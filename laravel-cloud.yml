@@ -9,5 +9,7 @@ build:
 deploy:
   commands:
     - 'php artisan migrate --force'
-    - 'php artisan db:seed --force'
+    - 'php artisan db:seed --class=CurrencySeeder --force'
+    - 'php artisan db:seed --class=LanguageSeeder --force'
+    - 'php artisan db:seed --class=PaymentGatewaySeeder --force'
     - 'php artisan storage:link'

@@ -5,8 +5,14 @@ use App\Models\Currency;
 if (!function_exists('getCurrentCurrency')) {
     function getCurrentCurrency()
     {
-        $currencyCode = session('currency', Currency::getDefaultCurrency()->code);
-        return Currency::where('code', $currencyCode)->first() ?? Currency::getDefaultCurrency();
+        $defaultCurrency = Currency::getDefaultCurrency();
+        if (!$defaultCurrency) {
+            // Fallback if no default currency exists
+            return (object) ['code' => 'USD', 'symbol' => '$', 'name' => 'US Dollar'];
+        }
+        
+        $currencyCode = session('currency', $defaultCurrency->code);
+        return Currency::where('code', $currencyCode)->first() ?? $defaultCurrency;
     }
 }
 
