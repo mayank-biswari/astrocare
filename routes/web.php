@@ -98,6 +98,7 @@ Route::middleware('auth')->prefix('dashboard')->group(function () {
     Route::get('/settings', [DashboardController::class, 'settings'])->name('dashboard.settings');
     Route::post('/settings/preferences', [DashboardController::class, 'updatePreferences'])->name('dashboard.preferences.update');
     Route::post('/settings/profile', [DashboardController::class, 'updateProfile'])->name('dashboard.profile.update');
+    Route::post('/settings/password', [DashboardController::class, 'updatePassword'])->name('dashboard.password.update');
     Route::get('/order/{id}', [DashboardController::class, 'orderDetails'])->name('dashboard.order.details');
     Route::get('/order/{id}/track', [DashboardController::class, 'trackOrder'])->name('dashboard.order.track');
     Route::get('/order/{id}/invoice', [DashboardController::class, 'downloadInvoice'])->name('dashboard.order.invoice');

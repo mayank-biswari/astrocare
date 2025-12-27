@@ -52,23 +52,23 @@
         <div class="bg-white rounded-lg shadow-lg p-6">
             <h2 class="text-xl font-bold mb-6">Change Password</h2>
             
-            <form class="space-y-4">
+            <form action="{{ route('dashboard.password.update') }}" method="POST" class="space-y-4">
                 @csrf
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Current Password</label>
-                    <input type="password" 
+                    <input type="password" name="current_password" required
                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">New Password</label>
-                    <input type="password" 
+                    <input type="password" name="password" required
                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Confirm New Password</label>
-                    <input type="password" 
+                    <input type="password" name="password_confirmation" required
                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
                 </div>
 
