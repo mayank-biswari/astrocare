@@ -105,6 +105,19 @@ Route::middleware('auth')->prefix('dashboard')->group(function () {
     Route::post('/order/{id}/cancel', [DashboardController::class, 'cancelOrder'])->name('dashboard.order.cancel');
 });
 
+// CMS Routes
+Route::prefix('pages')->group(function () {
+    Route::get('/', [App\Http\Controllers\CmsController::class, 'index'])->name('cms.index');
+    Route::get('/{slug}', [App\Http\Controllers\CmsController::class, 'show'])->name('cms.show');
+    Route::post('/{slug}/comment', [App\Http\Controllers\CmsController::class, 'storeComment'])->name('cms.comment.store');
+});
+
+// Testimonials Page
+Route::get('/testimonials', [App\Http\Controllers\CmsController::class, 'testimonials'])->name('testimonials');
+
+// Captcha Route
+Route::get('captcha/{config?}', '\Mews\Captcha\CaptchaController@getCaptcha')->name('captcha');
+
 // Admin Routes
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [App\Http\Controllers\AdminController::class, 'dashboard'])->name('dashboard');
@@ -157,6 +170,26 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // Payment Gateways
     Route::get('/payment-gateways', [App\Http\Controllers\AdminController::class, 'paymentGateways'])->name('payment-gateways');
     Route::put('/payment-gateways/{id}', [App\Http\Controllers\AdminController::class, 'updatePaymentGateway'])->name('payment-gateways.update');
+
+    // CMS Management
+    Route::get('/cms', [App\Http\Controllers\AdminController::class, 'cmsPages'])->name('cms.pages');
+    Route::get('/cms/create', [App\Http\Controllers\AdminController::class, 'createCmsPage'])->name('cms.create');
+    Route::post('/cms', [App\Http\Controllers\AdminController::class, 'storeCmsPage'])->name('cms.store');
+    Route::get('/cms/{id}/edit', [App\Http\Controllers\AdminController::class, 'editCmsPage'])->name('cms.edit');
+    Route::put('/cms/{id}', [App\Http\Controllers\AdminController::class, 'updateCmsPage'])->name('cms.update');
+    Route::delete('/cms/{id}', [App\Http\Controllers\AdminController::class, 'deleteCmsPage'])->name('cms.delete');
+    Route::get('/cms/comments', [App\Http\Controllers\AdminController::class, 'cmsComments'])->name('cms.comments');
+    Route::put('/cms/comments/{id}/approve', [App\Http\Controllers\AdminController::class, 'approveComment'])->name('cms.comments.approve');
+    Route::get('/cms/categories', [App\Http\Controllers\AdminController::class, 'cmsCategories'])->name('cms.categories');
+    Route::post('/cms/categories', [App\Http\Controllers\AdminController::class, 'storeCmsCategory'])->name('cms.categories.store');
+    Route::put('/cms/categories/{id}', [App\Http\Controllers\AdminController::class, 'updateCmsCategory'])->name('cms.categories.update');
+    Route::delete('/cms/categories/{id}', [App\Http\Controllers\AdminController::class, 'deleteCmsCategory'])->name('cms.categories.delete');
+    Route::get('/cms/page-types', [App\Http\Controllers\AdminController::class, 'cmsPageTypes'])->name('cms.page-types');
+    Route::get('/cms/page-types/create', [App\Http\Controllers\AdminController::class, 'createCmsPageType'])->name('cms.page-types.create');
+    Route::post('/cms/page-types', [App\Http\Controllers\AdminController::class, 'storeCmsPageType'])->name('cms.page-types.store');
+    Route::get('/cms/page-types/{id}/edit', [App\Http\Controllers\AdminController::class, 'editCmsPageType'])->name('cms.page-types.edit');
+    Route::put('/cms/page-types/{id}', [App\Http\Controllers\AdminController::class, 'updateCmsPageType'])->name('cms.page-types.update');
+    Route::delete('/cms/page-types/{id}', [App\Http\Controllers\AdminController::class, 'deleteCmsPageType'])->name('cms.page-types.delete');
 
     // Settings
     Route::get('/settings', [App\Http\Controllers\AdminController::class, 'settings'])->name('settings');

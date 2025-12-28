@@ -45,6 +45,7 @@
                     </div>
                     <a href="{{ route('pooja.index') }}" class="hover:text-yellow-300">{{ __('messages.pooja_rituals') }}</a>
                     <a href="{{ route('shop.index') }}" class="hover:text-yellow-300">{{ __('messages.shop') }}</a>
+                    <a href="{{ route('testimonials') }}" class="hover:text-yellow-300">{{ __('messages.testimonials') }}</a>
                     <a href="{{ route('cart.index') }}" class="hover:text-yellow-300 relative">
                         {{ __('messages.cart') }}
                         @php $cartCount = count(session()->get('cart', [])); @endphp
@@ -168,15 +169,15 @@ document.addEventListener('click', function(event) {
     const languageMenu = document.getElementById('language-menu');
     const currencyDropdown = document.getElementById('currency-dropdown');
     const currencyMenu = document.getElementById('currency-menu');
-    
+
     if (!servicesDropdown.contains(event.target)) {
         servicesMenu.classList.add('hidden');
     }
-    
+
     if (!languageDropdown.contains(event.target)) {
         languageMenu.classList.add('hidden');
     }
-    
+
     if (!currencyDropdown.contains(event.target)) {
         currencyMenu.classList.add('hidden');
     }

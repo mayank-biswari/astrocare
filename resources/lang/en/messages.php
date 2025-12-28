@@ -11,6 +11,7 @@ return [
     'predictions' => 'Predictions',
     'pooja_rituals' => 'Pooja & Rituals',
     'shop' => 'Shop',
+    'testimonials' => 'Testimonials',
     'cart' => 'Cart',
     'about' => 'About',
     'dashboard' => 'Dashboard',
@@ -29,13 +30,13 @@ return [
     'language' => 'Language',
     'english' => 'English',
     'hindi' => 'हिंदी',
-    
+
     // Home page
-    'welcome_title' => 'Welcome to AstroServices',
+    'welcome_title' => 'Welcome to Vijay Astro Care',
     'welcome_subtitle' => 'Your Gateway to Ancient Wisdom and Spiritual Guidance',
     'get_started' => 'Get Started',
     'learn_more' => 'Learn More',
-    
+
     // Common terms
     'name' => 'Name',
     'full_name' => 'Full Name',
@@ -83,7 +84,7 @@ return [
     'faq' => 'FAQ',
     'terms' => 'Terms & Conditions',
     'privacy' => 'Privacy Policy',
-    
+
     // Services page
     'astrology_services' => 'Astrology Services',
     'discover_path' => 'Discover your path with our comprehensive astrology services',
@@ -114,4 +115,45 @@ return [
     'zodiac_desc' => 'Daily predictions based on your zodiac sign',
     'read_more' => 'Read More',
     'session' => 'session',
+
+    // Dashboard
+    'my_dashboard' => 'My Dashboard',
+    'my_orders' => 'My Orders',
+    'my_consultations' => 'My Consultations',
+    'my_kundlis' => 'My Kundlis',
+    'my_poojas' => 'My Poojas',
+    'my_reports' => 'My Reports',
+    'account_settings' => 'Account Settings',
+    'orders_desc' => 'View your product orders and delivery status',
+    'consultations_desc' => 'Track your astrology consultation sessions',
+    'kundlis_desc' => 'Access your generated birth charts',
+    'poojas_desc' => 'View your booked pooja ceremonies',
+    'reports_desc' => 'Download your astrology reports',
+    'settings_desc' => 'Manage your profile and preferences',
+    
+    // Dashboard sub-pages
+    'order_number' => 'Order Number',
+    'order_date' => 'Order Date',
+    'delivery_status' => 'Delivery Status',
+    'consultation_type' => 'Consultation Type',
+    'consultation_date' => 'Consultation Date',
+    'consultation_status' => 'Consultation Status',
+    'astrologer' => 'Astrologer',
+    'report_type' => 'Report Type',
+    'generated_on' => 'Generated On',
+    'download' => 'Download',
+    'pooja_name' => 'Pooja Name',
+    'pooja_date' => 'Pooja Date',
+    'pooja_status' => 'Pooja Status',
+    'temple' => 'Temple',
+    'pending' => 'Pending',
+    'completed' => 'Completed',
+    'cancelled' => 'Cancelled',
+    'scheduled' => 'Scheduled',
+    'processing' => 'Processing',
+    'shipped' => 'Shipped',
+    'delivered' => 'Delivered',
+    'no_items_found' => 'No items found',
+    'view_report' => 'View Report',
+    'reschedule' => 'Reschedule',
 ];

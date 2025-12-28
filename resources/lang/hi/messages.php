@@ -11,6 +11,7 @@ return [
     'predictions' => 'भविष्यवाणी',
     'pooja_rituals' => 'पूजा और अनुष्ठान',
     'shop' => 'दुकान',
+    'testimonials' => 'प्रशंसापत्र',
     'cart' => 'कार्ट',
     'about' => 'हमारे बारे में',
     'dashboard' => 'डैशबोर्ड',
@@ -29,13 +30,13 @@ return [
     'language' => 'भाषा',
     'english' => 'English',
     'hindi' => 'हिंदी',
-    
+
     // Home page
-    'welcome_title' => 'एस्ट्रोसर्विसेज में आपका स्वागत है',
+    'welcome_title' => 'विजय एस्ट्रो केयर में आपका स्वागत है',
     'welcome_subtitle' => 'प्राचीन ज्ञान और आध्यात्मिक मार्गदर्शन का आपका द्वार',
     'get_started' => 'शुरू करें',
     'learn_more' => 'और जानें',
-    
+
     // Common terms
     'name' => 'नाम',
     'full_name' => 'पूरा नाम',
@@ -83,7 +84,7 @@ return [
     'faq' => 'अक्सर पूछे जाने वाले प्रश्न',
     'terms' => 'नियम और शर्तें',
     'privacy' => 'गोपनीयता नीति',
-    
+
     // Services page
     'astrology_services' => 'ज्योतिष सेवाएं',
     'discover_path' => 'हमारी व्यापक ज्योतिष सेवाओं के साथ अपना मार्ग खोजें',
@@ -114,4 +115,45 @@ return [
     'zodiac_desc' => 'आपके राशि चिह्न के आधार पर दैनिक भविष्यवाणियां',
     'read_more' => 'और पढ़ें',
     'session' => 'सत्र',
+
+    // Dashboard
+    'my_dashboard' => 'मेरा डैशबोर्ड',
+    'my_orders' => 'मेरे ऑर्डर',
+    'my_consultations' => 'मेरे परामर्श',
+    'my_kundlis' => 'मेरी कुंडलियां',
+    'my_poojas' => 'मेरी पूजाएं',
+    'my_reports' => 'मेरी रिपोर्ट्स',
+    'account_settings' => 'खाता सेटिंग्स',
+    'orders_desc' => 'अपने उत्पाद ऑर्डर और डिलीवरी स्थिति देखें',
+    'consultations_desc' => 'अपने ज्योतिष परामर्श सत्रों को ट्रैक करें',
+    'kundlis_desc' => 'अपनी जेनरेट की गई जन्म कुंडलियों तक पहुंचें',
+    'poojas_desc' => 'अपनी बुक की गई पूजा समारोहों को देखें',
+    'reports_desc' => 'अपनी ज्योतिष रिपोर्ट्स डाउनलोड करें',
+    'settings_desc' => 'अपनी प्रोफाइल और प्राथमिकताओं को प्रबंधित करें',
+    
+    // Dashboard sub-pages
+    'order_number' => 'ऑर्डर नंबर',
+    'order_date' => 'ऑर्डर दिनांक',
+    'delivery_status' => 'डिलीवरी स्थिति',
+    'consultation_type' => 'परामर्श प्रकार',
+    'consultation_date' => 'परामर्श दिनांक',
+    'consultation_status' => 'परामर्श स्थिति',
+    'astrologer' => 'ज्योतिषी',
+    'report_type' => 'रिपोर्ट प्रकार',
+    'generated_on' => 'जेनरेट किया गया',
+    'download' => 'डाउनलोड',
+    'pooja_name' => 'पूजा नाम',
+    'pooja_date' => 'पूजा दिनांक',
+    'pooja_status' => 'पूजा स्थिति',
+    'temple' => 'मंदिर',
+    'pending' => 'लंबित',
+    'completed' => 'पूर्ण',
+    'cancelled' => 'रद्द',
+    'scheduled' => 'निर्धारित',
+    'processing' => 'प्रसंस्करण',
+    'shipped' => 'भेजा गया',
+    'delivered' => 'डिलीवर',
+    'no_items_found' => 'कोई आइटम नहीं मिला',
+    'view_report' => 'रिपोर्ट देखें',
+    'reschedule' => 'पुनर्निर्धारण',
 ];

@@ -13,6 +13,8 @@ use App\Models\Category;
 use App\Models\Language;
 use App\Models\PaymentGateway;
 use App\Models\Currency;
+use App\Models\CmsCategory;
+use App\Models\CmsPageType;
 
 class AdminController extends Controller
 {
@@ -503,5 +505,345 @@ class AdminController extends Controller
         ]);
 
         return redirect()->route('admin.payment-gateways')->with('success', 'Payment gateway updated successfully!');
+    }
+
+    // CMS Management
+    public function cmsPages(Request $request)
+    {
+        $query = \App\Models\CmsPage::with(['category', 'pageType']);
+        
+        if ($request->search) {
+            $query->where('title', 'like', '%' . $request->search . '%')
+                  ->orWhere('body', 'like', '%' . $request->search . '%');
+        }
+        
+        if ($request->status !== null) {
+            $query->where('is_published', $request->status);
+        }
+        
+        if ($request->category) {
+            $query->where('cms_category_id', $request->category);
+        }
+        
+        if ($request->page_type) {
+            $query->where('cms_page_type_id', $request->page_type);
+        }
+        
+        $pages = $query->latest()->paginate(10)->appends($request->query());
+        $categories = \App\Models\CmsCategory::where('is_active', true)->get();
+        $pageTypes = \App\Models\CmsPageType::where('is_active', true)->get();
+        
+        return view('admin.cms.index', compact('pages', 'categories', 'pageTypes'));
+    }
+
+    public function createCmsPage()
+    {
+        $categories = CmsCategory::where('is_active', true)->get();
+        $pageTypes = CmsPageType::where('is_active', true)->get();
+        $languages = Language::getActiveLanguages();
+        return view('admin.cms.create', compact('categories', 'pageTypes', 'languages'));
+    }
+
+    public function storeCmsPage(Request $request)
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'body' => 'required|string',
+            'image' => 'nullable|image|max:2048',
+            'meta_title' => 'nullable|string|max:255',
+            'meta_description' => 'nullable|string|max:500',
+            'meta_keywords' => 'nullable|string|max:255',
+            'language_code' => 'required|exists:languages,code'
+        ]);
+
+        $data = [
+            'title' => $request->title,
+            'body' => $request->body,
+            'meta_title' => $request->meta_title,
+            'meta_description' => $request->meta_description,
+            'meta_keywords' => $request->meta_keywords,
+            'cms_category_id' => $request->cms_category_id,
+            'cms_page_type_id' => $request->cms_page_type_id,
+            'custom_fields' => $request->custom_fields,
+            'language_code' => $request->language_code,
+            'is_published' => $request->has('is_published'),
+            'allow_comments' => $request->has('allow_comments')
+        ];
+        
+        if ($request->hasFile('image')) {
+            $data['image'] = $request->file('image')->store('cms', 'public');
+        }
+
+        $page = \App\Models\CmsPage::create($data);
+        
+        // Save translations for other languages
+        if ($request->translations) {
+            foreach ($request->translations as $langCode => $translation) {
+                if (!empty($translation['title']) && $langCode !== $request->language_code) {
+                    $page->translations()->create([
+                        'language_code' => $langCode,
+                        'title' => $translation['title'],
+                        'body' => $translation['body'],
+                        'meta_title' => $translation['meta_title'],
+                        'meta_description' => $translation['meta_description'],
+                        'meta_keywords' => $translation['meta_keywords']
+                    ]);
+                }
+            }
+        }
+        
+        return redirect()->route('admin.cms.pages')->with('success', 'Page created successfully!');
+    }
+
+    public function editCmsPage($id)
+    {
+        $page = \App\Models\CmsPage::with('translations')->findOrFail($id);
+        $categories = CmsCategory::where('is_active', true)->get();
+        $pageTypes = CmsPageType::where('is_active', true)->get();
+        $languages = Language::getActiveLanguages();
+        return view('admin.cms.edit', compact('page', 'categories', 'pageTypes', 'languages'));
+    }
+
+    public function updateCmsPage(Request $request, $id)
+    {
+        $page = \App\Models\CmsPage::findOrFail($id);
+        
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'body' => 'required|string',
+            'image' => 'nullable|image|max:2048',
+            'meta_title' => 'nullable|string|max:255',
+            'meta_description' => 'nullable|string|max:500',
+            'meta_keywords' => 'nullable|string|max:255',
+            'language_code' => 'required|exists:languages,code'
+        ]);
+
+        $data = [
+            'title' => $request->title,
+            'body' => $request->body,
+            'meta_title' => $request->meta_title,
+            'meta_description' => $request->meta_description,
+            'meta_keywords' => $request->meta_keywords,
+            'cms_category_id' => $request->cms_category_id,
+            'cms_page_type_id' => $request->cms_page_type_id,
+            'custom_fields' => $request->custom_fields,
+            'language_code' => $request->language_code,
+            'is_published' => $request->has('is_published'),
+            'allow_comments' => $request->has('allow_comments')
+        ];
+        
+        if ($request->hasFile('image')) {
+            $data['image'] = $request->file('image')->store('cms', 'public');
+        }
+
+        $page->update($data);
+        
+        // Update translations
+        $page->translations()->delete();
+        if ($request->translations) {
+            foreach ($request->translations as $langCode => $translation) {
+                if (!empty($translation['title']) && $langCode !== $request->language_code) {
+                    $page->translations()->create([
+                        'language_code' => $langCode,
+                        'title' => $translation['title'],
+                        'body' => $translation['body'],
+                        'meta_title' => $translation['meta_title'],
+                        'meta_description' => $translation['meta_description'],
+                        'meta_keywords' => $translation['meta_keywords']
+                    ]);
+                }
+            }
+        }
+        
+        return redirect()->route('admin.cms.pages')->with('success', 'Page updated successfully!');
+    }
+
+    public function deleteCmsPage($id)
+    {
+        \App\Models\CmsPage::findOrFail($id)->delete();
+        return redirect()->route('admin.cms.pages')->with('success', 'Page deleted successfully!');
+    }
+
+    public function cmsComments()
+    {
+        $comments = \App\Models\CmsComment::with('page')->latest()->paginate(20);
+        return view('admin.cms.comments', compact('comments'));
+    }
+
+    public function approveComment($id)
+    {
+        $comment = \App\Models\CmsComment::findOrFail($id);
+        $comment->update(['is_approved' => !$comment->is_approved]);
+        return redirect()->back()->with('success', 'Comment status updated!');
+    }
+
+    // CMS Categories Management
+    public function cmsCategories()
+    {
+        $categories = CmsCategory::latest()->paginate(10);
+        return view('admin.cms.categories', compact('categories'));
+    }
+
+    public function storeCmsCategory(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255|unique:cms_categories',
+            'description' => 'nullable|string'
+        ]);
+
+        CmsCategory::create([
+            'name' => $request->name,
+            'description' => $request->description,
+            'is_active' => $request->has('is_active')
+        ]);
+
+        return redirect()->route('admin.cms.categories')->with('success', 'Category created successfully!');
+    }
+
+    public function updateCmsCategory(Request $request, $id)
+    {
+        $category = CmsCategory::findOrFail($id);
+        
+        $request->validate([
+            'name' => 'required|string|max:255|unique:cms_categories,name,' . $id,
+            'description' => 'nullable|string'
+        ]);
+
+        $category->update([
+            'name' => $request->name,
+            'description' => $request->description,
+            'is_active' => $request->has('is_active')
+        ]);
+
+        return redirect()->route('admin.cms.categories')->with('success', 'Category updated successfully!');
+    }
+
+    public function deleteCmsCategory($id)
+    {
+        CmsCategory::findOrFail($id)->delete();
+        return redirect()->route('admin.cms.categories')->with('success', 'Category deleted successfully!');
+    }
+
+    // CMS Page Types Management
+    public function cmsPageTypes(Request $request)
+    {
+        $query = CmsPageType::query();
+        
+        if ($request->search) {
+            $query->where('name', 'like', '%' . $request->search . '%')
+                  ->orWhere('description', 'like', '%' . $request->search . '%');
+        }
+        
+        if ($request->status !== null) {
+            $query->where('is_active', $request->status);
+        }
+        
+        $pageTypes = $query->latest()->paginate(10)->appends($request->query());
+        return view('admin.cms.page-types', compact('pageTypes'));
+    }
+
+    public function createCmsPageType()
+    {
+        return view('admin.cms.create-page-type');
+    }
+
+    public function storeCmsPageType(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255|unique:cms_page_types',
+            'description' => 'nullable|string'
+        ]);
+
+        $customFields = [];
+        if ($request->custom_fields) {
+            foreach ($request->custom_fields as $field) {
+                $customField = [
+                    'name' => $field['name'],
+                    'label' => $field['label'],
+                    'type' => $field['type'],
+                    'required' => (bool)$field['required']
+                ];
+                
+                if ($field['type'] === 'select' && !empty($field['options'])) {
+                    $customField['options'] = array_map('trim', explode(',', $field['options']));
+                }
+                
+                $customFields[] = $customField;
+            }
+        }
+
+        $fieldsConfig = [
+            'show_comments' => $request->has('fields_config.show_comments'),
+            'show_posted_date' => $request->has('fields_config.show_posted_date'),
+            'show_author' => $request->has('fields_config.show_author'),
+            'show_rating' => $request->has('fields_config.show_rating'),
+            'custom_fields' => $customFields
+        ];
+
+        CmsPageType::create([
+            'name' => $request->name,
+            'description' => $request->description,
+            'fields_config' => $fieldsConfig,
+            'is_active' => $request->has('is_active')
+        ]);
+
+        return redirect()->route('admin.cms.page-types')->with('success', 'Page type created successfully!');
+    }
+
+    public function editCmsPageType($id)
+    {
+        $pageType = CmsPageType::findOrFail($id);
+        return view('admin.cms.edit-page-type', compact('pageType'));
+    }
+
+    public function updateCmsPageType(Request $request, $id)
+    {
+        $pageType = CmsPageType::findOrFail($id);
+        
+        $request->validate([
+            'name' => 'required|string|max:255|unique:cms_page_types,name,' . $id,
+            'description' => 'nullable|string'
+        ]);
+
+        $customFields = [];
+        if ($request->custom_fields) {
+            foreach ($request->custom_fields as $field) {
+                $customField = [
+                    'name' => $field['name'],
+                    'label' => $field['label'],
+                    'type' => $field['type'],
+                    'required' => (bool)$field['required']
+                ];
+                
+                if ($field['type'] === 'select' && !empty($field['options'])) {
+                    $customField['options'] = array_map('trim', explode(',', $field['options']));
+                }
+                
+                $customFields[] = $customField;
+            }
+        }
+
+        $fieldsConfig = [
+            'show_comments' => $request->has('fields_config.show_comments'),
+            'show_posted_date' => $request->has('fields_config.show_posted_date'),
+            'show_author' => $request->has('fields_config.show_author'),
+            'show_rating' => $request->has('fields_config.show_rating'),
+            'custom_fields' => $customFields
+        ];
+
+        $pageType->update([
+            'name' => $request->name,
+            'description' => $request->description,
+            'fields_config' => $fieldsConfig,
+            'is_active' => $request->has('is_active')
+        ]);
+
+        return redirect()->route('admin.cms.page-types')->with('success', 'Page type updated successfully!');
+    }
+
+    public function deleteCmsPageType($id)
+    {
+        CmsPageType::findOrFail($id)->delete();
+        return redirect()->route('admin.cms.page-types')->with('success', 'Page type deleted successfully!');
     }
 }

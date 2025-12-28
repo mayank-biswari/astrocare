@@ -106,6 +106,41 @@
               <p>Categories</p>
             </a>
           </li>
+          <li class="nav-item {{ request()->routeIs('admin.cms*') ? 'menu-open' : '' }}">
+            <a href="#" class="nav-link {{ request()->routeIs('admin.cms*') ? 'active' : '' }}">
+              <i class="nav-icon fas fa-file-alt"></i>
+              <p>
+                CMS
+                <i class="fas fa-angle-left right"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{{ route('admin.cms.pages') }}" class="nav-link {{ request()->routeIs('admin.cms.pages*') ? 'active' : '' }}">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Pages</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{{ route('admin.cms.categories') }}" class="nav-link {{ request()->routeIs('admin.cms.categories*') ? 'active' : '' }}">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Categories</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{{ route('admin.cms.page-types') }}" class="nav-link {{ request()->routeIs('admin.cms.page-types*') ? 'active' : '' }}">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Page Types</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{{ route('admin.cms.comments') }}" class="nav-link {{ request()->routeIs('admin.cms.comments*') ? 'active' : '' }}">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Comments</p>
+                </a>
+              </li>
+            </ul>
+          </li>
           <li class="nav-item">
             <a href="{{ route('admin.languages') }}" class="nav-link {{ request()->routeIs('admin.languages*') ? 'active' : '' }}">
               <i class="nav-icon fas fa-language"></i>
@@ -180,5 +215,61 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
 <!-- AdminLTE App -->
 <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<style>
+/* Custom Pagination Styles */
+.pagination {
+    margin: 0;
+}
+.pagination .page-link {
+    color: #007bff;
+    background-color: #fff;
+    border: 1px solid #dee2e6;
+    padding: 0.375rem 0.75rem;
+    margin-left: -1px;
+    line-height: 1.25;
+    text-decoration: none;
+}
+.pagination .page-link:hover {
+    color: #0056b3;
+    background-color: #e9ecef;
+    border-color: #dee2e6;
+}
+.pagination .page-item.active .page-link {
+    color: #fff;
+    background-color: #007bff;
+    border-color: #007bff;
+}
+.pagination .page-item.disabled .page-link {
+    color: #6c757d;
+    background-color: #fff;
+    border-color: #dee2e6;
+    cursor: not-allowed;
+}
+</style>
+
+<script>
+// SweetAlert delete confirmation
+$('.delete-btn').on('click', function(e) {
+    e.preventDefault();
+    const form = $(this).closest('form');
+    
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            form.submit();
+        }
+    });
+});
+</script>
 </body>
 </html>

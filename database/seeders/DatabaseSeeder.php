@@ -24,7 +24,12 @@ class DatabaseSeeder extends Seeder
             PaymentGatewaySeeder::class,
             PoojaServiceSeeder::class,
             ProductSeeder::class,
-            ServiceSeeder::class
+            ServiceSeeder::class,
+            CmsPageTypeSeeder::class,
+            UpdateCmsPageLanguageSeeder::class,
+            TestimonialSeeder::class,
+            SacredProductsSeeder::class,
+            ServicesSeeder::class
         ]);
     }
 }
