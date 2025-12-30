@@ -102,4 +102,21 @@ class CmsController extends Controller
 
         return redirect()->back()->with('success', 'Comment submitted for approval!');
     }
+
+    public function blogs(Request $request)
+    {
+        $languageCode = $request->get('lang', Language::getDefaultLanguage()->code ?? 'en');
+        
+        $blogPageType = \App\Models\CmsPageType::where('name', 'Blogs')->first();
+        
+        $blogs = CmsPage::where('is_published', true)
+                       ->where('language_code', $languageCode)
+                       ->when($blogPageType, function($query) use ($blogPageType) {
+                           return $query->where('cms_page_type_id', $blogPageType->id);
+                       })
+                       ->latest()
+                       ->paginate(12);
+        
+        return view('blogs', compact('blogs', 'languageCode'));
+    }
 }

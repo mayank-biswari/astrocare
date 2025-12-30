@@ -21,7 +21,8 @@
                 <div class="col-md-12">
                     <div class="form-group">
                         <label>Body Content</label>
-                        <textarea name="body" rows="10" class="form-control" required></textarea>
+                        <div id="editor" style="height: 300px;"></div>
+                        <textarea name="body" id="body-content" style="display: none;" required></textarea>
                     </div>
                 </div>
                 <div class="col-md-6">
@@ -120,7 +121,8 @@
                                         <div class="col-md-12">
                                             <div class="form-group">
                                                 <label>Body Content</label>
-                                                <textarea name="translations[{{ $language->code }}][body]" rows="5" class="form-control"></textarea>
+                                                <div id="editor-{{ $language->code }}" style="height: 200px;"></div>
+                                                <textarea name="translations[{{ $language->code }}][body]" id="body-content-{{ $language->code }}" style="display: none;"></textarea>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
@@ -162,7 +164,64 @@
     </form>
 </div>
 
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+<script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+
 <script>
+// Initialize Quill editor
+var quill = new Quill('#editor', {
+    theme: 'snow',
+    modules: {
+        toolbar: [
+            [{ 'header': [1, 2, 3, false] }],
+            ['bold', 'italic', 'underline', 'strike'],
+            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+            ['link', 'image'],
+            ['clean']
+        ]
+    }
+});
+
+// Initialize translation editors
+var translationEditors = {};
+@foreach($languages as $language)
+    @if(!$language->is_default)
+        translationEditors['{{ $language->code }}'] = new Quill('#editor-{{ $language->code }}', {
+            theme: 'snow',
+            modules: {
+                toolbar: [
+                    [{ 'header': [1, 2, 3, false] }],
+                    ['bold', 'italic', 'underline'],
+                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                    ['link']
+                ]
+            }
+        });
+    @endif
+@endforeach
+
+// Update hidden textarea on content change and form submit
+quill.on('text-change', function() {
+    document.querySelector('#body-content').value = quill.root.innerHTML;
+});
+
+// Update translation textareas on content change
+Object.keys(translationEditors).forEach(function(lang) {
+    translationEditors[lang].on('text-change', function() {
+        document.querySelector('#body-content-' + lang).value = translationEditors[lang].root.innerHTML;
+    });
+});
+
+// Ensure content is synced on form submit
+document.querySelector('form').addEventListener('submit', function() {
+    document.querySelector('#body-content').value = quill.root.innerHTML;
+    
+    // Update translation textareas
+    Object.keys(translationEditors).forEach(function(lang) {
+        document.querySelector('#body-content-' + lang).value = translationEditors[lang].root.innerHTML;
+    });
+});
+
 document.getElementById('pageTypeSelect').addEventListener('change', function() {
     const selectedOption = this.options[this.selectedIndex];
     const config = selectedOption.dataset.config;

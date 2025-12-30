@@ -12,6 +12,7 @@ return [
     'pooja_rituals' => 'पूजा और अनुष्ठान',
     'shop' => 'दुकान',
     'testimonials' => 'प्रशंसापत्र',
+    'blogs' => 'ब्लॉग',
     'cart' => 'कार्ट',
     'about' => 'हमारे बारे में',
     'dashboard' => 'डैशबोर्ड',
@@ -156,4 +157,10 @@ return [
     'no_items_found' => 'कोई आइटम नहीं मिला',
     'view_report' => 'रिपोर्ट देखें',
     'reschedule' => 'पुनर्निर्धारण',
+    
+    // Shop page
+    'specifications' => 'विशिष्टताएं',
+    'product_features' => 'उत्पाद विशेषताएं',
+    'available' => 'उपलब्ध',
+    'login_to_buy' => 'खरीदने के लिए लॉगिन करें',
 ];

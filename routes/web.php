@@ -8,6 +8,7 @@ use App\Http\Controllers\ConsultationController;
 use App\Http\Controllers\KundliController;
 use App\Http\Controllers\PoojaController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ContactController;
 
 // Home
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -115,6 +116,13 @@ Route::prefix('pages')->group(function () {
 // Testimonials Page
 Route::get('/testimonials', [App\Http\Controllers\CmsController::class, 'testimonials'])->name('testimonials');
 
+// Blogs Page
+Route::get('/blogs', [App\Http\Controllers\CmsController::class, 'blogs'])->name('blogs.index');
+
+// Contact Routes
+Route::get('/contact', [ContactController::class, 'index'])->name('contact');
+Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
+
 // Captcha Route
 Route::get('captcha/{config?}', '\Mews\Captcha\CaptchaController@getCaptcha')->name('captcha');
 
@@ -194,6 +202,22 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // Settings
     Route::get('/settings', [App\Http\Controllers\AdminController::class, 'settings'])->name('settings');
     Route::post('/settings', [App\Http\Controllers\AdminController::class, 'updateSettings'])->name('settings.update');
+
+    // Contact Management
+    Route::get('/contact/submissions', [App\Http\Controllers\AdminController::class, 'contactSubmissions'])->name('contact.submissions');
+    Route::get('/contact/submissions/{id}', [App\Http\Controllers\AdminController::class, 'viewContactSubmission'])->name('contact.view');
+    Route::delete('/contact/submissions/{id}', [App\Http\Controllers\AdminController::class, 'deleteContactSubmission'])->name('contact.delete');
+    Route::get('/contact/settings', [App\Http\Controllers\AdminController::class, 'contactSettings'])->name('contact.settings');
+    Route::post('/contact/settings', [App\Http\Controllers\AdminController::class, 'updateContactSettings'])->name('contact.settings.update');
+
+    // Notifications
+    Route::get('/notifications', [App\Http\Controllers\AdminController::class, 'notifications'])->name('notifications');
+    Route::get('/notifications/{id}/read', [App\Http\Controllers\AdminController::class, 'markNotificationRead'])->name('notifications.read');
+    Route::post('/notifications/mark-all-read', [App\Http\Controllers\AdminController::class, 'markAllNotificationsRead'])->name('notifications.mark-all-read');
+
+    // Footer Settings
+    Route::get('/footer/settings', [App\Http\Controllers\AdminController::class, 'footerSettings'])->name('footer.settings');
+    Route::post('/footer/settings', [App\Http\Controllers\AdminController::class, 'updateFooterSettings'])->name('footer.settings.update');
 });
 
 require __DIR__.'/auth.php';

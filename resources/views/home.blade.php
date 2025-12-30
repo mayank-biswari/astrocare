@@ -4,14 +4,75 @@
 
 @section('content')
 <!-- Hero Section -->
-<section class="bg-gradient-to-r from-indigo-900 to-purple-900 text-white py-20">
-    <div class="container mx-auto px-4 text-center">
-        <h1 class="text-5xl font-bold mb-6">{{ __('messages.welcome_title') }}</h1>
-        <p class="text-xl mb-8">{{ __('messages.welcome_subtitle') }}</p>
-        <div class="space-x-4">
-            <a href="{{ route('consultations.index') }}" class="bg-yellow-500 text-indigo-900 px-8 py-3 rounded-lg font-bold hover:bg-yellow-400">{{ __('messages.book_now') }}</a>
-            <a href="{{ route('kundli.create') }}" class="border-2 border-white px-8 py-3 rounded-lg font-bold hover:bg-white hover:text-indigo-900">{{ __('messages.kundli_reading') }}</a>
+<section class="relative bg-gradient-to-br from-sacred-maroon via-temple-red to-deep-saffron text-white py-20 overflow-hidden">
+    <!-- Background Pattern -->
+    <div class="absolute inset-0 opacity-10">
+        <div class="absolute top-10 left-10 text-6xl text-divine-gold">🕉️</div>
+        <div class="absolute top-20 right-20 text-4xl text-holy-yellow">⭐</div>
+        <div class="absolute bottom-20 left-20 text-5xl text-divine-gold">🔯</div>
+        <div class="absolute bottom-10 right-10 text-4xl text-holy-yellow">🌙</div>
+        <div class="absolute top-1/2 left-1/4 text-3xl text-divine-gold">✨</div>
+        <div class="absolute top-1/3 right-1/3 text-3xl text-holy-yellow">🌟</div>
+    </div>
+    
+    <div class="container mx-auto px-4 text-center relative z-10">
+        <div class="mb-6">
+            <span class="text-6xl text-divine-gold mb-4 block">🕉️</span>
+            <div class="w-24 h-1 bg-gradient-to-r from-divine-gold to-holy-yellow mx-auto mb-6"></div>
         </div>
+        
+        <h1 class="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-divine-gold via-holy-yellow to-divine-gold bg-clip-text text-transparent">
+            {{ __('messages.welcome_title') }}
+        </h1>
+        
+        <p class="text-lg md:text-xl mb-8 text-orange-100 max-w-3xl mx-auto leading-relaxed">
+            {{ __('messages.welcome_subtitle') }}
+        </p>
+        
+        <div class="flex items-center justify-center mb-8">
+            <span class="text-divine-gold text-2xl mr-2">ॐ</span>
+            <span class="text-orange-100 italic">"Guided by Ancient Wisdom, Blessed by Divine Grace"</span>
+            <span class="text-divine-gold text-2xl ml-2">ॐ</span>
+        </div>
+        
+        <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <a href="{{ route('consultations.index') }}" class="bg-gradient-to-r from-divine-gold to-holy-yellow text-temple-red px-8 py-4 rounded-lg font-bold hover:from-holy-yellow hover:to-divine-gold transition-all duration-300 transform hover:scale-105 divine-glow flex items-center">
+                <i class="fas fa-star-and-crescent mr-2"></i>
+                {{ __('messages.book_now') }}
+            </a>
+            <a href="{{ route('kundli.create') }}" class="border-2 border-divine-gold text-divine-gold px-8 py-4 rounded-lg font-bold hover:bg-divine-gold hover:text-temple-red transition-all duration-300 transform hover:scale-105 flex items-center">
+                <i class="fas fa-chart-pie mr-2"></i>
+                {{ __('messages.kundli_reading') }}
+            </a>
+        </div>
+        
+        <div class="mt-12 grid grid-cols-2 md:grid-cols-4 gap-6 max-w-2xl mx-auto">
+            <div class="text-center">
+                <div class="text-2xl text-divine-gold mb-2">🔮</div>
+                <div class="text-sm text-orange-100">Predictions</div>
+            </div>
+            <div class="text-center">
+                <div class="text-2xl text-divine-gold mb-2">🕉️</div>
+                <div class="text-sm text-orange-100">Poojas</div>
+            </div>
+            <div class="text-center">
+                <div class="text-2xl text-divine-gold mb-2">💎</div>
+                <div class="text-sm text-orange-100">Gemstones</div>
+            </div>
+            <div class="text-center">
+                <div class="text-2xl text-divine-gold mb-2">📿</div>
+                <div class="text-sm text-orange-100">Rudraksha</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bottom Wave -->
+    <div class="absolute bottom-0 left-0 w-full">
+        <svg viewBox="0 0 1200 120" preserveAspectRatio="none" class="relative block w-full h-16">
+            <path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" opacity=".25" fill="#FFD700"></path>
+            <path d="M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z" opacity=".5" fill="#FFD700"></path>
+            <path d="M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z" fill="#FFD700"></path>
+        </svg>
     </div>
 </section>
 
@@ -41,7 +102,7 @@
                         </div>
                     @endif
                     <h3 class="text-2xl font-bold mb-4">{{ $service->title }}</h3>
-                    <p class="text-gray-600 mb-6">{{ $service->body }}</p>
+                    <p class="text-gray-600 mb-6">{!! $service->body !!}</p>
                     <a href="{{ $service->custom_fields['service_link'] ?? '#' }}" class="bg-indigo-600 text-white px-6 py-2 rounded hover:bg-indigo-700">{{ __('messages.learn_more') }}</a>
                 </div>
                 @endforeach
@@ -97,7 +158,7 @@
                         </div>
                     @endif
                     <h4 class="font-bold mb-2">{{ $product->title }}</h4>
-                    <p class="text-sm text-gray-600">{{ $product->body }}</p>
+                    <p class="text-sm text-gray-600">{!! $product->body !!}</p>
                 </a>
                 @endforeach
             @else

@@ -15,6 +15,8 @@ use App\Models\PaymentGateway;
 use App\Models\Currency;
 use App\Models\CmsCategory;
 use App\Models\CmsPageType;
+use App\Models\ContactSubmission;
+use App\Models\ContactSetting;
 
 class AdminController extends Controller
 {
@@ -25,6 +27,11 @@ class AdminController extends Controller
             'orders' => Order::count(),
             'users' => User::count(),
             'consultations' => Consultation::count(),
+            'contact_submissions' => \App\Models\ContactSubmission::count(),
+            'unread_notifications' => \App\Models\Notification::getUnreadCount(),
+            'cms_pages' => \App\Models\CmsPage::count(),
+            'recent_contacts' => \App\Models\ContactSubmission::latest()->take(5)->get(),
+            'recent_notifications' => \App\Models\Notification::latest()->take(5)->get()
         ];
         return view('admin.dashboard', compact('stats'));
     }
@@ -63,12 +70,20 @@ class AdminController extends Controller
             'category' => 'required|string',
             'description' => 'required|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'gallery_images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'stock_quantity' => 'nullable|integer|min:0',
         ]);
 
         $imagePath = null;
         if ($request->hasFile('image')) {
             $imagePath = $request->file('image')->store('products', 'public');
+        }
+
+        $galleryImages = [];
+        if ($request->hasFile('gallery_images')) {
+            foreach ($request->file('gallery_images') as $file) {
+                $galleryImages[] = $file->store('products', 'public');
+            }
         }
 
         $specifications = null;
@@ -89,6 +104,7 @@ class AdminController extends Controller
             'specifications' => $specifications,
             'features' => $features,
             'image' => $imagePath ? '/storage/' . $imagePath : null,
+            'images' => $galleryImages,
             'slug' => \Str::slug($request->name),
             'stock_quantity' => $request->stock_quantity ?? 0,
             'show_stock' => $request->has('show_stock'),
@@ -112,6 +128,7 @@ class AdminController extends Controller
             'category' => 'required|string',
             'description' => 'required|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'gallery_images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'stock_quantity' => 'nullable|integer|min:0',
         ]);
 
@@ -143,6 +160,29 @@ class AdminController extends Controller
             $imagePath = $request->file('image')->store('products', 'public');
             $updateData['image'] = '/storage/' . $imagePath;
         }
+
+        // Handle gallery images
+        $existingImages = $request->input('existing_gallery_images', []);
+        $deletedImages = $request->input('deleted_gallery_images', []);
+        $newImages = [];
+        
+        // Delete files from storage
+        if (!empty($deletedImages)) {
+            foreach ($deletedImages as $deletedImage) {
+                \Storage::disk('public')->delete('products/' . $deletedImage);
+            }
+        }
+        
+        if ($request->hasFile('gallery_images')) {
+            foreach ($request->file('gallery_images') as $file) {
+                $newImages[] = $file->store('products', 'public');
+            }
+        }
+        
+        // Remove deleted images from existing images array
+        $existingImages = array_diff($existingImages, $deletedImages);
+        
+        $updateData['images'] = array_merge($existingImages, $newImages);
 
         $product->update($updateData);
 
@@ -610,6 +650,7 @@ class AdminController extends Controller
         
         $request->validate([
             'title' => 'required|string|max:255',
+            'slug' => 'required|string|max:255|unique:cms_pages,slug,' . $id,
             'body' => 'required|string',
             'image' => 'nullable|image|max:2048',
             'meta_title' => 'nullable|string|max:255',
@@ -620,6 +661,7 @@ class AdminController extends Controller
 
         $data = [
             'title' => $request->title,
+            'slug' => $request->slug,
             'body' => $request->body,
             'meta_title' => $request->meta_title,
             'meta_description' => $request->meta_description,
@@ -632,7 +674,16 @@ class AdminController extends Controller
             'allow_comments' => $request->has('allow_comments')
         ];
         
+        // Handle image deletion
+        if ($request->has('delete_image') && $page->image) {
+            \Storage::disk('public')->delete($page->image);
+            $data['image'] = null;
+        }
+        
         if ($request->hasFile('image')) {
+            if ($page->image) {
+                \Storage::disk('public')->delete($page->image);
+            }
             $data['image'] = $request->file('image')->store('cms', 'public');
         }
 
@@ -845,5 +896,113 @@ class AdminController extends Controller
     {
         CmsPageType::findOrFail($id)->delete();
         return redirect()->route('admin.cms.page-types')->with('success', 'Page type deleted successfully!');
+    }
+
+    // Notifications Management
+    public function notifications()
+    {
+        $notifications = \App\Models\Notification::latest()->paginate(20);
+        return view('admin.notifications.index', compact('notifications'));
+    }
+
+    public function markNotificationRead($id)
+    {
+        $notification = \App\Models\Notification::findOrFail($id);
+        $notification->update(['is_read' => true]);
+        
+        if ($notification->data && isset($notification->data['url'])) {
+            return redirect($notification->data['url']);
+        }
+        
+        return redirect()->route('admin.notifications');
+    }
+
+    public function markAllNotificationsRead()
+    {
+        \App\Models\Notification::where('is_read', false)->update(['is_read' => true]);
+        return redirect()->back()->with('success', 'All notifications marked as read!');
+    }
+
+    // Footer Settings
+    public function footerSettings()
+    {
+        return view('admin.footer.settings');
+    }
+
+    public function updateFooterSettings(Request $request)
+    {
+        $request->validate([
+            'company_name' => 'nullable|string|max:255',
+            'company_description' => 'nullable|string',
+            'contact_email' => 'nullable|email',
+            'contact_phone' => 'nullable|string|max:20',
+            'address' => 'nullable|string',
+            'facebook_url' => 'nullable|url',
+            'twitter_url' => 'nullable|url',
+            'instagram_url' => 'nullable|url',
+            'youtube_url' => 'nullable|url',
+            'copyright_text' => 'nullable|string'
+        ]);
+
+        foreach ($request->except(['_token']) as $key => $value) {
+            \App\Models\FooterSetting::set($key, $value);
+        }
+
+        return redirect()->route('admin.footer.settings')->with('success', 'Footer settings updated successfully!');
+    }
+
+    // Contact Management
+    public function contactSubmissions(Request $request)
+    {
+        $query = ContactSubmission::query();
+        
+        if ($request->search) {
+            $query->where('name', 'like', '%' . $request->search . '%')
+                  ->orWhere('email', 'like', '%' . $request->search . '%')
+                  ->orWhere('subject', 'like', '%' . $request->search . '%');
+        }
+        
+        if ($request->status !== null) {
+            $query->where('is_read', $request->status);
+        }
+        
+        $submissions = $query->latest()->paginate(10)->appends($request->query());
+        return view('admin.contact.submissions', compact('submissions'));
+    }
+
+    public function viewContactSubmission($id)
+    {
+        $submission = ContactSubmission::findOrFail($id);
+        $submission->update(['is_read' => true]);
+        return view('admin.contact.view', compact('submission'));
+    }
+
+    public function deleteContactSubmission($id)
+    {
+        ContactSubmission::findOrFail($id)->delete();
+        return redirect()->route('admin.contact.submissions')->with('success', 'Submission deleted successfully!');
+    }
+
+    public function contactSettings()
+    {
+        return view('admin.contact.settings');
+    }
+
+    public function updateContactSettings(Request $request)
+    {
+        $request->validate([
+            'admin_email' => 'required|email',
+            'contact_phone' => 'nullable|string|max:20',
+            'contact_address' => 'nullable|string',
+            'business_hours' => 'nullable|string'
+        ]);
+
+        ContactSetting::set('admin_email', $request->admin_email);
+        ContactSetting::set('contact_phone', $request->contact_phone);
+        ContactSetting::set('contact_address', $request->contact_address);
+        ContactSetting::set('business_hours', $request->business_hours);
+        ContactSetting::set('show_contact_info', $request->has('show_contact_info'));
+
+        return redirect()->route('admin.contact.settings')->with('success', 'Contact settings updated successfully!');
     }
 }

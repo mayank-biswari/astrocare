@@ -12,6 +12,7 @@ return [
     'pooja_rituals' => 'Pooja & Rituals',
     'shop' => 'Shop',
     'testimonials' => 'Testimonials',
+    'blogs' => 'Blogs',
     'cart' => 'Cart',
     'about' => 'About',
     'dashboard' => 'Dashboard',
@@ -156,4 +157,10 @@ return [
     'no_items_found' => 'No items found',
     'view_report' => 'View Report',
     'reschedule' => 'Reschedule',
+    
+    // Shop page
+    'specifications' => 'Specifications',
+    'product_features' => 'Product Features',
+    'available' => 'available',
+    'login_to_buy' => 'Login to Buy Now',
 ];

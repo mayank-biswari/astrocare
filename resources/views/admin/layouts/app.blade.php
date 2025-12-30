@@ -29,6 +29,35 @@
 
     <!-- Right navbar links -->
     <ul class="navbar-nav ml-auto">
+      <!-- Notifications -->
+      <li class="nav-item dropdown">
+        @php $unreadCount = \App\Models\Notification::getUnreadCount(); @endphp
+        <a class="nav-link" data-toggle="dropdown" href="#">
+          <i class="far fa-bell"></i>
+          @if($unreadCount > 0)
+            <span class="badge badge-warning navbar-badge">{{ $unreadCount }}</span>
+          @endif
+        </a>
+        <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+          <span class="dropdown-item dropdown-header">{{ $unreadCount }} Notifications</span>
+          @if($unreadCount > 0)
+            @php $recentNotifications = \App\Models\Notification::getRecent(); @endphp
+            @foreach($recentNotifications as $notification)
+              <div class="dropdown-divider"></div>
+              <a href="{{ route('admin.notifications.read', $notification->id) }}" class="dropdown-item">
+                <i class="fas fa-{{ $notification->type === 'contact' ? 'envelope' : ($notification->type === 'consultation' ? 'comments' : 'star') }} mr-2"></i>
+                {{ Str::limit($notification->title, 25) }}
+                <span class="float-right text-muted text-sm">{{ $notification->created_at->diffForHumans() }}</span>
+              </a>
+            @endforeach
+            <div class="dropdown-divider"></div>
+            <a href="{{ route('admin.notifications') }}" class="dropdown-item dropdown-footer">See All Notifications</a>
+          @else
+            <div class="dropdown-divider"></div>
+            <span class="dropdown-item text-center text-muted">No new notifications</span>
+          @endif
+        </div>
+      </li>
       <li class="nav-item dropdown">
         <a class="nav-link" data-toggle="dropdown" href="#">
           <i class="far fa-user"></i> {{ auth()->user()->name }}
@@ -159,11 +188,51 @@
               <p>Payment Gateways</p>
             </a>
           </li>
-          <li class="nav-item">
-            <a href="{{ route('admin.settings') }}" class="nav-link {{ request()->routeIs('admin.settings*') ? 'active' : '' }}">
-              <i class="nav-icon fas fa-cog"></i>
-              <p>Settings</p>
+          <li class="nav-item {{ request()->routeIs('admin.contact*') ? 'menu-open' : '' }}">
+            <a href="#" class="nav-link {{ request()->routeIs('admin.contact*') ? 'active' : '' }}">
+              <i class="nav-icon fas fa-envelope"></i>
+              <p>
+                Contact
+                <i class="fas fa-angle-left right"></i>
+              </p>
             </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{{ route('admin.contact.submissions') }}" class="nav-link {{ request()->routeIs('admin.contact.submissions*') ? 'active' : '' }}">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Submissions</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{{ route('admin.contact.settings') }}" class="nav-link {{ request()->routeIs('admin.contact.settings*') ? 'active' : '' }}">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Settings</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-item {{ request()->routeIs('admin.settings*') || request()->routeIs('admin.footer*') ? 'menu-open' : '' }}">
+            <a href="#" class="nav-link {{ request()->routeIs('admin.settings*') || request()->routeIs('admin.footer*') ? 'active' : '' }}">
+              <i class="nav-icon fas fa-cog"></i>
+              <p>
+                Settings
+                <i class="fas fa-angle-left right"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{{ route('admin.settings') }}" class="nav-link {{ request()->routeIs('admin.settings') ? 'active' : '' }}">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>General</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{{ route('admin.footer.settings') }}" class="nav-link {{ request()->routeIs('admin.footer*') ? 'active' : '' }}">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Footer</p>
+                </a>
+              </li>
+            </ul>
           </li>
         </ul>
       </nav>

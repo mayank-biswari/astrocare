@@ -44,7 +44,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
@@ -55,7 +55,7 @@
                         <div class="col-md-6">
                         </div>
                     </div>
-                    
+
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
@@ -69,7 +69,7 @@
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="image">Product Image</label>
+                                <label for="image">Main Product Image</label>
                                 @if($product->image)
                                     <div class="mb-2">
                                         <img src="{{ asset($product->image) }}" alt="Current image" class="img-thumbnail" style="width: 80px; height: 80px; object-fit: cover;">
@@ -82,18 +82,47 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <div class="form-group">
+                                <label for="gallery_images">Gallery Images</label>
+                                @if($product->images && count($product->images) > 0)
+                                    <div class="mb-2">
+                                        <div class="row">
+                                            @foreach($product->images as $index => $galleryImage)
+                                                <div class="col-md-3 mb-2" id="gallery-image-{{ $index }}">
+                                                    <div class="position-relative">
+                                                        <img src="{{ asset('storage/' . $galleryImage) }}" alt="Gallery image" class="img-thumbnail" style="width: 60px; height: 60px; object-fit: cover;">
+                                                        <button type="button" class="btn btn-danger btn-sm position-absolute" style="top: -5px; right: -5px; padding: 2px 6px;" onclick="removeGalleryImage({{ $index }})">
+                                                            <i class="fas fa-times"></i>
+                                                        </button>
+                                                        <input type="hidden" name="existing_gallery_images[]" value="{{ $galleryImage }}">
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                @endif
+                                <div class="input-group">
+                                    <div class="custom-file">
+                                        <input type="file" class="custom-file-input" id="gallery_images" name="gallery_images[]" accept="image/*" multiple>
+                                        <label class="custom-file-label" for="gallery_images">Add more images</label>
+                                    </div>
+                                </div>
+                                <small class="text-muted">You can select multiple images to add to the gallery</small>
+                            </div>
                         </div>
                     </div>
-                    
+
                     <div class="row">
                         <div class="col-md-12">
                             <div class="form-group">
                                 <label for="description">Description</label>
-                                <textarea class="form-control" id="description" name="description" rows="4" required>{{ old('description', $product->description) }}</textarea>
+                                <div id="editor" style="height: 300px;"></div>
+                                <textarea class="form-control" id="description" name="description" style="display: none;" required>{{ old('description', $product->description) }}</textarea>
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
@@ -108,7 +137,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
@@ -128,7 +157,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="card-footer">
                     <button type="submit" class="btn btn-primary">Update Product</button>
                     <a href="{{ route('admin.products') }}" class="btn btn-secondary">Cancel</a>
@@ -137,4 +166,72 @@
         </div>
     </div>
 </section>
+
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+<script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+// Initialize Quill editor
+var quill = new Quill('#editor', {
+    theme: 'snow',
+    modules: {
+        toolbar: [
+            [{ 'header': [1, 2, 3, false] }],
+            ['bold', 'italic', 'underline', 'strike'],
+            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+            ['link', 'image'],
+            ['clean']
+        ]
+    }
+});
+
+// Set initial content
+quill.root.innerHTML = {!! json_encode($product->description) !!};
+
+// Update hidden textarea on form submit
+document.querySelector('form').addEventListener('submit', function() {
+    document.querySelector('#description').value = quill.root.innerHTML;
+});
+
+// Remove gallery image function with SweetAlert
+function removeGalleryImage(index) {
+    console.log('Removing image at index:', index); // Debug log
+
+    Swal.fire({
+        title: 'Are you sure?',
+        text: 'Do you want to remove this image from the gallery?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#DC143C',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Yes, remove it!',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Hide the image div and mark input as deleted
+            const imageDiv = document.getElementById('gallery-image-' + index);
+
+            if (imageDiv) {
+                const hiddenInput = imageDiv.querySelector('input[name="existing_gallery_images[]"]');
+
+                imageDiv.style.display = 'none';
+                if (hiddenInput) {
+                    hiddenInput.name = 'deleted_gallery_images[]';
+                }
+
+                Swal.fire({
+                    title: 'Removed!',
+                    text: 'The image has been removed from the gallery.',
+                    icon: 'success',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+            } else {
+                console.error('Image div not found:', 'gallery-image-' + index);
+            }
+        }
+    });
+}
+</script>
 @endsection

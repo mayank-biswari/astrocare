@@ -81,13 +81,24 @@
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="image">Product Image</label>
+                                <label for="image">Main Product Image</label>
                                 <div class="input-group">
                                     <div class="custom-file">
                                         <input type="file" class="custom-file-input" id="image" name="image" accept="image/*">
                                         <label class="custom-file-label" for="image">Choose file</label>
                                     </div>
                                 </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="gallery_images">Gallery Images (Multiple)</label>
+                                <div class="input-group">
+                                    <div class="custom-file">
+                                        <input type="file" class="custom-file-input" id="gallery_images" name="gallery_images[]" accept="image/*" multiple>
+                                        <label class="custom-file-label" for="gallery_images">Choose files</label>
+                                    </div>
+                                </div>
+                                <small class="text-muted">You can select multiple images for the product gallery</small>
                             </div>
                         </div>
                     </div>
@@ -96,7 +107,8 @@
                         <div class="col-md-12">
                             <div class="form-group">
                                 <label for="description">Description</label>
-                                <textarea class="form-control" id="description" name="description" rows="4" required>{{ old('description') }}</textarea>
+                                <div id="editor" style="height: 300px;"></div>
+                                <textarea class="form-control" id="description" name="description" style="display: none;" required>{{ old('description') }}</textarea>
                                 @error('description')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
@@ -147,4 +159,28 @@
         </div>
     </div>
 </section>
+
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+<script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+
+<script>
+// Initialize Quill editor
+var quill = new Quill('#editor', {
+    theme: 'snow',
+    modules: {
+        toolbar: [
+            [{ 'header': [1, 2, 3, false] }],
+            ['bold', 'italic', 'underline', 'strike'],
+            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+            ['link', 'image'],
+            ['clean']
+        ]
+    }
+});
+
+// Update hidden textarea on form submit
+document.querySelector('form').addEventListener('submit', function() {
+    document.querySelector('#description').value = quill.root.innerHTML;
+});
+</script>
 @endsection

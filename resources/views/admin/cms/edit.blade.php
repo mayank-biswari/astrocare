@@ -22,7 +22,8 @@
                 <div class="col-md-12">
                     <div class="form-group">
                         <label>Body Content</label>
-                        <textarea name="body" rows="10" class="form-control" required>{{ $page->body }}</textarea>
+                        <div id="editor" style="height: 300px;"></div>
+                        <textarea name="body" id="body-content" style="display: none;" required>{{ $page->body }}</textarea>
                     </div>
                 </div>
                 <div class="col-md-6">
@@ -59,13 +60,27 @@
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
+                        <label>Slug</label>
+                        <input type="text" name="slug" class="form-control" value="{{ $page->slug }}">
+                        <small class="form-text text-muted">URL-friendly version of the title</small>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
                         <label>Featured Image</label>
                         @if($page->image)
                             <div class="mb-2">
                                 <img src="{{ asset('storage/' . $page->image) }}" alt="Current image" class="img-thumbnail" style="max-height: 100px;">
+                                <div class="mt-2">
+                                    <label class="custom-control custom-checkbox">
+                                        <input type="checkbox" name="delete_image" value="1" class="custom-control-input">
+                                        <span class="custom-control-label">Delete current image</span>
+                                    </label>
+                                </div>
                             </div>
                         @endif
                         <input type="file" name="image" class="form-control" accept="image/*">
+                        <small class="form-text text-muted">Upload new image or check delete to remove current image</small>
                     </div>
                 </div>
                 <div class="col-md-6">
@@ -129,7 +144,8 @@
                                             <div class="col-md-12">
                                                 <div class="form-group">
                                                     <label>Body Content</label>
-                                                    <textarea name="translations[{{ $language->code }}][body]" rows="5" class="form-control">{{ $translation->body ?? '' }}</textarea>
+                                                    <div id="editor-{{ $language->code }}" style="height: 200px;"></div>
+                                                    <textarea name="translations[{{ $language->code }}][body]" id="body-content-{{ $language->code }}" style="display: none;">{{ $translation->body ?? '' }}</textarea>
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
@@ -171,8 +187,72 @@
     </form>
 </div>
 
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+<script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+
 <script>
 const existingCustomFields = @json($page->custom_fields ?? []);
+
+// Initialize Quill editor
+var quill = new Quill('#editor', {
+    theme: 'snow',
+    modules: {
+        toolbar: [
+            [{ 'header': [1, 2, 3, false] }],
+            ['bold', 'italic', 'underline', 'strike'],
+            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+            ['link', 'image'],
+            ['clean']
+        ]
+    }
+});
+
+// Set initial content
+quill.root.innerHTML = {!! json_encode($page->body) !!};
+
+// Initialize translation editors
+var translationEditors = {};
+@foreach($languages as $language)
+    @if($language->code !== $page->language_code)
+        @php
+            $translation = $page->translations->where('language_code', $language->code)->first();
+        @endphp
+        translationEditors['{{ $language->code }}'] = new Quill('#editor-{{ $language->code }}', {
+            theme: 'snow',
+            modules: {
+                toolbar: [
+                    [{ 'header': [1, 2, 3, false] }],
+                    ['bold', 'italic', 'underline'],
+                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                    ['link']
+                ]
+            }
+        });
+        translationEditors['{{ $language->code }}'].root.innerHTML = {!! json_encode($translation->body ?? '') !!};
+    @endif
+@endforeach
+
+// Update hidden textarea on content change and form submit
+quill.on('text-change', function() {
+    document.querySelector('#body-content').value = quill.root.innerHTML;
+});
+
+// Update translation textareas on content change
+Object.keys(translationEditors).forEach(function(lang) {
+    translationEditors[lang].on('text-change', function() {
+        document.querySelector('#body-content-' + lang).value = translationEditors[lang].root.innerHTML;
+    });
+});
+
+// Ensure content is synced on form submit
+document.querySelector('form').addEventListener('submit', function() {
+    document.querySelector('#body-content').value = quill.root.innerHTML;
+    
+    // Update translation textareas
+    Object.keys(translationEditors).forEach(function(lang) {
+        document.querySelector('#body-content-' + lang).value = translationEditors[lang].root.innerHTML;
+    });
+});
 
 function loadCustomFields() {
     const selectedOption = document.getElementById('pageTypeSelect').options[document.getElementById('pageTypeSelect').selectedIndex];
