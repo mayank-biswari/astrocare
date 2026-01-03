@@ -148,6 +148,7 @@ return [
     'pooja_status' => 'Pooja Status',
     'temple' => 'Temple',
     'pending' => 'Pending',
+    'booked' => 'Booked',
     'completed' => 'Completed',
     'cancelled' => 'Cancelled',
     'scheduled' => 'Scheduled',

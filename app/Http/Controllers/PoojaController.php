@@ -45,6 +45,18 @@ class PoojaController extends Controller
 
     public function book(Request $request)
     {
+        if (!auth()->check()) {
+            // Store form data in session
+            session(['pooja_booking_data' => $request->all()]);
+            return redirect()->route('login')->with('error', 'Please login to book a pooja.');
+        }
+        
+        // Check if we have stored booking data from before login
+        $bookingData = session('pooja_booking_data', $request->all());
+        session()->forget('pooja_booking_data');
+        
+        $request->merge($bookingData);
+        
         $request->validate([
             'name' => 'required|string|max:255',
             'type' => 'required|string',
@@ -54,7 +66,8 @@ class PoojaController extends Controller
             'phone' => 'required|string',
             'email' => 'nullable|email',
             'gotra' => 'nullable|string',
-            'special_requirements' => 'nullable|string'
+            'special_requirements' => 'nullable|string',
+            'captcha' => 'required|captcha'
         ]);
 
         // Store booking details in session

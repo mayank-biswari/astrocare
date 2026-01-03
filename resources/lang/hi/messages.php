@@ -148,6 +148,7 @@ return [
     'pooja_status' => 'पूजा स्थिति',
     'temple' => 'मंदिर',
     'pending' => 'लंबित',
+    'booked' => 'बुक किया गया',
     'completed' => 'पूर्ण',
     'cancelled' => 'रद्द',
     'scheduled' => 'निर्धारित',

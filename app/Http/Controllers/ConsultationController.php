@@ -29,12 +29,25 @@ class ConsultationController extends Controller
 
     public function book(Request $request)
     {
+        if (!auth()->check()) {
+            // Store form data in session
+            session(['consultation_booking_data' => $request->all()]);
+            return redirect()->route('login')->with('error', 'Please login to book a consultation.');
+        }
+        
+        // Check if we have stored booking data from before login
+        $bookingData = session('consultation_booking_data', $request->all());
+        session()->forget('consultation_booking_data');
+        
+        $request->merge($bookingData);
+        
         $request->validate([
             'service_id' => 'required|exists:services,id',
             'type' => 'required|string',
             'duration' => 'required|integer|in:30,45,60',
             'scheduled_at' => 'required|date|after:now',
-            'notes' => 'nullable|string'
+            'notes' => 'nullable|string',
+            'captcha' => 'required|captcha'
         ]);
 
         $service = \App\Models\Service::findOrFail($request->service_id);
@@ -59,4 +72,5 @@ class ConsultationController extends Controller
 
         return redirect()->route('dashboard.consultations')->with('success', 'Consultation booked successfully!');
     }
+
 }

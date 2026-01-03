@@ -9,6 +9,58 @@ class DashboardController extends Controller
 {
     public function index()
     {
+        // Check for pending consultation booking after login
+        if (session('consultation_booking_data')) {
+            $bookingData = session('consultation_booking_data');
+            session()->forget('consultation_booking_data');
+            
+            // Create the consultation booking
+            $service = \App\Models\Service::findOrFail($bookingData['service_id']);
+            
+            // Calculate price based on duration
+            $multiplier = 1;
+            if ($bookingData['duration'] == 45) $multiplier = 1.5;
+            elseif ($bookingData['duration'] == 60) $multiplier = 2;
+            
+            $amount = $service->price * $multiplier;
+            
+            \App\Models\Consultation::create([
+                'user_id' => auth()->id(),
+                'service_id' => $bookingData['service_id'],
+                'type' => $bookingData['type'],
+                'duration' => $bookingData['duration'],
+                'scheduled_at' => $bookingData['scheduled_at'],
+                'notes' => $bookingData['notes'] ?? null,
+                'amount' => $amount,
+                'status' => 'scheduled'
+            ]);
+            
+            return redirect()->route('dashboard.consultations')->with('success', 'Consultation booked successfully!');
+        }
+        
+        // Check for pending pooja booking after login
+        if (session('pooja_booking_data')) {
+            $bookingData = session('pooja_booking_data');
+            session()->forget('pooja_booking_data');
+            
+            // Store booking details in session for checkout
+            session([
+                'pooja_booking' => [
+                    'name' => $bookingData['name'],
+                    'type' => $bookingData['type'],
+                    'amount' => $bookingData['amount'],
+                    'scheduled_at' => $bookingData['scheduled_at'],
+                    'devotee_name' => $bookingData['devotee_name'],
+                    'phone' => $bookingData['phone'],
+                    'email' => $bookingData['email'] ?? null,
+                    'gotra' => $bookingData['gotra'] ?? null,
+                    'special_requirements' => $bookingData['special_requirements'] ?? null
+                ]
+            ]);
+            
+            return redirect()->route('pooja.checkout');
+        }
+        
         return view('dashboard.index');
     }
 

@@ -62,6 +62,22 @@
                               placeholder="Any specific questions or concerns..."></textarea>
                 </div>
 
+                <!-- Captcha -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Security Check</label>
+                    <div class="flex items-center space-x-4 mb-2">
+                        <img src="{{ captcha_src() }}" alt="Captcha" class="border rounded">
+                        <button type="button" onclick="this.previousElementSibling.src='{{ captcha_src() }}?'+Math.random()" 
+                                class="text-indigo-600 hover:text-indigo-800 text-sm">Refresh</button>
+                    </div>
+                    <input type="text" name="captcha" required 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                           placeholder="Enter captcha">
+                    @error('captcha')
+                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
                 <button type="submit" id="book-button"
                         class="w-full bg-indigo-600 text-white py-3 px-6 rounded-lg font-bold hover:bg-indigo-700">
                     Book Consultation & Pay {{ formatPrice($service->price) }}

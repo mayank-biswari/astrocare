@@ -94,6 +94,22 @@
                                   placeholder="Any specific prayers or requirements..."></textarea>
                     </div>
 
+                    <!-- Captcha -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Security Check</label>
+                        <div class="flex items-center space-x-4 mb-2">
+                            <img src="{{ captcha_src() }}" alt="Captcha" class="border rounded">
+                            <button type="button" onclick="this.previousElementSibling.src='{{ captcha_src() }}?'+Math.random()" 
+                                    class="text-orange-600 hover:text-orange-800 text-sm">Refresh</button>
+                        </div>
+                        <input type="text" name="captcha" required 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                               placeholder="Enter captcha">
+                        @error('captcha')
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+
                     <div class="border-t pt-4">
                         <div class="flex justify-between items-center mb-4">
                             <span class="text-lg">Total Amount:</span>

@@ -4,6 +4,12 @@
 
 @section('content')
 <div class="container mx-auto px-4 py-8">
+    @if(session('success'))
+        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
+            {{ session('success') }}
+        </div>
+    @endif
+    
     <div class="flex justify-between items-center mb-8">
         <h1 class="text-3xl font-bold">{{ __('messages.my_consultations') }}</h1>
         <a href="{{ route('consultations.index') }}" class="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700">
