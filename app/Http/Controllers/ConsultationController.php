@@ -59,18 +59,61 @@ class ConsultationController extends Controller
         
         $amount = $service->price * $multiplier;
         
-        \App\Models\Consultation::create([
+        // Store booking details in session
+        session([
+            'consultation_booking' => [
+                'service_id' => $request->service_id,
+                'type' => $request->type,
+                'duration' => $request->duration,
+                'scheduled_at' => $request->scheduled_at,
+                'notes' => $request->notes,
+                'amount' => $amount
+            ]
+        ]);
+
+        return redirect()->route('consultations.checkout');
+    }
+    
+    public function checkout()
+    {
+        $booking = session('consultation_booking');
+        
+        if (!$booking) {
+            return redirect()->route('consultations.index')->with('error', 'No booking found.');
+        }
+
+        $paymentGateways = \App\Models\PaymentGateway::where('is_active', true)->get();
+        
+        return view('consultations.checkout', compact('booking', 'paymentGateways'));
+    }
+
+    public function placeOrder(Request $request)
+    {
+        $request->validate([
+            'payment_gateway' => 'required|string'
+        ]);
+
+        $booking = session('consultation_booking');
+        
+        if (!$booking) {
+            return redirect()->route('consultations.index')->with('error', 'No booking found.');
+        }
+
+        // Create consultation booking
+        $consultation = \App\Models\Consultation::create([
             'user_id' => auth()->id(),
-            'service_id' => $request->service_id,
-            'type' => $request->type,
-            'duration' => $request->duration,
-            'scheduled_at' => $request->scheduled_at,
-            'notes' => $request->notes,
-            'amount' => $amount,
+            'service_id' => $booking['service_id'],
+            'type' => $booking['type'],
+            'duration' => $booking['duration'],
+            'scheduled_at' => $booking['scheduled_at'],
+            'notes' => $booking['notes'],
+            'amount' => $booking['amount'],
             'status' => 'scheduled'
         ]);
 
+        // Clear session
+        session()->forget('consultation_booking');
+
         return redirect()->route('dashboard.consultations')->with('success', 'Consultation booked successfully!');
     }
-
 }

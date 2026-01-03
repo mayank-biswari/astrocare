@@ -14,28 +14,26 @@ class DashboardController extends Controller
             $bookingData = session('consultation_booking_data');
             session()->forget('consultation_booking_data');
             
-            // Create the consultation booking
-            $service = \App\Models\Service::findOrFail($bookingData['service_id']);
-            
             // Calculate price based on duration
+            $service = \App\Models\Service::findOrFail($bookingData['service_id']);
             $multiplier = 1;
             if ($bookingData['duration'] == 45) $multiplier = 1.5;
             elseif ($bookingData['duration'] == 60) $multiplier = 2;
-            
             $amount = $service->price * $multiplier;
             
-            \App\Models\Consultation::create([
-                'user_id' => auth()->id(),
-                'service_id' => $bookingData['service_id'],
-                'type' => $bookingData['type'],
-                'duration' => $bookingData['duration'],
-                'scheduled_at' => $bookingData['scheduled_at'],
-                'notes' => $bookingData['notes'] ?? null,
-                'amount' => $amount,
-                'status' => 'scheduled'
+            // Store booking details in session for checkout
+            session([
+                'consultation_booking' => [
+                    'service_id' => $bookingData['service_id'],
+                    'type' => $bookingData['type'],
+                    'duration' => $bookingData['duration'],
+                    'scheduled_at' => $bookingData['scheduled_at'],
+                    'notes' => $bookingData['notes'] ?? null,
+                    'amount' => $amount
+                ]
             ]);
             
-            return redirect()->route('dashboard.consultations')->with('success', 'Consultation booked successfully!');
+            return redirect()->route('consultations.checkout');
         }
         
         // Check for pending pooja booking after login

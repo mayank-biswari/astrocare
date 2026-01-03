@@ -39,6 +39,8 @@ Route::prefix('services')->group(function () {
     Route::get('/consultations', [ConsultationController::class, 'index'])->name('consultations.index');
     Route::get('/consultations/{type}', [ConsultationController::class, 'show'])->name('consultations.show');
     Route::post('/consultations/book', [ConsultationController::class, 'book'])->name('consultations.book');
+    Route::get('/consultations/checkout/payment', [ConsultationController::class, 'checkout'])->name('consultations.checkout');
+    Route::post('/consultations/order/place', [ConsultationController::class, 'placeOrder'])->name('consultations.order.place');
 
     Route::get('/kundli', [KundliController::class, 'index'])->name('kundli.index');
     Route::get('/kundli/generate', [KundliController::class, 'create'])->name('kundli.create');
