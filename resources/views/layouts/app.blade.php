@@ -40,8 +40,10 @@
             box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
         }
     </style>
+    @stack('styles')
 </head>
 <body class="bg-gradient-to-br from-orange-50 via-yellow-50 to-red-50">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- Navigation -->
     <nav class="gradient-bg text-white shadow-lg om-shadow">
         <div class="container mx-auto px-4">
@@ -190,7 +192,7 @@
                     <a href="{{ route('home') }}" class="block px-3 py-2 text-white hover:text-divine-gold hover:bg-white/10 rounded-lg transition-colors duration-300">
                         <i class="fas fa-home mr-2"></i>{{ __('messages.home') }}
                     </a>
-                    
+
                     <!-- Mobile Services Dropdown -->
                     <div class="block">
                         <button onclick="toggleMobileServices()" class="w-full text-left px-3 py-2 text-white hover:text-divine-gold hover:bg-white/10 rounded-lg flex items-center justify-between transition-colors duration-300">
@@ -208,7 +210,7 @@
                             <a href="{{ route('predictions.index') }}" class="block px-3 py-2 text-gray-200 hover:text-divine-gold hover:bg-white/10 rounded-lg text-sm transition-colors duration-300">{{ __('messages.predictions') }}</a>
                         </div>
                     </div>
-                    
+
                     <a href="{{ route('pooja.index') }}" class="block px-3 py-2 text-white hover:text-divine-gold hover:bg-white/10 rounded-lg transition-colors duration-300">
                         <i class="fas fa-fire mr-2"></i>{{ __('messages.pooja_rituals') }}
                     </a>
@@ -227,9 +229,9 @@
                     <a href="{{ route('about') }}" class="block px-3 py-2 text-white hover:text-divine-gold hover:bg-white/10 rounded-lg transition-colors duration-300">
                         <i class="fas fa-info-circle mr-2"></i>{{ __('messages.about') }}
                     </a>
-                    
+
                     <hr class="border-divine-gold/30 my-2">
-                    
+
                     <!-- Mobile Language/Currency -->
                     <div class="flex space-x-4 px-3 py-2">
                         <div class="relative" id="mobile-language-dropdown">
@@ -254,9 +256,9 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <hr class="border-divine-gold/30 my-2">
-                    
+
                     <!-- Mobile Auth -->
                     @auth
                         <a href="{{ route('dashboard') }}" class="block px-3 py-2 text-white hover:text-divine-gold hover:bg-white/10 rounded-lg transition-colors duration-300">
@@ -412,7 +414,7 @@ function toggleMobileMenu() {
     const mobileMenu = document.getElementById('mobile-menu');
     const menuIcon = document.getElementById('mobile-menu-icon');
     const closeIcon = document.getElementById('mobile-close-icon');
-    
+
     mobileMenu.classList.toggle('hidden');
     menuIcon.classList.toggle('hidden');
     closeIcon.classList.toggle('hidden');
@@ -421,7 +423,7 @@ function toggleMobileMenu() {
 function toggleMobileServices() {
     const servicesMenu = document.getElementById('mobile-services-menu');
     const servicesIcon = document.getElementById('mobile-services-icon');
-    
+
     servicesMenu.classList.toggle('hidden');
     servicesIcon.classList.toggle('rotate-180');
 }
@@ -476,12 +478,13 @@ window.addEventListener('resize', function() {
         const mobileMenu = document.getElementById('mobile-menu');
         const menuIcon = document.getElementById('mobile-menu-icon');
         const closeIcon = document.getElementById('mobile-close-icon');
-        
+
         mobileMenu.classList.add('hidden');
         menuIcon.classList.remove('hidden');
         closeIcon.classList.add('hidden');
     }
 });
 </script>
+@stack('scripts')
 </body>
 </html>

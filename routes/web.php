@@ -121,6 +121,9 @@ Route::get('/testimonials', [App\Http\Controllers\CmsController::class, 'testimo
 // Blogs Page
 Route::get('/blogs', [App\Http\Controllers\CmsController::class, 'blogs'])->name('blogs.index');
 
+// Dynamic List Pages
+Route::get('/view/{slug}', [App\Http\Controllers\CmsController::class, 'viewListPage'])->name('list.view');
+
 // Contact Routes
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');
 Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
@@ -139,6 +142,20 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/products/{product}/edit', [App\Http\Controllers\AdminController::class, 'editProduct'])->name('products.edit');
     Route::put('/products/{product}', [App\Http\Controllers\AdminController::class, 'updateProduct'])->name('products.update');
     Route::delete('/products/{product}', [App\Http\Controllers\AdminController::class, 'deleteProduct'])->name('products.delete');
+
+    // Lists
+    Route::prefix('lists')->name('lists.')->group(function () {
+        Route::get('/products', [App\Http\Controllers\AdminController::class, 'productLists'])->name('products');
+        Route::get('/pages', [App\Http\Controllers\AdminController::class, 'pageLists'])->name('pages');
+        Route::get('/create/{type}', [App\Http\Controllers\AdminController::class, 'createList'])->name('create');
+        Route::post('/store', [App\Http\Controllers\AdminController::class, 'storeList'])->name('store');
+        Route::get('/{list}/edit', [App\Http\Controllers\AdminController::class, 'editList'])->name('edit');
+        Route::put('/{list}', [App\Http\Controllers\AdminController::class, 'updateList'])->name('update');
+        Route::delete('/{list}', [App\Http\Controllers\AdminController::class, 'deleteList'])->name('delete');
+        Route::get('/templates', [App\Http\Controllers\AdminController::class, 'templates'])->name('templates');
+        Route::delete('/templates/{template}', [App\Http\Controllers\AdminController::class, 'deleteTemplate'])->name('templates.delete');
+        Route::post('/preview', [App\Http\Controllers\AdminController::class, 'previewList'])->name('preview');
+    });
 
     // Orders
     Route::get('/orders', [App\Http\Controllers\AdminController::class, 'orders'])->name('orders');

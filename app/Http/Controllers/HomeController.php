@@ -10,6 +10,16 @@ class HomeController extends Controller
 {
     public function index()
     {
+        // Get Home Hero Pages
+        $heroPagesType = CmsPageType::where('name', 'Home Hero Pages')->first();
+        $heroPages = collect();
+        if ($heroPagesType) {
+            $heroPages = CmsPage::where('cms_page_type_id', $heroPagesType->id)
+                ->where('is_published', true)
+                ->latest()
+                ->get();
+        }
+
         // Get testimonials page type
         $testimonialsPageType = CmsPageType::where('name', 'Testimonials')->first();
 
@@ -35,7 +45,7 @@ class HomeController extends Controller
 
         // Get sacred products page type
         $productsPageType = CmsPageType::where('name', 'Sacred Products')->first();
-        
+
         $products = collect();
         if ($productsPageType) {
             $products = CmsPage::where('cms_page_type_id', $productsPageType->id)
@@ -43,8 +53,8 @@ class HomeController extends Controller
                 ->orderBy('created_at')
                 ->get();
         }
-        
-        return view('home', compact('testimonials', 'services', 'products'));
+
+        return view('home', compact('testimonials', 'services', 'products', 'heroPages'));
     }
 
     public function about()

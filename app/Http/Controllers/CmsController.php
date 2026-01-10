@@ -119,4 +119,51 @@ class CmsController extends Controller
         
         return view('blogs', compact('blogs', 'languageCode'));
     }
+
+    public function viewListPage($slug, Request $request)
+    {
+        $list = \App\Models\AdminList::where('page_slug', $slug)
+                                    ->where('create_page', true)
+                                    ->where('is_active', true)
+                                    ->firstOrFail();
+        
+        $perPage = $list->items_per_page ?: 12;
+        
+        if ($list->method === 'query_builder') {
+            $model = $list->type === 'products' ? \App\Models\Product::query() : \App\Models\CmsPage::query();
+            
+            foreach ($list->configuration['filters'] ?? [] as $filter) {
+                if (empty($filter['field']) || empty($filter['operator']) || $filter['value'] === '') {
+                    continue;
+                }
+                
+                $field = $filter['field'];
+                $operator = $filter['operator'];
+                $value = $filter['value'];
+                
+                if ($list->type === 'pages' && $field === 'page_type_id') {
+                    $field = 'cms_page_type_id';
+                }
+                
+                if ($operator === 'like') {
+                    $model->where($field, 'like', '%' . $value . '%');
+                } else {
+                    $model->where($field, $operator, $value);
+                }
+            }
+            
+            $items = $model->paginate($perPage);
+        } else {
+            $allItems = $list->getResults();
+            $items = new \Illuminate\Pagination\LengthAwarePaginator(
+                $allItems->forPage($request->get('page', 1), $perPage),
+                $allItems->count(),
+                $perPage,
+                $request->get('page', 1),
+                ['path' => $request->url(), 'pageName' => 'page']
+            );
+        }
+        
+        return view('list-page', compact('list', 'items'));
+    }
 }

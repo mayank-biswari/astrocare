@@ -3,7 +3,27 @@
 @section('title', 'Home - Astrology Services')
 
 @section('content')
-<!-- Hero Section -->
+<!-- Hero Slider -->
+@if($heroPages->count() > 0)
+<section class="hero-slider">
+    @foreach($heroPages as $heroPage)
+    @if($heroPage->custom_fields['link'])
+        <a href="{{ $heroPage->custom_fields['link'] }}">
+    @endif
+    <div class="hero-slide relative bg-gradient-to-br from-sacred-maroon via-temple-red to-deep-saffron text-white py-52 overflow-hidden">
+        @if($heroPage->image)
+            <div class="absolute inset-0">
+                <img src="{{ asset('storage/' . $heroPage->image) }}" alt="{{ $heroPage->title }}" class="w-full h-full object-cover">
+            </div>
+        @endif
+    </div>
+    @if($heroPage->custom_fields['link'])
+        </a>
+    @endif
+    @endforeach
+</section>
+@else
+<!-- Default Hero Section -->
 <section class="relative bg-gradient-to-br from-sacred-maroon via-temple-red to-deep-saffron text-white py-20 overflow-hidden">
     <!-- Background Pattern -->
     <div class="absolute inset-0 opacity-10">
@@ -11,30 +31,22 @@
         <div class="absolute top-20 right-20 text-4xl text-holy-yellow">⭐</div>
         <div class="absolute bottom-20 left-20 text-5xl text-divine-gold">🔯</div>
         <div class="absolute bottom-10 right-10 text-4xl text-holy-yellow">🌙</div>
-        <div class="absolute top-1/2 left-1/4 text-3xl text-divine-gold">✨</div>
-        <div class="absolute top-1/3 right-1/3 text-3xl text-holy-yellow">🌟</div>
     </div>
-    
+
     <div class="container mx-auto px-4 text-center relative z-10">
         <div class="mb-6">
             <span class="text-6xl text-divine-gold mb-4 block">🕉️</span>
             <div class="w-24 h-1 bg-gradient-to-r from-divine-gold to-holy-yellow mx-auto mb-6"></div>
         </div>
-        
+
         <h1 class="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-divine-gold via-holy-yellow to-divine-gold bg-clip-text text-transparent">
             {{ __('messages.welcome_title') }}
         </h1>
-        
+
         <p class="text-lg md:text-xl mb-8 text-orange-100 max-w-3xl mx-auto leading-relaxed">
             {{ __('messages.welcome_subtitle') }}
         </p>
-        
-        <div class="flex items-center justify-center mb-8">
-            <span class="text-divine-gold text-2xl mr-2">ॐ</span>
-            <span class="text-orange-100 italic">"Guided by Ancient Wisdom, Blessed by Divine Grace"</span>
-            <span class="text-divine-gold text-2xl ml-2">ॐ</span>
-        </div>
-        
+
         <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <a href="{{ route('consultations.index') }}" class="bg-gradient-to-r from-divine-gold to-holy-yellow text-temple-red px-8 py-4 rounded-lg font-bold hover:from-holy-yellow hover:to-divine-gold transition-all duration-300 transform hover:scale-105 divine-glow flex items-center">
                 <i class="fas fa-star-and-crescent mr-2"></i>
@@ -45,27 +57,8 @@
                 {{ __('messages.kundli_reading') }}
             </a>
         </div>
-        
-        <div class="mt-12 grid grid-cols-2 md:grid-cols-4 gap-6 max-w-2xl mx-auto">
-            <div class="text-center">
-                <div class="text-2xl text-divine-gold mb-2">🔮</div>
-                <div class="text-sm text-orange-100">Predictions</div>
-            </div>
-            <div class="text-center">
-                <div class="text-2xl text-divine-gold mb-2">🕉️</div>
-                <div class="text-sm text-orange-100">Poojas</div>
-            </div>
-            <div class="text-center">
-                <div class="text-2xl text-divine-gold mb-2">💎</div>
-                <div class="text-sm text-orange-100">Gemstones</div>
-            </div>
-            <div class="text-center">
-                <div class="text-2xl text-divine-gold mb-2">📿</div>
-                <div class="text-sm text-orange-100">Rudraksha</div>
-            </div>
-        </div>
     </div>
-    
+
     <!-- Bottom Wave -->
     <div class="absolute bottom-0 left-0 w-full">
         <svg viewBox="0 0 1200 120" preserveAspectRatio="none" class="relative block w-full h-16">
@@ -75,6 +68,7 @@
         </svg>
     </div>
 </section>
+@endif
 
 <!-- Services Section -->
 <section class="py-16">
@@ -276,3 +270,28 @@
 </section>
 @endif
 @endsection
+
+@push('styles')
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css"/>
+@endpush
+
+@push('scripts')
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+<script>
+$(document).ready(function(){
+    $('.hero-slider').slick({
+        dots: false,
+        infinite: true,
+        speed: 500,
+        fade: true,
+        cssEase: 'linear',
+        autoplay: true,
+        autoplaySpeed: 5000,
+        arrows: true,
+        prevArrow: '<button type="button" class="slick-prev absolute left-4 top-1/2 transform -translate-y-1/2 z-20 bg-white bg-opacity-20 hover:bg-opacity-30 text-white rounded-full transition-all"><i class="fas fa-chevron-left"></i></button>',
+        nextArrow: '<button type="button" class="slick-next absolute right-4 top-1/2 transform -translate-y-1/2 z-20 bg-white bg-opacity-20 hover:bg-opacity-30 text-white rounded-full transition-all"><i class="fas fa-chevron-right"></i></button>'
+    });
+});
+</script>
+@endpush
