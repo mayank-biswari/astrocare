@@ -66,6 +66,12 @@ class AdminMenuService
                         'active' => 'admin.cms.pages*'
                     ],
                     [
+                        'title' => 'Dynamic Pages',
+                        'icon' => 'far fa-circle',
+                        'route' => 'admin.dynamic-pages.index',
+                        'active' => 'admin.dynamic-pages*'
+                    ],
+                    [
                         'title' => 'Categories',
                         'icon' => 'far fa-circle',
                         'route' => 'admin.cms.categories',

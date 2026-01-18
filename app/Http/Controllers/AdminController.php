@@ -1182,6 +1182,121 @@ class AdminController extends Controller
         return redirect()->route('admin.lists.templates')->with('success', 'Template deleted successfully!');
     }
 
+    // Dynamic Pages Management
+    public function dynamicPages(Request $request)
+    {
+        $query = \App\Models\DynamicPage::query();
+        
+        if ($request->search) {
+            $query->where('title', 'like', '%' . $request->search . '%')
+                  ->orWhere('system_name', 'like', '%' . $request->search . '%');
+        }
+        
+        if ($request->status !== null) {
+            $query->where('is_published', $request->status);
+        }
+        
+        $pages = $query->latest()->paginate(10)->appends($request->query());
+        return view('admin.dynamic-pages.index', compact('pages'));
+    }
+
+    public function createDynamicPage()
+    {
+        $lists = \App\Models\AdminList::where('is_active', true)->get();
+        return view('admin.dynamic-pages.create', compact('lists'));
+    }
+
+    public function storeDynamicPage(Request $request)
+    {
+        $request->validate([
+            'system_name' => 'required|string|max:255',
+            'title' => 'required|string|max:255',
+            'url' => 'required|string|max:255|unique:dynamic_pages',
+            'sections' => 'nullable|array'
+        ]);
+
+        // Process sections to handle checkbox values
+        $sections = $request->sections ?? [];
+        foreach ($sections as &$section) {
+            // Handle checkboxes - if not present, they are false
+            $section['show_dots'] = isset($section['show_dots']) && $section['show_dots'] === 'on';
+            $section['show_arrows'] = isset($section['show_arrows']) && $section['show_arrows'] === 'on';
+            $section['auto_rotate'] = isset($section['auto_rotate']) && $section['auto_rotate'] === 'on';
+            $section['make_clickable'] = isset($section['make_clickable']) && $section['make_clickable'] === 'on';
+            $section['show_read_more'] = isset($section['show_read_more']) && $section['show_read_more'] === 'on';
+        }
+
+        \App\Models\DynamicPage::create([
+            'system_name' => $request->system_name,
+            'title' => $request->title,
+            'url' => $request->url,
+            'meta_title' => $request->meta_title,
+            'meta_description' => $request->meta_description,
+            'meta_keywords' => $request->meta_keywords,
+            'sections' => $sections,
+            'custom_css' => $request->custom_css,
+            'custom_js' => $request->custom_js,
+            'external_css' => array_filter($request->external_css ?? []),
+            'external_js' => array_filter($request->external_js ?? []),
+            'is_published' => $request->has('is_published')
+        ]);
+
+        return redirect()->route('admin.dynamic-pages.index')->with('success', 'Dynamic page created successfully!');
+    }
+
+    public function editDynamicPage($id)
+    {
+        $page = \App\Models\DynamicPage::findOrFail($id);
+        $lists = \App\Models\AdminList::where('is_active', true)->get();
+        return view('admin.dynamic-pages.edit', compact('page', 'lists'));
+    }
+
+    public function updateDynamicPage(Request $request, $id)
+    {
+        $page = \App\Models\DynamicPage::findOrFail($id);
+        
+        $request->validate([
+            'system_name' => 'required|string|max:255',
+            'title' => 'required|string|max:255',
+            'url' => 'required|string|max:255|unique:dynamic_pages,url,' . $id,
+            'sections' => 'nullable|array'
+        ]);
+
+        // Process sections to handle checkbox values
+        $sections = $request->sections ?? [];
+        foreach ($sections as &$section) {
+            // Handle checkboxes - if not present, they are false
+            $section['show_dots'] = isset($section['show_dots']) && $section['show_dots'] === 'on';
+            $section['show_arrows'] = isset($section['show_arrows']) && $section['show_arrows'] === 'on';
+            $section['auto_rotate'] = isset($section['auto_rotate']) && $section['auto_rotate'] === 'on';
+            $section['make_clickable'] = isset($section['make_clickable']) && $section['make_clickable'] === 'on';
+            $section['show_read_more'] = isset($section['show_read_more']) && $section['show_read_more'] === 'on';
+        }
+
+        $page->update([
+            'system_name' => $request->system_name,
+            'title' => $request->title,
+            'url' => $request->url,
+            'meta_title' => $request->meta_title,
+            'meta_description' => $request->meta_description,
+            'meta_keywords' => $request->meta_keywords,
+            'sections' => $sections,
+            'custom_css' => $request->custom_css,
+            'custom_js' => $request->custom_js,
+            'external_css' => array_filter($request->external_css ?? []),
+            'external_js' => array_filter($request->external_js ?? []),
+            'is_published' => $request->has('is_published')
+        ]);
+
+        return redirect()->route('admin.dynamic-pages.index')->with('success', 'Dynamic page updated successfully!');
+    }
+
+    public function deleteDynamicPage($id)
+    {
+        \App\Models\DynamicPage::findOrFail($id)->delete();
+        return redirect()->route('admin.dynamic-pages.index')->with('success', 'Dynamic page deleted successfully!');
+    }
+
     public function previewList(Request $request)
     {
         $configuration = [];

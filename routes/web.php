@@ -121,15 +121,21 @@ Route::get('/testimonials', [App\Http\Controllers\CmsController::class, 'testimo
 // Blogs Page
 Route::get('/blogs', [App\Http\Controllers\CmsController::class, 'blogs'])->name('blogs.index');
 
-// Dynamic List Pages
-Route::get('/view/{slug}', [App\Http\Controllers\CmsController::class, 'viewListPage'])->name('list.view');
-
 // Contact Routes
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');
 Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
 
 // Captcha Route
 Route::get('captcha/{config?}', '\Mews\Captcha\CaptchaController@getCaptcha')->name('captcha');
+
+// Auth Routes - Load before dynamic pages
+require __DIR__.'/auth.php';
+
+// Dynamic List Pages
+Route::get('/view/{slug}', [App\Http\Controllers\CmsController::class, 'viewListPage'])->name('list.view');
+
+// Dynamic Pages - Must be last to avoid conflicts
+// Route::get('/{url}', [App\Http\Controllers\CmsController::class, 'viewDynamicPage'])->name('dynamic.view');
 
 // Admin Routes
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
@@ -188,7 +194,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::put('/languages/{id}', [App\Http\Controllers\AdminController::class, 'updateLanguage'])->name('languages.update');
     Route::post('/languages/{id}/set-default', [App\Http\Controllers\AdminController::class, 'setDefaultLanguage'])->name('languages.set-default');
     Route::delete('/languages/{id}', [App\Http\Controllers\AdminController::class, 'deleteLanguage'])->name('languages.delete');
-    
+
     // Currencies
     Route::get('/currencies', [App\Http\Controllers\AdminController::class, 'currencies'])->name('currencies');
     Route::put('/currencies/{id}', [App\Http\Controllers\AdminController::class, 'updateCurrency'])->name('currencies.update');
@@ -237,6 +243,12 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // Footer Settings
     Route::get('/footer/settings', [App\Http\Controllers\AdminController::class, 'footerSettings'])->name('footer.settings');
     Route::post('/footer/settings', [App\Http\Controllers\AdminController::class, 'updateFooterSettings'])->name('footer.settings.update');
-});
 
-require __DIR__.'/auth.php';
+    // Dynamic Pages
+    Route::get('/dynamic-pages', [App\Http\Controllers\AdminController::class, 'dynamicPages'])->name('dynamic-pages.index');
+    Route::get('/dynamic-pages/create', [App\Http\Controllers\AdminController::class, 'createDynamicPage'])->name('dynamic-pages.create');
+    Route::post('/dynamic-pages', [App\Http\Controllers\AdminController::class, 'storeDynamicPage'])->name('dynamic-pages.store');
+    Route::get('/dynamic-pages/{id}/edit', [App\Http\Controllers\AdminController::class, 'editDynamicPage'])->name('dynamic-pages.edit');
+    Route::put('/dynamic-pages/{id}', [App\Http\Controllers\AdminController::class, 'updateDynamicPage'])->name('dynamic-pages.update');
+    Route::delete('/dynamic-pages/{id}', [App\Http\Controllers\AdminController::class, 'deleteDynamicPage'])->name('dynamic-pages.delete');
+});
