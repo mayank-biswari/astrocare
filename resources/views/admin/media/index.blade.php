@@ -260,6 +260,30 @@ function deleteFolder(path) {
 }
 
 function copyUrl(url) {
+    // Fallback for older browsers
+    if (!navigator.clipboard) {
+        const textArea = document.createElement('textarea');
+        textArea.value = url;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.select();
+        try {
+            document.execCommand('copy');
+            Swal.fire({
+                icon: 'success',
+                title: 'Copied!',
+                text: 'URL copied to clipboard',
+                timer: 1500,
+                showConfirmButton: false
+            });
+        } catch (err) {
+            Swal.fire('Error!', 'Failed to copy URL', 'error');
+        }
+        document.body.removeChild(textArea);
+        return;
+    }
+    
     navigator.clipboard.writeText(url).then(() => {
         Swal.fire({
             icon: 'success',
@@ -268,6 +292,8 @@ function copyUrl(url) {
             timer: 1500,
             showConfirmButton: false
         });
+    }).catch(err => {
+        Swal.fire('Error!', 'Failed to copy URL', 'error');
     });
 }
 </script>
