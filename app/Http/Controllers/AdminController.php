@@ -1297,6 +1297,88 @@ class AdminController extends Controller
         return redirect()->route('admin.dynamic-pages.index')->with('success', 'Dynamic page deleted successfully!');
     }
 
+    // Media Manager
+    public function media(Request $request)
+    {
+        $folder = $request->get('folder', '');
+        $disk = \Storage::disk('public');
+        $path = $folder ? 'media/' . $folder : 'media';
+        
+        if (!$disk->exists($path)) {
+            $disk->makeDirectory($path);
+        }
+        
+        $files = [];
+        $folders = [];
+        
+        foreach ($disk->files($path) as $file) {
+            $files[] = [
+                'name' => basename($file),
+                'path' => $file,
+                'url' => '/storage/' . $file,
+                'size' => $disk->size($file),
+                'type' => $disk->mimeType($file),
+                'modified' => $disk->lastModified($file)
+            ];
+        }
+        
+        foreach ($disk->directories($path) as $dir) {
+            $folders[] = [
+                'name' => basename($dir),
+                'path' => str_replace('media/', '', $dir)
+            ];
+        }
+        
+        return view('admin.media.index', compact('files', 'folders', 'folder'));
+    }
+
+    public function uploadMedia(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|max:10240'
+        ]);
+        
+        $folder = $request->input('folder') ? 'media/' . $request->input('folder') : 'media';
+        $path = $request->file('file')->store($folder, 'public');
+        
+        return response()->json([
+            'success' => true,
+            'url' => '/storage/' . $path,
+            'path' => $path
+        ]);
+    }
+
+    public function deleteMedia(Request $request)
+    {
+        $request->validate(['path' => 'required|string']);
+        
+        \Storage::disk('public')->delete($request->path);
+        
+        return response()->json(['success' => true]);
+    }
+
+    public function createFolder(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'parent' => 'nullable|string'
+        ]);
+        
+        $path = $request->parent ? 'media/' . $request->parent . '/' . $request->name : 'media/' . $request->name;
+        \Storage::disk('public')->makeDirectory($path);
+        
+        return response()->json(['success' => true]);
+    }
+
+    public function deleteFolder(Request $request)
+    {
+        $request->validate(['path' => 'required|string']);
+        
+        \Storage::disk('public')->deleteDirectory('media/' . $request->path);
+        
+        return response()->json(['success' => true]);
+    }
+
     public function previewList(Request $request)
     {
         $configuration = [];
