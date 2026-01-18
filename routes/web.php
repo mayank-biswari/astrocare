@@ -251,4 +251,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/dynamic-pages/{id}/edit', [App\Http\Controllers\AdminController::class, 'editDynamicPage'])->name('dynamic-pages.edit');
     Route::put('/dynamic-pages/{id}', [App\Http\Controllers\AdminController::class, 'updateDynamicPage'])->name('dynamic-pages.update');
     Route::delete('/dynamic-pages/{id}', [App\Http\Controllers\AdminController::class, 'deleteDynamicPage'])->name('dynamic-pages.delete');
+
+    // Media Manager
+    Route::get('/media', [App\Http\Controllers\AdminController::class, 'media'])->name('media');
+    Route::post('/media/upload', [App\Http\Controllers\AdminController::class, 'uploadMedia'])->name('media.upload');
+    Route::delete('/media/delete', [App\Http\Controllers\AdminController::class, 'deleteMedia'])->name('media.delete');
+    Route::post('/media/folder', [App\Http\Controllers\AdminController::class, 'createFolder'])->name('media.folder.create');
+    Route::delete('/media/folder', [App\Http\Controllers\AdminController::class, 'deleteFolder'])->name('media.folder.delete');
 });

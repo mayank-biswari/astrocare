@@ -158,6 +158,12 @@ class AdminMenuService
                 ]
             ],
             [
+                'title' => 'Media Manager',
+                'icon' => 'fas fa-folder-open',
+                'route' => 'admin.media',
+                'active' => 'admin.media*'
+            ],
+            [
                 'title' => 'System Configuration',
                 'icon' => 'fas fa-cog',
                 'children' => [
