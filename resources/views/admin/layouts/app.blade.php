@@ -14,6 +14,8 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <!-- AdminLTE -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+<!-- jQuery UI -->
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 </head>
 <body class="hold-transition sidebar-mini">
 <div class="wrapper">
@@ -122,7 +124,7 @@
             {{ session('success') }}
           </div>
         @endif
-        
+
         @yield('content')
       </div>
     </section>
@@ -140,8 +142,12 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
 <!-- AdminLTE App -->
 <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
+<!-- jQuery UI -->
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
 <!-- SweetAlert2 -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+@stack('scripts')
 
 <style>
 /* Custom Pagination Styles */
@@ -180,7 +186,7 @@
 $('.delete-btn').on('click', function(e) {
     e.preventDefault();
     const form = $(this).closest('form');
-    
+
     Swal.fire({
         title: 'Are you sure?',
         text: "You won't be able to revert this!",

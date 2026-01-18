@@ -49,7 +49,13 @@
                     <div class="grid md:grid-cols-2 gap-4 mb-4">
                         <div>
                             <p class="text-sm text-gray-600">{{ __('messages.consultation_date') }}</p>
-                            <p class="font-medium">{{ $consultation->date ? $consultation->date->format('M d, Y') : 'Not scheduled' }} {{ $consultation->time ? 'at ' . $consultation->time : '' }}</p>
+                            <p class="font-medium">
+                                @if($consultation->scheduled_at)
+                                    {{ \Carbon\Carbon::parse($consultation->scheduled_at)->format('M d, Y') }} at {{ \Carbon\Carbon::parse($consultation->scheduled_at)->format('h:i A') }}
+                                @else
+                                    Not scheduled
+                                @endif
+                            </p>
                         </div>
                         <div>
                             <p class="text-sm text-gray-600">Duration</p>
