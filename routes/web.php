@@ -159,16 +159,16 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     // Lists
     Route::prefix('lists')->name('lists.')->group(function () {
-        Route::get('/products', [App\Http\Controllers\AdminController::class, 'productLists'])->name('products');
-        Route::get('/pages', [App\Http\Controllers\AdminController::class, 'pageLists'])->name('pages');
-        Route::get('/create/{type}', [App\Http\Controllers\AdminController::class, 'createList'])->name('create');
-        Route::post('/store', [App\Http\Controllers\AdminController::class, 'storeList'])->name('store');
-        Route::get('/{list}/edit', [App\Http\Controllers\AdminController::class, 'editList'])->name('edit');
-        Route::put('/{list}', [App\Http\Controllers\AdminController::class, 'updateList'])->name('update');
-        Route::delete('/{list}', [App\Http\Controllers\AdminController::class, 'deleteList'])->name('delete');
-        Route::get('/templates', [App\Http\Controllers\AdminController::class, 'templates'])->name('templates');
-        Route::delete('/templates/{template}', [App\Http\Controllers\AdminController::class, 'deleteTemplate'])->name('templates.delete');
-        Route::post('/preview', [App\Http\Controllers\AdminController::class, 'previewList'])->name('preview');
+        Route::get('/products', [App\Http\Controllers\Admin\ListController::class, 'productLists'])->name('products');
+        Route::get('/pages', [App\Http\Controllers\Admin\ListController::class, 'pageLists'])->name('pages');
+        Route::get('/create/{type}', [App\Http\Controllers\Admin\ListController::class, 'create'])->name('create');
+        Route::post('/store', [App\Http\Controllers\Admin\ListController::class, 'store'])->name('store');
+        Route::get('/{list}/edit', [App\Http\Controllers\Admin\ListController::class, 'edit'])->name('edit');
+        Route::put('/{list}', [App\Http\Controllers\Admin\ListController::class, 'update'])->name('update');
+        Route::delete('/{list}', [App\Http\Controllers\Admin\ListController::class, 'destroy'])->name('delete');
+        Route::get('/templates', [App\Http\Controllers\Admin\ListController::class, 'templates'])->name('templates');
+        Route::delete('/templates/{template}', [App\Http\Controllers\Admin\ListController::class, 'deleteTemplate'])->name('templates.delete');
+        Route::post('/preview', [App\Http\Controllers\Admin\ListController::class, 'preview'])->name('preview');
     });
 
     // Orders
