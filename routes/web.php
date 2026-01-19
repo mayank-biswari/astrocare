@@ -55,6 +55,8 @@ Route::prefix('services')->group(function () {
 
     Route::get('/ask-question', [ServiceController::class, 'askQuestion'])->name('ask.question');
     Route::post('/ask-question', [ServiceController::class, 'submitQuestion'])->name('ask.submit');
+    Route::get('/ask-question/checkout', [ServiceController::class, 'checkout'])->name('ask.checkout');
+    Route::post('/ask-question/order/place', [ServiceController::class, 'placeOrder'])->name('ask.order.place');
 
     Route::get('/predictions', [ServiceController::class, 'predictions'])->name('predictions.index');
     Route::post('/predictions/monthly', [ServiceController::class, 'monthlyPredictions'])->name('predictions.monthly');
