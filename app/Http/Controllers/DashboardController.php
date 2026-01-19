@@ -100,6 +100,18 @@ class DashboardController extends Controller
         return view('dashboard.kundlis', compact('kundlis'));
     }
 
+    public function questions(Request $request)
+    {
+        $query = auth()->user()->questions();
+
+        if ($request->status && $request->status !== 'all') {
+            $query->where('status', $request->status);
+        }
+
+        $questions = $query->latest()->get();
+        return view('dashboard.questions', compact('questions'));
+    }
+
     public function poojas(Request $request)
     {
         $query = auth()->user()->poojas();

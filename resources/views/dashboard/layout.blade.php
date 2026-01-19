@@ -35,6 +35,10 @@
                     <i class="fas fa-chart-line w-5"></i>
                     <span>{{ __('messages.my_kundlis') }}</span>
                 </a>
+                <a href="{{ route('dashboard.questions') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg {{ request()->routeIs('dashboard.questions*') ? 'bg-indigo-50 text-indigo-600' : 'text-gray-700 hover:bg-gray-50' }}">
+                    <i class="fas fa-question-circle w-5"></i>
+                    <span>My Questions</span>
+                </a>
                 <a href="{{ route('dashboard.poojas') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg {{ request()->routeIs('dashboard.poojas*') || request()->routeIs('dashboard.pooja.*') ? 'bg-indigo-50 text-indigo-600' : 'text-gray-700 hover:bg-gray-50' }}">
                     <i class="fas fa-om w-5"></i>
                     <span>{{ __('messages.my_poojas') }}</span>
