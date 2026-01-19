@@ -13,26 +13,26 @@
                 
                 <div>
                     <label for="name" class="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
-                    <input type="text" id="name" name="name" required 
+                    <input type="text" id="name" name="name" value="{{ old('name', session('kundli_data.name')) }}" required 
                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                 </div>
 
                 <div class="grid md:grid-cols-2 gap-4">
                     <div>
                         <label for="birth_date" class="block text-sm font-medium text-gray-700 mb-2">Birth Date</label>
-                        <input type="date" id="birth_date" name="birth_date" required 
+                        <input type="date" id="birth_date" name="birth_date" value="{{ old('birth_date', session('kundli_data.birth_date')) }}" required 
                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                     </div>
                     <div>
                         <label for="birth_time" class="block text-sm font-medium text-gray-700 mb-2">Birth Time</label>
-                        <input type="time" id="birth_time" name="birth_time" required 
+                        <input type="time" id="birth_time" name="birth_time" value="{{ old('birth_time', session('kundli_data.birth_time')) }}" required 
                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                     </div>
                 </div>
 
                 <div>
                     <label for="birth_place" class="block text-sm font-medium text-gray-700 mb-2">Birth Place</label>
-                    <input type="text" id="birth_place" name="birth_place" required 
+                    <input type="text" id="birth_place" name="birth_place" value="{{ old('birth_place', session('kundli_data.birth_place')) }}" required 
                            placeholder="City, State, Country"
                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                 </div>
@@ -42,9 +42,9 @@
                     <select id="type" name="type" required 
                             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                         <option value="">Select Kundli Type</option>
-                        <option value="basic">Basic Kundli - ₹299</option>
-                        <option value="detailed">Detailed Kundli - ₹599</option>
-                        <option value="premium">Premium Kundli - ₹999</option>
+                        <option value="basic" {{ old('type', session('kundli_data.type')) == 'basic' ? 'selected' : '' }}>Basic Kundli - ₹299</option>
+                        <option value="detailed" {{ old('type', session('kundli_data.type')) == 'detailed' ? 'selected' : '' }}>Detailed Kundli - ₹599</option>
+                        <option value="premium" {{ old('type', session('kundli_data.type')) == 'premium' ? 'selected' : '' }}>Premium Kundli - ₹999</option>
                     </select>
                 </div>
 

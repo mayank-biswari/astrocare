@@ -59,6 +59,14 @@ class DashboardController extends Controller
             return redirect()->route('pooja.checkout');
         }
         
+        // Check for pending kundli generation after login
+        if (session('kundli_generation_data')) {
+            $kundliData = session('kundli_generation_data');
+            session()->forget('kundli_generation_data');
+            
+            return redirect()->route('kundli.create')->with('kundli_data', $kundliData);
+        }
+        
         return view('dashboard.index');
     }
 
@@ -270,7 +278,12 @@ class DashboardController extends Controller
     {
         $request->validate([
             'current_password' => 'required',
-            'password' => 'required|min:8|confirmed'
+            'password' => [
+                'required',
+                'min:8',
+                'confirmed',
+                'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/'
+            ]
         ]);
 
         if (!\Hash::check($request->current_password, auth()->user()->password)) {
@@ -282,6 +295,38 @@ class DashboardController extends Controller
         ]);
 
         return redirect()->route('dashboard.settings')->with('success', 'Password updated successfully!');
+    }
+
+    public function updateProfilePhoto(Request $request)
+    {
+        $request->validate([
+            'profile_photo' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
+        ]);
+
+        $user = auth()->user();
+
+        // Delete old photo if exists
+        if ($user->profile_photo) {
+            \Storage::disk('public')->delete(str_replace('/storage/', '', $user->profile_photo));
+        }
+
+        // Store new photo
+        $path = $request->file('profile_photo')->store('profile-photos', 'public');
+        $user->update(['profile_photo' => '/storage/' . $path]);
+
+        return redirect()->route('dashboard.settings')->with('success', 'Profile photo updated successfully!');
+    }
+
+    public function deleteProfilePhoto()
+    {
+        $user = auth()->user();
+
+        if ($user->profile_photo) {
+            \Storage::disk('public')->delete(str_replace('/storage/', '', $user->profile_photo));
+            $user->update(['profile_photo' => null]);
+        }
+
+        return redirect()->route('dashboard.settings')->with('success', 'Profile photo deleted successfully!');
     }
 
     public function consultationDetails($id)

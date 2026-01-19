@@ -45,6 +45,9 @@ Route::prefix('services')->group(function () {
     Route::get('/kundli', [KundliController::class, 'index'])->name('kundli.index');
     Route::get('/kundli/generate', [KundliController::class, 'create'])->name('kundli.create');
     Route::post('/kundli/generate', [KundliController::class, 'store'])->name('kundli.store');
+    Route::get('/kundli/checkout', [KundliController::class, 'checkout'])->name('kundli.checkout');
+    Route::post('/kundli/order/place', [KundliController::class, 'placeOrder'])->name('kundli.order.place');
+    Route::get('/kundli/{kundli}/download', [KundliController::class, 'download'])->name('kundli.download');
     Route::get('/kundli/{kundli}', [KundliController::class, 'show'])->name('kundli.show');
 
     Route::get('/horoscope-matching', [ServiceController::class, 'horoscopeMatching'])->name('horoscope.matching');
@@ -102,6 +105,8 @@ Route::middleware('auth')->prefix('dashboard')->group(function () {
     Route::post('/settings/preferences', [DashboardController::class, 'updatePreferences'])->name('dashboard.preferences.update');
     Route::post('/settings/profile', [DashboardController::class, 'updateProfile'])->name('dashboard.profile.update');
     Route::post('/settings/password', [DashboardController::class, 'updatePassword'])->name('dashboard.password.update');
+    Route::post('/settings/profile/photo', [DashboardController::class, 'updateProfilePhoto'])->name('dashboard.profile.photo.update');
+    Route::delete('/settings/profile/photo', [DashboardController::class, 'deleteProfilePhoto'])->name('dashboard.profile.photo.delete');
     Route::get('/order/{id}', [DashboardController::class, 'orderDetails'])->name('dashboard.order.details');
     Route::get('/order/{id}/track', [DashboardController::class, 'trackOrder'])->name('dashboard.order.track');
     Route::get('/order/{id}/invoice', [DashboardController::class, 'downloadInvoice'])->name('dashboard.order.invoice');

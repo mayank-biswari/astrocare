@@ -8,7 +8,7 @@ class Kundli extends Model
 {
     protected $fillable = [
         'user_id', 'name', 'birth_date', 'birth_time', 'birth_place', 'type', 
-        'chart_data', 'report', 'pdf_path', 'amount', 'currency'
+        'chart_data', 'report', 'pdf_path', 'amount', 'currency', 'status'
     ];
 
     protected $casts = [
