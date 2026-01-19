@@ -8,6 +8,8 @@ use App\Models\Service;
 use App\Models\PoojaService;
 use App\Models\Order;
 use App\Models\Consultation;
+use App\Models\Kundli;
+use App\Models\Question;
 use App\Models\User;
 use App\Models\Category;
 use App\Models\Language;
@@ -428,6 +430,91 @@ class AdminController extends Controller
         $consultation->update($updateData);
         
         return redirect()->route('admin.consultations')->with('success', 'Consultation status updated successfully!');
+    }
+
+    // Kundlis Management
+    public function kundlis(Request $request)
+    {
+        $query = Kundli::with('user');
+        
+        if ($request->status) {
+            $query->where('status', $request->status);
+        }
+        
+        if ($request->type) {
+            $query->where('type', $request->type);
+        }
+        
+        if ($request->search) {
+            $query->where('name', 'like', '%' . $request->search . '%')
+                  ->orWhereHas('user', function($userQuery) use ($request) {
+                      $userQuery->where('name', 'like', '%' . $request->search . '%')
+                                ->orWhere('email', 'like', '%' . $request->search . '%');
+                  });
+        }
+        
+        $kundlis = $query->latest()->paginate(10)->appends($request->query());
+        return view('admin.kundlis.index', compact('kundlis'));
+    }
+
+    public function viewKundli($id)
+    {
+        $kundli = Kundli::with('user')->findOrFail($id);
+        return view('admin.kundlis.view', compact('kundli'));
+    }
+
+    public function updateKundliStatus(Request $request, $id)
+    {
+        $request->validate(['status' => 'required|in:pending,completed,cancelled']);
+        Kundli::findOrFail($id)->update(['status' => $request->status]);
+        return redirect()->route('admin.kundlis')->with('success', 'Kundli status updated successfully!');
+    }
+
+    // Questions Management
+    public function questions(Request $request)
+    {
+        $query = Question::with('user');
+        
+        if ($request->status) {
+            $query->where('status', $request->status);
+        }
+        
+        if ($request->category) {
+            $query->where('category', $request->category);
+        }
+        
+        if ($request->search) {
+            $query->where('question', 'like', '%' . $request->search . '%')
+                  ->orWhereHas('user', function($userQuery) use ($request) {
+                      $userQuery->where('name', 'like', '%' . $request->search . '%')
+                                ->orWhere('email', 'like', '%' . $request->search . '%');
+                  });
+        }
+        
+        $questions = $query->latest()->paginate(10)->appends($request->query());
+        return view('admin.questions.index', compact('questions'));
+    }
+
+    public function viewQuestion($id)
+    {
+        $question = Question::with('user')->findOrFail($id);
+        return view('admin.questions.view', compact('question'));
+    }
+
+    public function updateQuestionStatus(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|in:pending,completed,cancelled',
+            'answer' => 'required_if:status,completed|nullable|string'
+        ]);
+
+        $question = Question::findOrFail($id);
+        $question->update([
+            'status' => $request->status,
+            'answer' => $request->answer
+        ]);
+        
+        return redirect()->route('admin.questions')->with('success', 'Question status updated successfully!');
     }
 
     // Languages Management

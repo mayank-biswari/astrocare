@@ -55,6 +55,8 @@ Route::prefix('services')->group(function () {
 
     Route::get('/ask-question', [ServiceController::class, 'askQuestion'])->name('ask.question');
     Route::post('/ask-question', [ServiceController::class, 'submitQuestion'])->name('ask.submit');
+    Route::get('/ask-question/checkout', [ServiceController::class, 'checkout'])->name('ask.checkout');
+    Route::post('/ask-question/order/place', [ServiceController::class, 'placeOrder'])->name('ask.order.place');
 
     Route::get('/predictions', [ServiceController::class, 'predictions'])->name('predictions.index');
     Route::post('/predictions/monthly', [ServiceController::class, 'monthlyPredictions'])->name('predictions.monthly');
@@ -98,6 +100,7 @@ Route::middleware('auth')->prefix('dashboard')->group(function () {
     Route::post('/consultation/{id}/cancel', [DashboardController::class, 'cancelConsultation'])->name('dashboard.consultation.cancel');
     Route::get('/consultation/{id}/report', [DashboardController::class, 'downloadReport'])->name('dashboard.consultation.report');
     Route::get('/kundlis', [DashboardController::class, 'kundlis'])->name('dashboard.kundlis');
+    Route::get('/questions', [DashboardController::class, 'questions'])->name('dashboard.questions');
     Route::get('/poojas', [DashboardController::class, 'poojas'])->name('dashboard.poojas');
     Route::get('/pooja/{id}', [DashboardController::class, 'poojaDetails'])->name('dashboard.pooja.details');
     Route::get('/reports', [DashboardController::class, 'reports'])->name('dashboard.reports');
@@ -177,6 +180,16 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/consultations', [App\Http\Controllers\AdminController::class, 'consultations'])->name('consultations');
     Route::get('/consultations/{id}/view', [App\Http\Controllers\AdminController::class, 'viewConsultation'])->name('consultations.view');
     Route::put('/consultations/{id}/status', [App\Http\Controllers\AdminController::class, 'updateConsultationStatus'])->name('consultations.status');
+
+    // Kundlis
+    Route::get('/kundlis', [App\Http\Controllers\AdminController::class, 'kundlis'])->name('kundlis');
+    Route::get('/kundlis/{id}/view', [App\Http\Controllers\AdminController::class, 'viewKundli'])->name('kundlis.view');
+    Route::put('/kundlis/{id}/status', [App\Http\Controllers\AdminController::class, 'updateKundliStatus'])->name('kundlis.status');
+
+    // Questions
+    Route::get('/questions', [App\Http\Controllers\AdminController::class, 'questions'])->name('questions');
+    Route::get('/questions/{id}/view', [App\Http\Controllers\AdminController::class, 'viewQuestion'])->name('questions.view');
+    Route::put('/questions/{id}/status', [App\Http\Controllers\AdminController::class, 'updateQuestionStatus'])->name('questions.status');
 
     // Users
     Route::get('/users', [App\Http\Controllers\AdminController::class, 'users'])->name('users');

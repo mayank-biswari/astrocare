@@ -48,6 +48,18 @@ class AdminMenuService
                         'active' => 'admin.consultations*'
                     ],
                     [
+                        'title' => 'Kundlis',
+                        'icon' => 'far fa-circle',
+                        'route' => 'admin.kundlis',
+                        'active' => 'admin.kundlis*'
+                    ],
+                    [
+                        'title' => 'Questions',
+                        'icon' => 'far fa-circle',
+                        'route' => 'admin.questions',
+                        'active' => 'admin.questions*'
+                    ],
+                    [
                         'title' => 'Pooja Bookings',
                         'icon' => 'far fa-circle',
                         'route' => 'admin.consultations',
