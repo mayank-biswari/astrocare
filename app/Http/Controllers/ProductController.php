@@ -106,6 +106,11 @@ class ProductController extends Controller
             'payment_gateway' => 'required|exists:payment_gateways,code'
         ]);
 
+        // Update user phone if not already filled
+        if (auth()->check() && !auth()->user()->phone) {
+            auth()->user()->update(['phone' => $request->phone]);
+        }
+
         // Calculate total from cart
         $cart = session()->get('cart', []);
         $total = 0;

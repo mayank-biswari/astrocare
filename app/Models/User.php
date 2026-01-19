@@ -21,6 +21,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'profile_photo',
         'email_notifications',
         'sms_notifications',
         'marketing_emails',
