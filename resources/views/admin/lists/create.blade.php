@@ -4,7 +4,7 @@
 
 @section('content')
 <meta name="csrf-token" content="{{ csrf_token() }}">
-<div class="content-wrapper">
+<div class="content-fluid">
     <div class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">
@@ -20,7 +20,7 @@
             <form method="POST" action="{{ route('admin.lists.store') }}">
                 @csrf
                 <input type="hidden" name="type" value="{{ $type }}">
-                
+
                 <div class="card">
                     <div class="card-header">
                         <h3 class="card-title">List Configuration</h3>
@@ -40,7 +40,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="form-group">
                             <label>List Type *</label>
                             <div class="row">
@@ -182,7 +182,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="row mt-3">
                             <div class="col-md-12">
                                 <div class="custom-control custom-checkbox">
@@ -191,7 +191,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div id="page-creation-fields" class="row mt-3" style="display: none;">
                             <div class="col-md-6">
                                 <div class="form-group">
@@ -226,12 +226,12 @@
                             </div>
                             <div class="col-md-12">
                                 <div class="alert alert-info">
-                                    <i class="fas fa-info-circle"></i> 
+                                    <i class="fas fa-info-circle"></i>
                                     The page will be created at: <strong id="page-url-preview">/view/</strong>
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div id="template-fields" class="row" style="display: none;">
                             <div class="col-md-6">
                                 <div class="form-group">
@@ -252,14 +252,14 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="form-group">
                             <label>Load from Template</label>
                             <select id="template-selector" class="form-control">
                                 <option value="">Select a template...</option>
                                 @foreach(\App\Models\AdminList::where('is_template', true)->where('type', $type)->get() as $template)
                                     <option value="{{ $template->id }}" data-config="{{ htmlspecialchars(json_encode($template->configuration)) }}" data-method="{{ $template->method }}">
-                                        {{ $template->template_name ?: $template->name }} 
+                                        {{ $template->template_name ?: $template->name }}
                                         @if($template->template_category)
                                             ({{ ucfirst($template->template_category) }})
                                         @endif
@@ -267,7 +267,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        
+
                         <div class="mt-3">
                             <button type="submit" class="btn btn-primary">Create List</button>
                             <a href="{{ route('admin.lists.' . $type) }}" class="btn btn-secondary">Cancel</a>
@@ -283,32 +283,32 @@
 document.addEventListener('DOMContentLoaded', function() {
     const methodRadios = document.querySelectorAll('input[name="method"]');
     const configs = document.querySelectorAll('.method-config');
-    
+
     // Categories and Page Types data
     const categories = @json($categories ?? []);
     const pageTypes = @json($pageTypes ?? []);
     const type = '{{ $type }}';
-    
+
     methodRadios.forEach(radio => {
         radio.addEventListener('change', function() {
             configs.forEach(config => config.style.display = 'none');
             document.getElementById(this.value + '_config').style.display = 'block';
         });
     });
-    
+
     // Handle field change to show appropriate value input
     function handleFieldChange(fieldSelect) {
         const row = fieldSelect.closest('.filter-row');
         const valueInput = row.querySelector('.filter-value');
         const valueSelect = row.querySelector('.filter-select');
         const field = fieldSelect.value;
-        
+
         if ((type === 'products' && field === 'category') || (type === 'pages' && field === 'cms_category_id')) {
             valueInput.style.display = 'none';
             valueSelect.style.display = 'block';
             valueSelect.name = valueInput.name;
             valueInput.name = '';
-            
+
             // Populate categories
             valueSelect.innerHTML = '<option value="">Select Category</option>';
             categories.forEach(cat => {
@@ -319,7 +319,7 @@ document.addEventListener('DOMContentLoaded', function() {
             valueSelect.style.display = 'block';
             valueSelect.name = valueInput.name;
             valueInput.name = '';
-            
+
             // Populate status options
             valueSelect.innerHTML = '<option value="">Select Status</option>';
             const statusOptions = [
@@ -334,7 +334,7 @@ document.addEventListener('DOMContentLoaded', function() {
             valueSelect.style.display = 'block';
             valueSelect.name = valueInput.name;
             valueInput.name = '';
-            
+
             // Populate page types
             valueSelect.innerHTML = '<option value="">Select Page Type</option>';
             pageTypes.forEach(pt => {
@@ -347,26 +347,26 @@ document.addEventListener('DOMContentLoaded', function() {
             valueSelect.name = '';
         }
     }
-    
+
     // Initial setup for existing field selects
     document.querySelectorAll('select[name*="[field]"]').forEach(handleFieldChange);
-    
+
     // Add event listeners to existing field selects
     document.querySelectorAll('select[name*="[field]"]').forEach(select => {
         select.addEventListener('change', () => handleFieldChange(select));
     });
-    
+
     let filterIndex = 1;
     document.getElementById('add-filter').addEventListener('click', function() {
         const container = document.getElementById('filters-container');
         const newFilter = container.querySelector('.filter-row').cloneNode(true);
-        
+
         newFilter.querySelectorAll('input, select').forEach(input => {
             const oldName = input.name;
             input.name = oldName.replace(/\[\d+\]/, '[' + filterIndex + ']');
             input.value = '';
         });
-        
+
         // Reset value field to input type
         const valueInput = newFilter.querySelector('.filter-value');
         const valueSelect = newFilter.querySelector('.filter-select');
@@ -374,16 +374,16 @@ document.addEventListener('DOMContentLoaded', function() {
         valueSelect.style.display = 'none';
         valueInput.name = valueInput.name || valueSelect.name;
         valueSelect.name = '';
-        
+
         container.appendChild(newFilter);
-        
+
         // Add event listener to new field select
         const newFieldSelect = newFilter.querySelector('select[name*="[field]"]');
         newFieldSelect.addEventListener('change', () => handleFieldChange(newFieldSelect));
-        
+
         filterIndex++;
     });
-    
+
     document.addEventListener('click', function(e) {
         if (e.target.classList.contains('remove-filter')) {
             if (document.querySelectorAll('.filter-row').length > 1) {
@@ -391,26 +391,26 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
-    
+
     // Template selector functionality
     document.getElementById('template-selector').addEventListener('change', function() {
         const selectedOption = this.options[this.selectedIndex];
         if (selectedOption.value) {
             const config = JSON.parse(selectedOption.dataset.config);
             const method = selectedOption.dataset.method;
-            
+
             // Set method
             document.querySelector(`input[name="method"][value="${method}"]`).checked = true;
-            
+
             // Show appropriate config
             configs.forEach(config => config.style.display = 'none');
             document.getElementById(method + '_config').style.display = 'block';
-            
+
             // Load filters for query_builder
             if (method === 'query_builder' && config.filters) {
                 const container = document.getElementById('filters-container');
                 container.innerHTML = '';
-                
+
                 config.filters.forEach((filter, index) => {
                     const filterRow = document.createElement('div');
                     filterRow.className = 'filter-row mb-3';
@@ -449,28 +449,28 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                     `;
                     container.appendChild(filterRow);
-                    
+
                     // Handle field change for loaded filters
                     const fieldSelect = filterRow.querySelector('select[name*="[field]"]');
                     fieldSelect.addEventListener('change', () => handleFieldChange(fieldSelect));
                     handleFieldChange(fieldSelect);
                 });
-                
+
                 filterIndex = config.filters.length;
             }
         }
     });
-    
+
     // Show/hide template fields
     document.getElementById('is_template').addEventListener('change', function() {
         document.getElementById('template-fields').style.display = this.checked ? 'block' : 'none';
     });
-    
+
     // Show/hide page creation fields
     document.getElementById('create_page').addEventListener('change', function() {
         document.getElementById('page-creation-fields').style.display = this.checked ? 'block' : 'none';
     });
-    
+
     // Auto-generate slug from title
     document.querySelector('input[name="page_title"]').addEventListener('input', function() {
         const title = this.value;
@@ -486,12 +486,12 @@ document.addEventListener('DOMContentLoaded', function() {
             const valueInput = row.querySelector('.filter-value');
             const valueSelect = row.querySelector('.filter-select');
             const value = valueInput.style.display !== 'none' ? valueInput.value : valueSelect.value;
-            
+
             if (field && operator && value) {
                 filters.push({ field, operator, value });
             }
         });
-        
+
         fetch('{{ route("admin.lists.preview") }}', {
             method: 'POST',
             headers: {
@@ -509,22 +509,22 @@ document.addEventListener('DOMContentLoaded', function() {
             const previewDiv = document.getElementById('preview-results');
             const previewCount = document.getElementById('preview-count');
             const previewItems = document.getElementById('preview-items');
-            
+
             if (data.error) {
                 alert('Error: ' + data.error);
                 previewDiv.style.display = 'none';
             } else {
                 previewCount.textContent = data.count;
                 previewItems.innerHTML = '';
-                
+
                 if (data.results && data.results.length > 0) {
                     data.results.forEach(item => {
                         const title = type === 'products' ? item.name : item.title;
-                        const status = type === 'products' ? 
-                            (item.is_active ? 'Active' : 'Inactive') : 
+                        const status = type === 'products' ?
+                            (item.is_active ? 'Active' : 'Inactive') :
                             (item.is_published ? 'Published' : 'Draft');
                         const statusClass = (type === 'products' ? item.is_active : item.is_published) ? 'success' : 'secondary';
-                        
+
                         previewItems.innerHTML += `
                             <tr>
                                 <td>${item.id}</td>
@@ -536,7 +536,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 } else {
                     previewItems.innerHTML = '<tr><td colspan="3" class="text-center">No items found</td></tr>';
                 }
-                
+
                 previewDiv.style.display = 'block';
             }
         })
