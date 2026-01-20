@@ -128,52 +128,58 @@ class DashboardController extends Controller
     {
         $user = auth()->user();
 
-        // Get user's orders
-        $orders = $user->orders();
+        // Get user's orders stats
         $orderStats = [
-            'total' => $orders->count(),
-            'completed' => $orders->where('status', 'completed')->count(),
-            'pending' => $orders->where('status', 'pending')->count(),
-            'cancelled' => $orders->where('status', 'cancelled')->count()
+            'total' => $user->orders()->count(),
+            'completed' => $user->orders()->where('status', 'completed')->count(),
+            'pending' => $user->orders()->where('status', 'pending')->count(),
+            'cancelled' => $user->orders()->where('status', 'cancelled')->count()
         ];
 
-        // Get user's consultations
-        $consultations = $user->consultations();
+        // Get user's consultations stats
         $consultationStats = [
-            'total' => $consultations->count(),
-            'completed' => $consultations->where('status', 'completed')->count(),
-            'upcoming' => $consultations->where('status', 'scheduled')->count(),
-            'total_spent' => $consultations->where('status', 'completed')->sum('price')
+            'total' => $user->consultations()->count(),
+            'completed' => $user->consultations()->where('status', 'completed')->count(),
+            'upcoming' => $user->consultations()->where('status', 'scheduled')->count(),
+            'total_spent' => $user->consultations()->where('status', 'completed')->sum('amount')
         ];
 
-        // Get user's kundlis
-        $kundlis = $user->kundlis();
+        // Get user's kundlis stats
         $kundliStats = [
-            'generated' => $kundlis->count(),
-            'downloaded' => $kundlis->whereNotNull('downloaded_at')->count(),
-            'shared' => $kundlis->where('is_shared', true)->count()
+            'generated' => $user->kundlis()->count(),
+            'downloaded' => $user->kundlis()->whereNotNull('downloaded_at')->count(),
+            'shared' => $user->kundlis()->where('is_shared', true)->count()
         ];
 
-        // Get user's poojas
-        $poojas = $user->poojas();
+        // Get user's poojas stats
         $poojaStats = [
-            'total' => $poojas->count(),
-            'completed' => $poojas->where('status', 'completed')->count(),
-            'upcoming' => $poojas->where('status', 'scheduled')->count(),
-            'total_spent' => $poojas->where('status', 'completed')->sum('price')
+            'total' => $user->poojas()->count(),
+            'completed' => $user->poojas()->where('status', 'completed')->count(),
+            'upcoming' => $user->poojas()->where('status', 'scheduled')->count(),
+            'total_spent' => $user->poojas()->where('status', 'completed')->sum('amount')
+        ];
+
+        // Get user's questions stats
+        $questionStats = [
+            'total' => $user->questions()->count(),
+            'completed' => $user->questions()->where('status', 'completed')->count(),
+            'pending' => $user->questions()->where('status', 'pending')->count(),
+            'total_spent' => $user->questions()->where('status', 'completed')->sum('amount')
         ];
 
         // Calculate spending
         $thisMonth = now()->startOfMonth();
         $lastMonth = now()->subMonth()->startOfMonth();
         $spendingStats = [
-            'this_month' => $orders->where('created_at', '>=', $thisMonth)->sum('total_amount') +
-                          $consultations->where('created_at', '>=', $thisMonth)->sum('price') +
-                          $poojas->where('created_at', '>=', $thisMonth)->sum('price'),
-            'last_month' => $orders->whereBetween('created_at', [$lastMonth, $thisMonth])->sum('total_amount') +
-                          $consultations->whereBetween('created_at', [$lastMonth, $thisMonth])->sum('price') +
-                          $poojas->whereBetween('created_at', [$lastMonth, $thisMonth])->sum('price'),
-            'lifetime' => $orders->sum('total_amount') + $consultations->sum('price') + $poojas->sum('price')
+            'this_month' => $user->orders()->where('created_at', '>=', $thisMonth)->sum('total_amount') +
+                          $user->consultations()->where('created_at', '>=', $thisMonth)->sum('amount') +
+                          $user->poojas()->where('created_at', '>=', $thisMonth)->sum('amount') +
+                          $user->questions()->where('created_at', '>=', $thisMonth)->sum('amount'),
+            'last_month' => $user->orders()->whereBetween('created_at', [$lastMonth, $thisMonth])->sum('total_amount') +
+                          $user->consultations()->whereBetween('created_at', [$lastMonth, $thisMonth])->sum('amount') +
+                          $user->poojas()->whereBetween('created_at', [$lastMonth, $thisMonth])->sum('amount') +
+                          $user->questions()->whereBetween('created_at', [$lastMonth, $thisMonth])->sum('amount'),
+            'lifetime' => $user->orders()->sum('total_amount') + $user->consultations()->sum('amount') + $user->poojas()->sum('amount') + $user->questions()->sum('amount')
         ];
 
         // Activity stats
@@ -185,19 +191,19 @@ class DashboardController extends Controller
 
         // Recent activities
         $recentActivities = collect()
-            ->merge($orders->latest()->take(3)->get()->map(fn($order) => [
+            ->merge($user->orders()->latest()->take(3)->get()->map(fn($order) => [
                 'type' => 'order',
                 'title' => 'Order #' . $order->id . ' placed',
                 'description' => 'Total: ₹' . number_format($order->total_amount),
                 'date' => $order->created_at
             ]))
-            ->merge($consultations->latest()->take(2)->get()->map(fn($consultation) => [
+            ->merge($user->consultations()->latest()->take(2)->get()->map(fn($consultation) => [
                 'type' => 'consultation',
                 'title' => 'Consultation ' . ($consultation->status == 'completed' ? 'completed' : 'booked'),
                 'description' => $consultation->type . ' Session',
                 'date' => $consultation->created_at
             ]))
-            ->merge($kundlis->latest()->take(2)->get()->map(fn($kundli) => [
+            ->merge($user->kundlis()->latest()->take(2)->get()->map(fn($kundli) => [
                 'type' => 'kundli',
                 'title' => 'Kundli generated',
                 'description' => 'Birth Chart Analysis',
@@ -208,7 +214,7 @@ class DashboardController extends Controller
 
         return view('dashboard.reports', compact(
             'orderStats', 'consultationStats', 'kundliStats',
-            'poojaStats', 'spendingStats', 'activityStats', 'recentActivities'
+            'poojaStats', 'questionStats', 'spendingStats', 'activityStats', 'recentActivities'
         ));
     }
 
