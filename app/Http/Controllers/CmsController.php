@@ -27,12 +27,14 @@ class CmsController extends Controller
         $page = CmsPage::where('slug', $slug)
                       ->where('is_published', true)
                       ->where('language_code', $languageCode)
+                      ->with('pageType')
                       ->first();
 
         // If not found, try to find the base page and get its translation
         if (!$page) {
             $basePage = CmsPage::where('slug', $slug)
                               ->where('is_published', true)
+                              ->with('pageType')
                               ->first();
 
             if ($basePage) {
@@ -56,6 +58,15 @@ class CmsController extends Controller
         }
 
         $comments = $page->comments()->latest()->get();
+        
+        // Check if page type has a custom template
+        if ($page->pageType && $page->pageType->template) {
+            $templatePath = 'dynamic-pages.custom-templates.' . str_replace('.blade.php', '', $page->pageType->template);
+            if (view()->exists($templatePath)) {
+                return view($templatePath, compact('page', 'comments', 'languageCode'));
+            }
+        }
+        
         return view('cms.show', compact('page', 'comments', 'languageCode'));
     }
 

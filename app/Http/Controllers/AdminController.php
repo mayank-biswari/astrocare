@@ -906,22 +906,34 @@ class AdminController extends Controller
                     $customField['options'] = array_map('trim', explode(',', $field['options']));
                 }
                 
+                if ($field['type'] === 'number') {
+                    if (isset($field['min']) && $field['min'] !== '') $customField['min'] = $field['min'];
+                    if (isset($field['max']) && $field['max'] !== '') $customField['max'] = $field['max'];
+                    if (isset($field['step']) && $field['step'] !== '') $customField['step'] = $field['step'];
+                }
+                
+                if ($field['type'] === 'image') {
+                    $customField['multiple'] = (bool)($field['multiple'] ?? false);
+                    $customField['max_size'] = $field['max_size'] ?? 2;
+                    $customField['max_images'] = $field['max_images'] ?? 5;
+                    $customField['allowed_types'] = $field['allowed_types'] ?? ['jpg', 'png'];
+                }
+                
                 $customFields[] = $customField;
             }
         }
 
-        $fieldsConfig = [
-            'show_comments' => $request->has('fields_config.show_comments'),
-            'show_posted_date' => $request->has('fields_config.show_posted_date'),
-            'show_author' => $request->has('fields_config.show_author'),
-            'show_rating' => $request->has('fields_config.show_rating'),
-            'custom_fields' => $customFields
-        ];
-
         CmsPageType::create([
             'name' => $request->name,
             'description' => $request->description,
-            'fields_config' => $fieldsConfig,
+            'template' => $request->template,
+            'fields_config' => [
+                'show_comments' => $request->has('fields_config.show_comments'),
+                'show_posted_date' => $request->has('fields_config.show_posted_date'),
+                'show_author' => $request->has('fields_config.show_author'),
+                'show_rating' => $request->has('fields_config.show_rating'),
+                'custom_fields' => $customFields
+            ],
             'is_active' => $request->has('is_active')
         ]);
 
@@ -957,6 +969,19 @@ class AdminController extends Controller
                     $customField['options'] = array_map('trim', explode(',', $field['options']));
                 }
                 
+                if ($field['type'] === 'number') {
+                    if (isset($field['min']) && $field['min'] !== '') $customField['min'] = $field['min'];
+                    if (isset($field['max']) && $field['max'] !== '') $customField['max'] = $field['max'];
+                    if (isset($field['step']) && $field['step'] !== '') $customField['step'] = $field['step'];
+                }
+                
+                if ($field['type'] === 'image') {
+                    $customField['multiple'] = (bool)($field['multiple'] ?? false);
+                    $customField['max_size'] = $field['max_size'] ?? 2;
+                    $customField['max_images'] = $field['max_images'] ?? 5;
+                    $customField['allowed_types'] = $field['allowed_types'] ?? ['jpg', 'png'];
+                }
+                
                 $customFields[] = $customField;
             }
         }
@@ -972,6 +997,7 @@ class AdminController extends Controller
         $pageType->update([
             'name' => $request->name,
             'description' => $request->description,
+            'template' => $request->template,
             'fields_config' => $fieldsConfig,
             'is_active' => $request->has('is_active')
         ]);

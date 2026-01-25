@@ -3,7 +3,7 @@
 @section('title', 'CMS Page Types')
 
 @section('content')
-<div class="content-wrapper">
+<div class="content-fluid">
     <div class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">
@@ -31,7 +31,7 @@
                         </a>
                     </div>
                 </div>
-                
+
                 <!-- Filters -->
                 <div class="card-body border-bottom">
                     <form method="GET" class="row">
@@ -51,7 +51,7 @@
                         </div>
                     </form>
                 </div>
-                
+
                 <div class="card-body p-0">
                     <table class="table table-bordered">
                         <thead>

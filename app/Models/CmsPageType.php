@@ -7,7 +7,7 @@ use Illuminate\Support\Str;
 
 class CmsPageType extends Model
 {
-    protected $fillable = ['name', 'slug', 'description', 'fields_config', 'is_active'];
+    protected $fillable = ['name', 'slug', 'description', 'template', 'fields_config', 'is_active'];
 
     protected $casts = [
         'fields_config' => 'array',

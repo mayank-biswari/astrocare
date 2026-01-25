@@ -3,7 +3,7 @@
 @section('title', 'Create Page Type')
 
 @section('content')
-<div class="content-wrapper">
+<div class="content-fluid">
     <div class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">
@@ -21,20 +21,41 @@
                     @csrf
                     <div class="card-body">
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="form-group">
                                     <label>Name</label>
                                     <input type="text" name="name" class="form-control" required>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="form-group">
                                     <label>Description</label>
                                     <input type="text" name="description" class="form-control">
                                 </div>
                             </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Template</label>
+                                    <select name="template" class="form-control">
+                                        <option value="">Default Template</option>
+                                        @php
+                                            $templatesPath = resource_path('views/dynamic-pages/custom-templates');
+                                            $templates = File::exists($templatesPath) ? File::files($templatesPath) : [];
+                                        @endphp
+                                        @foreach($templates as $template)
+                                            @php
+                                                $filename = $template->getFilename();
+                                                $name = str_replace(['.blade.php', '-', '_'], ['', ' ', ' '], pathinfo($filename, PATHINFO_FILENAME));
+                                                $name = ucwords($name);
+                                            @endphp
+                                            <option value="{{ $filename }}">{{ $name }}</option>
+                                        @endforeach
+                                    </select>
+                                    <small class="text-muted">Custom template file for this page type</small>
+                                </div>
+                            </div>
                         </div>
-                        
+
                         <h5>Field Configuration</h5>
                         <div class="row">
                             <div class="col-md-3">
@@ -62,12 +83,12 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="form-check mt-3">
                             <input type="checkbox" name="is_active" class="form-check-input" checked>
                             <label class="form-check-label">Active</label>
                         </div>
-                        
+
                         <h5 class="mt-4">Custom Fields</h5>
                         <div id="customFieldsList">
                             <!-- Custom fields will be added here -->
@@ -185,11 +206,11 @@ function toggleFieldOptions(index) {
     const optionsDiv = document.getElementById(`options_${index}`);
     const numberOptionsDiv = document.getElementById(`number_options_${index}`);
     const imageOptionsDiv = document.getElementById(`image_options_${index}`);
-    
+
     optionsDiv.style.display = 'none';
     if (numberOptionsDiv) numberOptionsDiv.style.display = 'none';
     imageOptionsDiv.style.display = 'none';
-    
+
     if (typeSelect.value === 'select') {
         optionsDiv.style.display = 'block';
     } else if (typeSelect.value === 'number') {
