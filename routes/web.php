@@ -276,4 +276,14 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::delete('/media/delete', [App\Http\Controllers\AdminController::class, 'deleteMedia'])->name('media.delete');
     Route::post('/media/folder', [App\Http\Controllers\AdminController::class, 'createFolder'])->name('media.folder.create');
     Route::delete('/media/folder', [App\Http\Controllers\AdminController::class, 'deleteFolder'])->name('media.folder.delete');
+
+    // Template Editor
+    Route::prefix('template-editor')->name('template-editor.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\TemplateEditorController::class, 'index'])->name('index');
+        Route::get('/{filename}/edit', [App\Http\Controllers\Admin\TemplateEditorController::class, 'edit'])->name('edit');
+        Route::put('/{filename}', [App\Http\Controllers\Admin\TemplateEditorController::class, 'update'])->name('update');
+        Route::post('/create', [App\Http\Controllers\Admin\TemplateEditorController::class, 'create'])->name('create');
+        Route::delete('/{filename}', [App\Http\Controllers\Admin\TemplateEditorController::class, 'destroy'])->name('destroy');
+        Route::get('/{filename}/download', [App\Http\Controllers\Admin\TemplateEditorController::class, 'download'])->name('download');
+    });
 });
