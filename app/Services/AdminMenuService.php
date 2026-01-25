@@ -176,6 +176,12 @@ class AdminMenuService
                 'active' => 'admin.media*'
             ],
             [
+                'title' => 'Template Editor',
+                'icon' => 'fas fa-code',
+                'route' => 'admin.template-editor.index',
+                'active' => 'admin.template-editor*'
+            ],
+            [
                 'title' => 'System Configuration',
                 'icon' => 'fas fa-cog',
                 'children' => [

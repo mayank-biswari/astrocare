@@ -4,7 +4,7 @@
 
 @section('content')
 <meta name="csrf-token" content="{{ csrf_token() }}">
-<div class="content-wrapper">
+<div class="content-fluid">
     <div class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">
@@ -20,7 +20,7 @@
             <form method="POST" action="{{ route('admin.lists.update', $list) }}">
                 @csrf
                 @method('PUT')
-                
+
                 <div class="card">
                     <div class="card-header">
                         <h3 class="card-title">List Configuration</h3>
@@ -40,7 +40,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="form-group">
                             <label>List Type *</label>
                             <div class="row">
@@ -183,7 +183,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="row mt-3">
                             <div class="col-md-12">
                                 <div class="custom-control custom-checkbox">
@@ -192,7 +192,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div id="page-creation-fields" class="row mt-3" style="{{ $list->create_page ? '' : 'display: none;' }}">
                             <div class="col-md-6">
                                 <div class="form-group">
@@ -227,7 +227,7 @@
                             </div>
                             <div class="col-md-12">
                                 <div class="alert alert-info">
-                                    <i class="fas fa-info-circle"></i> 
+                                    <i class="fas fa-info-circle"></i>
                                     The page will be created at: <strong id="page-url-preview">/view/{{ $list->page_slug ?: '' }}</strong>
                                     @if($list->page_slug)
                                         <a href="/view/{{ $list->page_slug }}" target="_blank" class="btn btn-sm btn-outline-primary ml-2">
@@ -237,7 +237,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="mt-3">
                             <button type="submit" class="btn btn-primary">Update List</button>
                             <a href="{{ route('admin.lists.' . $list->type) }}" class="btn btn-secondary">Cancel</a>
@@ -253,19 +253,19 @@
 document.addEventListener('DOMContentLoaded', function() {
     const methodRadios = document.querySelectorAll('input[name="method"]');
     const configs = document.querySelectorAll('.method-config');
-    
+
     // Categories and Page Types data
     const categories = @json($categories ?? []);
     const pageTypes = @json($pageTypes ?? []);
     const type = '{{ $list->type }}';
-    
+
     methodRadios.forEach(radio => {
         radio.addEventListener('change', function() {
             configs.forEach(config => config.style.display = 'none');
             document.getElementById(this.value + '_config').style.display = 'block';
         });
     });
-    
+
     // Handle field change to show appropriate value input
     function handleFieldChange(fieldSelect) {
         const row = fieldSelect.closest('.filter-row');
@@ -273,13 +273,13 @@ document.addEventListener('DOMContentLoaded', function() {
         const valueSelect = row.querySelector('.filter-select');
         const field = fieldSelect.value;
         const currentValue = valueInput.value || valueSelect.value;
-        
+
         if ((type === 'products' && field === 'category') || (type === 'pages' && field === 'cms_category_id')) {
             valueInput.style.display = 'none';
             valueSelect.style.display = 'block';
             valueSelect.name = valueInput.name;
             valueInput.name = '';
-            
+
             // Populate categories
             valueSelect.innerHTML = '<option value="">Select Category</option>';
             categories.forEach(cat => {
@@ -291,7 +291,7 @@ document.addEventListener('DOMContentLoaded', function() {
             valueSelect.style.display = 'block';
             valueSelect.name = valueInput.name;
             valueInput.name = '';
-            
+
             // Populate status options
             valueSelect.innerHTML = '<option value="">Select Status</option>';
             const statusOptions = [
@@ -307,7 +307,7 @@ document.addEventListener('DOMContentLoaded', function() {
             valueSelect.style.display = 'block';
             valueSelect.name = valueInput.name;
             valueInput.name = '';
-            
+
             // Populate page types
             valueSelect.innerHTML = '<option value="">Select Page Type</option>';
             pageTypes.forEach(pt => {
@@ -324,26 +324,26 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     }
-    
+
     // Initial setup for existing field selects
     document.querySelectorAll('select[name*="[field]"]').forEach(handleFieldChange);
-    
+
     // Add event listeners to existing field selects
     document.querySelectorAll('select[name*="[field]"]').forEach(select => {
         select.addEventListener('change', () => handleFieldChange(select));
     });
-    
+
     let filterIndex = {{ count($list->configuration['filters'] ?? []) }};
     document.getElementById('add-filter').addEventListener('click', function() {
         const container = document.getElementById('filters-container');
         const newFilter = container.querySelector('.filter-row').cloneNode(true);
-        
+
         newFilter.querySelectorAll('input, select').forEach(input => {
             input.name = input.name.replace(/\[\d+\]/, '[' + filterIndex + ']');
             input.value = '';
             if (input.type === 'checkbox') input.checked = false;
         });
-        
+
         // Reset value field to input type
         const valueInput = newFilter.querySelector('.filter-value');
         const valueSelect = newFilter.querySelector('.filter-select');
@@ -351,16 +351,16 @@ document.addEventListener('DOMContentLoaded', function() {
         valueSelect.style.display = 'none';
         valueInput.name = valueInput.name || valueSelect.name;
         valueSelect.name = '';
-        
+
         container.appendChild(newFilter);
-        
+
         // Add event listener to new field select
         const newFieldSelect = newFilter.querySelector('select[name*="[field]"]');
         newFieldSelect.addEventListener('change', () => handleFieldChange(newFieldSelect));
-        
+
         filterIndex++;
     });
-    
+
     document.addEventListener('click', function(e) {
         if (e.target.classList.contains('remove-filter')) {
             if (document.querySelectorAll('.filter-row').length > 1) {
@@ -368,7 +368,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
-    
+
     // Preview functionality
     document.getElementById('preview-query').addEventListener('click', function() {
         const filters = [];
@@ -378,12 +378,12 @@ document.addEventListener('DOMContentLoaded', function() {
             const valueInput = row.querySelector('.filter-value');
             const valueSelect = row.querySelector('.filter-select');
             const value = valueInput.style.display !== 'none' ? valueInput.value : valueSelect.value;
-            
+
             if (field && operator && value) {
                 filters.push({ field, operator, value });
             }
         });
-        
+
         fetch('{{ route("admin.lists.preview") }}', {
             method: 'POST',
             headers: {
@@ -401,22 +401,22 @@ document.addEventListener('DOMContentLoaded', function() {
             const previewDiv = document.getElementById('preview-results');
             const previewCount = document.getElementById('preview-count');
             const previewItems = document.getElementById('preview-items');
-            
+
             if (data.error) {
                 alert('Error: ' + data.error);
                 previewDiv.style.display = 'none';
             } else {
                 previewCount.textContent = data.count;
                 previewItems.innerHTML = '';
-                
+
                 if (data.results && data.results.length > 0) {
                     data.results.forEach(item => {
                         const title = '{{ $list->type }}' === 'products' ? item.name : item.title;
-                        const status = '{{ $list->type }}' === 'products' ? 
-                            (item.is_active ? 'Active' : 'Inactive') : 
+                        const status = '{{ $list->type }}' === 'products' ?
+                            (item.is_active ? 'Active' : 'Inactive') :
                             (item.is_published ? 'Published' : 'Draft');
                         const statusClass = ('{{ $list->type }}' === 'products' ? item.is_active : item.is_published) ? 'success' : 'secondary';
-                        
+
                         previewItems.innerHTML += `
                             <tr>
                                 <td>${item.id}</td>
@@ -428,7 +428,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 } else {
                     previewItems.innerHTML = '<tr><td colspan="3" class="text-center">No items found</td></tr>';
                 }
-                
+
                 previewDiv.style.display = 'block';
             }
         })
@@ -436,12 +436,12 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('Error: ' + error.message);
         });
     });
-    
+
     // Show/hide page creation fields
     document.getElementById('create_page').addEventListener('change', function() {
         document.getElementById('page-creation-fields').style.display = this.checked ? 'block' : 'none';
     });
-    
+
     // Auto-generate slug from title
     document.querySelector('input[name="page_title"]').addEventListener('input', function() {
         const title = this.value;
