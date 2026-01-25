@@ -85,11 +85,12 @@
                                         </div>
                                         <div class="col-md-2">
                                             <label>Field Type</label>
-                                            <select name="custom_fields[{{ $index }}][type]" class="form-control" onchange="toggleOptions({{ $index }})" required>
+                                            <select name="custom_fields[{{ $index }}][type]" class="form-control" onchange="toggleFieldOptions({{ $index }})" required>
                                                 <option value="text" {{ $field['type'] == 'text' ? 'selected' : '' }}>Text</option>
                                                 <option value="number" {{ $field['type'] == 'number' ? 'selected' : '' }}>Number</option>
                                                 <option value="select" {{ $field['type'] == 'select' ? 'selected' : '' }}>Select</option>
                                                 <option value="textarea" {{ $field['type'] == 'textarea' ? 'selected' : '' }}>Textarea</option>
+                                                <option value="image" {{ $field['type'] == 'image' ? 'selected' : '' }}>Image(s)</option>
                                             </select>
                                         </div>
                                         <div class="col-md-2">
@@ -108,6 +109,49 @@
                                         <div class="col-md-12">
                                             <label>Options (comma separated)</label>
                                             <input type="text" name="custom_fields[{{ $index }}][options]" class="form-control" value="{{ isset($field['options']) ? implode(', ', $field['options']) : '' }}">
+                                        </div>
+                                    </div>
+                                    <div class="row mt-2" id="number_options_{{ $index }}" style="display: {{ $field['type'] == 'number' ? 'block' : 'none' }};">
+                                        <div class="col-md-4">
+                                            <label>Min Value</label>
+                                            <input type="number" name="custom_fields[{{ $index }}][min]" class="form-control" value="{{ $field['min'] ?? '' }}" placeholder="e.g., 0">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label>Max Value</label>
+                                            <input type="number" name="custom_fields[{{ $index }}][max]" class="form-control" value="{{ $field['max'] ?? '' }}" placeholder="e.g., 100">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label>Step</label>
+                                            <input type="number" name="custom_fields[{{ $index }}][step]" class="form-control" value="{{ $field['step'] ?? 1 }}" placeholder="e.g., 1">
+                                        </div>
+                                    </div>
+                                    <div class="row mt-2" id="image_options_{{ $index }}" style="display: {{ $field['type'] == 'image' ? 'block' : 'none' }};">
+                                        <div class="col-md-3">
+                                            <label>Allow Multiple</label>
+                                            <select name="custom_fields[{{ $index }}][multiple]" class="form-control">
+                                                <option value="0" {{ !($field['multiple'] ?? false) ? 'selected' : '' }}>Single Image</option>
+                                                <option value="1" {{ ($field['multiple'] ?? false) ? 'selected' : '' }}>Multiple Images</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label>Max Size (MB)</label>
+                                            <input type="number" name="custom_fields[{{ $index }}][max_size]" class="form-control" value="{{ $field['max_size'] ?? 2 }}" min="1" max="10">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label>Max Images (if multiple)</label>
+                                            <input type="number" name="custom_fields[{{ $index }}][max_images]" class="form-control" value="{{ $field['max_images'] ?? 5 }}" min="1" max="20">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label>Allowed Types</label>
+                                            <select name="custom_fields[{{ $index }}][allowed_types][]" class="form-control" multiple size="3">
+                                                @php $allowedTypes = $field['allowed_types'] ?? ['jpg', 'png']; @endphp
+                                                <option value="jpg" {{ in_array('jpg', $allowedTypes) ? 'selected' : '' }}>JPG</option>
+                                                <option value="png" {{ in_array('png', $allowedTypes) ? 'selected' : '' }}>PNG</option>
+                                                <option value="gif" {{ in_array('gif', $allowedTypes) ? 'selected' : '' }}>GIF</option>
+                                                <option value="webp" {{ in_array('webp', $allowedTypes) ? 'selected' : '' }}>WebP</option>
+                                                <option value="svg" {{ in_array('svg', $allowedTypes) ? 'selected' : '' }}>SVG</option>
+                                            </select>
+                                            <small class="text-muted">Hold Ctrl to select multiple</small>
                                         </div>
                                     </div>
                                 </div>
@@ -145,11 +189,12 @@ function addCustomField() {
             </div>
             <div class="col-md-2">
                 <label>Field Type</label>
-                <select name="custom_fields[${fieldIndex}][type]" class="form-control" onchange="toggleOptions(${fieldIndex})" required>
+                <select name="custom_fields[${fieldIndex}][type]" class="form-control" onchange="toggleFieldOptions(${fieldIndex})" required>
                     <option value="text">Text</option>
                     <option value="number">Number</option>
                     <option value="select">Select</option>
                     <option value="textarea">Textarea</option>
+                    <option value="image">Image(s)</option>
                 </select>
             </div>
             <div class="col-md-2">
@@ -170,6 +215,48 @@ function addCustomField() {
                 <input type="text" name="custom_fields[${fieldIndex}][options]" class="form-control" placeholder="Option 1, Option 2, Option 3">
             </div>
         </div>
+        <div class="row mt-2" id="number_options_${fieldIndex}" style="display: none;">
+            <div class="col-md-4">
+                <label>Min Value</label>
+                <input type="number" name="custom_fields[${fieldIndex}][min]" class="form-control" placeholder="e.g., 0">
+            </div>
+            <div class="col-md-4">
+                <label>Max Value</label>
+                <input type="number" name="custom_fields[${fieldIndex}][max]" class="form-control" placeholder="e.g., 100">
+            </div>
+            <div class="col-md-4">
+                <label>Step</label>
+                <input type="number" name="custom_fields[${fieldIndex}][step]" class="form-control" placeholder="e.g., 1" value="1">
+            </div>
+        </div>
+        <div class="row mt-2" id="image_options_${fieldIndex}" style="display: none;">
+            <div class="col-md-3">
+                <label>Allow Multiple</label>
+                <select name="custom_fields[${fieldIndex}][multiple]" class="form-control">
+                    <option value="0">Single Image</option>
+                    <option value="1">Multiple Images</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label>Max Size (MB)</label>
+                <input type="number" name="custom_fields[${fieldIndex}][max_size]" class="form-control" value="2" min="1" max="10">
+            </div>
+            <div class="col-md-3">
+                <label>Max Images (if multiple)</label>
+                <input type="number" name="custom_fields[${fieldIndex}][max_images]" class="form-control" value="5" min="1" max="20">
+            </div>
+            <div class="col-md-3">
+                <label>Allowed Types</label>
+                <select name="custom_fields[${fieldIndex}][allowed_types][]" class="form-control" multiple size="3">
+                    <option value="jpg" selected>JPG</option>
+                    <option value="png" selected>PNG</option>
+                    <option value="gif">GIF</option>
+                    <option value="webp">WebP</option>
+                    <option value="svg">SVG</option>
+                </select>
+                <small class="text-muted">Hold Ctrl to select multiple</small>
+            </div>
+        </div>
     `;
     container.appendChild(fieldDiv);
     fieldIndex++;
@@ -179,15 +266,23 @@ function removeCustomField(button) {
     button.closest('.border').remove();
 }
 
-function toggleOptions(index) {
+function toggleFieldOptions(index) {
     const typeSelect = document.querySelector(`select[name="custom_fields[${index}][type]"]`);
     const optionsDiv = document.getElementById(`options_${index}`);
+    const numberOptionsDiv = document.getElementById(`number_options_${index}`);
+    const imageOptionsDiv = document.getElementById(`image_options_${index}`);
     
-    if (typeSelect && optionsDiv) {
+    if (typeSelect && optionsDiv && imageOptionsDiv) {
+        optionsDiv.style.display = 'none';
+        if (numberOptionsDiv) numberOptionsDiv.style.display = 'none';
+        imageOptionsDiv.style.display = 'none';
+        
         if (typeSelect.value === 'select') {
             optionsDiv.style.display = 'block';
-        } else {
-            optionsDiv.style.display = 'none';
+        } else if (typeSelect.value === 'number') {
+            if (numberOptionsDiv) numberOptionsDiv.style.display = 'block';
+        } else if (typeSelect.value === 'image') {
+            imageOptionsDiv.style.display = 'block';
         }
     }
 }
