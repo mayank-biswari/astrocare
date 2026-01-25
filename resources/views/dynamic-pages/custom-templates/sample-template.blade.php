@@ -1,0 +1,50 @@
+{{-- Sample Custom Template --}}
+
+@extends('layouts.app')
+
+@section('title', 'Sample Custom Template')
+
+@section('content')
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-4xl font-bold text-gray-900 mb-6">Sample Custom Template</h1>
+        
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h2 class="text-2xl font-bold mb-4">Welcome to the Template Editor</h2>
+            <p class="text-gray-700 mb-4">
+                This is a sample template file. You can edit this file using the Template Editor in the admin panel.
+            </p>
+            <p class="text-gray-700 mb-4">
+                The Template Editor provides:
+            </p>
+            <ul class="list-disc list-inside text-gray-700 space-y-2 mb-4">
+                <li>Syntax highlighting with Ace Editor</li>
+                <li>Auto-completion for Blade directives</li>
+                <li>Multiple theme options</li>
+                <li>Automatic backups before saving</li>
+                <li>Keyboard shortcuts (Ctrl+S to save)</li>
+            </ul>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-6">
+            <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-6">
+                <h3 class="text-xl font-bold text-blue-900 mb-3">Features</h3>
+                <ul class="text-blue-800 space-y-2">
+                    <li><i class="fas fa-check-circle mr-2"></i>Live code editing</li>
+                    <li><i class="fas fa-check-circle mr-2"></i>File management</li>
+                    <li><i class="fas fa-check-circle mr-2"></i>Secure operations</li>
+                </ul>
+            </div>
+
+            <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-6">
+                <h3 class="text-xl font-bold text-purple-900 mb-3">Security</h3>
+                <ul class="text-purple-800 space-y-2">
+                    <li><i class="fas fa-shield-alt mr-2"></i>Admin-only access</li>
+                    <li><i class="fas fa-shield-alt mr-2"></i>Path validation</li>
+                    <li><i class="fas fa-shield-alt mr-2"></i>Backup system</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection

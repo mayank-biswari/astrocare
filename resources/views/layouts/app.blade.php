@@ -50,8 +50,8 @@
         <div class="container mx-auto px-4">
             <div class="flex justify-between items-center py-4">
                 <!-- Logo -->
-                <div class="flex items-center">
-                    <a href="{{ route('home') }}" class="flex items-center space-x-2">
+                <div class="flex items-center lg:flex-1">
+                    <a href="{{ route('home') }}" class="flex items-center space-x-2 lg:ml-0 absolute left-1/2 transform -translate-x-1/2 lg:static lg:transform-none">
                         @if(\App\Models\SiteSetting::get('site_logo'))
                             <img src="{{ asset(\App\Models\SiteSetting::get('site_logo')) }}" alt="Logo" class="h-8 w-auto">
                         @else
