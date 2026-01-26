@@ -83,6 +83,7 @@ Route::prefix('shop')->group(function () {
     Route::get('/category/{category}', [ProductController::class, 'category'])->name('shop.category');
     Route::get('/product/{id}/{slug?}', [ProductController::class, 'show'])->name('product.show');
     Route::post('/cart/add', [ProductController::class, 'addToCart'])->name('cart.add');
+    Route::post('/cart/update', [ProductController::class, 'updateCart'])->name('cart.update');
     Route::post('/cart/remove', [ProductController::class, 'removeFromCart'])->name('cart.remove');
     Route::get('/cart', [ProductController::class, 'cart'])->name('cart.index');
     Route::post('/checkout', [ProductController::class, 'checkout'])->name('checkout');
@@ -143,7 +144,7 @@ require __DIR__.'/auth.php';
 Route::get('/view/{slug}', [App\Http\Controllers\CmsController::class, 'viewListPage'])->name('list.view');
 
 // Dynamic Pages - Must be last to avoid conflicts
-// Route::get('/{url}', [App\Http\Controllers\CmsController::class, 'viewDynamicPage'])->name('dynamic.view');
+Route::get('/{url}', [App\Http\Controllers\CmsController::class, 'viewDynamicPage'])->name('dynamic.view')->where('url', '^(?!admin).*');
 
 // Admin Routes
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
@@ -229,6 +230,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/cms/{id}/edit', [App\Http\Controllers\AdminController::class, 'editCmsPage'])->name('cms.edit');
     Route::put('/cms/{id}', [App\Http\Controllers\AdminController::class, 'updateCmsPage'])->name('cms.update');
     Route::delete('/cms/{id}', [App\Http\Controllers\AdminController::class, 'deleteCmsPage'])->name('cms.delete');
+    Route::get('/cms/page-types/{id}/check-product-fields', [App\Http\Controllers\AdminController::class, 'checkPageTypeProductFields']);
     Route::get('/cms/comments', [App\Http\Controllers\AdminController::class, 'cmsComments'])->name('cms.comments');
     Route::put('/cms/comments/{id}/approve', [App\Http\Controllers\AdminController::class, 'approveComment'])->name('cms.comments.approve');
     Route::get('/cms/categories', [App\Http\Controllers\AdminController::class, 'cmsCategories'])->name('cms.categories');
@@ -280,10 +282,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // Template Editor
     Route::prefix('template-editor')->name('template-editor.')->group(function () {
         Route::get('/', [App\Http\Controllers\Admin\TemplateEditorController::class, 'index'])->name('index');
-        Route::get('/{filename}/edit', [App\Http\Controllers\Admin\TemplateEditorController::class, 'edit'])->name('edit');
-        Route::put('/{filename}', [App\Http\Controllers\Admin\TemplateEditorController::class, 'update'])->name('update');
+        Route::get('/{filename}/edit', [App\Http\Controllers\Admin\TemplateEditorController::class, 'edit'])->name('edit')->where('filename', '.*');
+        Route::put('/{filename}', [App\Http\Controllers\Admin\TemplateEditorController::class, 'update'])->name('update')->where('filename', '.*');
         Route::post('/create', [App\Http\Controllers\Admin\TemplateEditorController::class, 'create'])->name('create');
-        Route::delete('/{filename}', [App\Http\Controllers\Admin\TemplateEditorController::class, 'destroy'])->name('destroy');
-        Route::get('/{filename}/download', [App\Http\Controllers\Admin\TemplateEditorController::class, 'download'])->name('download');
+        Route::delete('/{filename}', [App\Http\Controllers\Admin\TemplateEditorController::class, 'destroy'])->name('destroy')->where('filename', '.*');
+        Route::get('/{filename}/download', [App\Http\Controllers\Admin\TemplateEditorController::class, 'download'])->name('download')->where('filename', '.*');
     });
 });

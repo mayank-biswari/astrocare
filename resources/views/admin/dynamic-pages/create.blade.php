@@ -3,7 +3,7 @@
 @section('title', 'Create Dynamic Page')
 
 @section('content')
-<div class="content-wrapper">
+<div class="content-fluid">
     <div class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">
@@ -18,7 +18,7 @@
         <div class="container-fluid">
             <form method="POST" action="{{ route('admin.dynamic-pages.store') }}">
                 @csrf
-                
+
                 <div class="card">
                     <div class="card-header">
                         <h3 class="card-title">Page Information</h3>
@@ -190,11 +190,11 @@ document.addEventListener('click', function(e) {
     if (e.target.classList.contains('remove-section') || e.target.closest('.remove-section')) {
         e.target.closest('.section-item').remove();
     }
-    
+
     if (e.target.classList.contains('add-section-before')) {
         addSectionAt(e.target.closest('.section-item'), 'before');
     }
-    
+
     if (e.target.classList.contains('add-section-after')) {
         addSectionAt(e.target.closest('.section-item'), 'after');
     }
@@ -293,6 +293,27 @@ function createSectionHtml(index) {
                     <div class="form-group list-field">
                         <label>Columns/Limit</label>
                         <input type="number" name="sections[${index}][limit]" class="form-control" value="12" min="1">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group list-field">
+                        <div class="custom-control custom-checkbox mt-4">
+                            <input class="custom-control-input" type="checkbox" id="show_pagination_${index}" name="sections[${index}][show_pagination]">
+                            <label for="show_pagination_${index}" class="custom-control-label">Pagination</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group list-field">
+                        <label>Per Page</label>
+                        <select name="sections[${index}][items_per_page]" class="form-control">
+                            <option value="6">6</option>
+                            <option value="9">9</option>
+                            <option value="12" selected>12</option>
+                            <option value="18">18</option>
+                            <option value="24">24</option>
+                            <option value="50">50</option>
+                        </select>
                     </div>
                 </div>
                 <div class="col-md-1">
@@ -414,7 +435,7 @@ document.addEventListener('change', function(e) {
         const listFields = section.querySelectorAll('.list-field');
         const htmlField = section.querySelector('.html-field');
         const sliderOptions = section.querySelector('.slider-options');
-        
+
         if (e.target.value === 'html') {
             listFields.forEach(field => field.style.display = 'none');
             htmlField.style.display = 'block';
@@ -434,12 +455,12 @@ document.addEventListener('change', function(e) {
             }
         }
     }
-    
+
     if (e.target.classList.contains('layout-select')) {
         const section = e.target.closest('.section-item');
         const sliderOptions = section.querySelector('.slider-options');
         const sectionType = section.querySelector('.section-type');
-        
+
         if (e.target.value === 'slider' && sectionType.value === 'list') {
             sliderOptions.style.display = 'block';
         } else {
@@ -462,7 +483,7 @@ document.addEventListener('click', function(e) {
         `;
         container.insertAdjacentHTML('beforeend', newField);
     }
-    
+
     if (e.target.classList.contains('add-js-file')) {
         const container = document.getElementById('js-files-container');
         const newField = `
@@ -475,7 +496,7 @@ document.addEventListener('click', function(e) {
         `;
         container.insertAdjacentHTML('beforeend', newField);
     }
-    
+
     if (e.target.classList.contains('remove-css-file') || e.target.classList.contains('remove-js-file')) {
         e.target.closest('.input-group').remove();
     }

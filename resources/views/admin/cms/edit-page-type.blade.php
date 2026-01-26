@@ -86,6 +86,11 @@
                         </div>
 
                         <div class="form-check mt-3">
+                            <input type="checkbox" name="has_product_fields" class="form-check-input" value="1" {{ $pageType->has_product_fields ? 'checked' : '' }}>
+                            <label class="form-check-label">Enable Product Fields</label>
+                        </div>
+                        
+                        <div class="form-check mt-3">
                             <input type="checkbox" name="is_active" class="form-check-input" {{ $pageType->is_active ? 'checked' : '' }}>
                             <label class="form-check-label">Active</label>
                         </div>

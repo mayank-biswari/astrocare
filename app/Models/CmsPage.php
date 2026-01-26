@@ -40,6 +40,16 @@ class CmsPage extends Model
         return $this->belongsTo(CmsPageType::class, 'cms_page_type_id');
     }
 
+    public function product()
+    {
+        return $this->hasOne(CmsPageProduct::class);
+    }
+
+    public function isProduct()
+    {
+        return $this->product()->exists();
+    }
+
     public function translations()
     {
         return $this->hasMany(CmsPageTranslation::class);

@@ -75,11 +75,15 @@ class TemplateEditorController extends Controller
         try {
             // Create backup before updating
             $backupPath = base_path($this->templatesPath . '/backups');
-            if (!File::exists($backupPath)) {
-                File::makeDirectory($backupPath, 0755, true);
+            
+            // If filename contains subdirectory, preserve structure in backups
+            $backupFile = $backupPath . '/' . $filename . '.' . time() . '.backup';
+            $backupDir = dirname($backupFile);
+            
+            if (!File::exists($backupDir)) {
+                File::makeDirectory($backupDir, 0755, true);
             }
 
-            $backupFile = $backupPath . '/' . $filename . '.' . time() . '.backup';
             File::copy($filePath, $backupFile);
 
             // Update the file
@@ -187,14 +191,16 @@ class TemplateEditorController extends Controller
             return [];
         }
 
-        $files = File::files($path);
+        $files = File::allFiles($path);
         $templates = [];
 
         foreach ($files as $file) {
             $filename = $file->getFilename();
+            $relativePath = str_replace($path . DIRECTORY_SEPARATOR, '', $file->getPathname());
+            $relativePath = str_replace('\\', '/', $relativePath);
             
             // Skip backup files and hidden files
-            if (Str::startsWith($filename, '.') || Str::contains($filename, '.backup')) {
+            if (Str::startsWith($filename, '.') || Str::contains($relativePath, ['.backup', 'backups/'])) {
                 continue;
             }
 
@@ -209,7 +215,7 @@ class TemplateEditorController extends Controller
 
             if ($isAllowed) {
                 $templates[] = [
-                    'name' => $filename,
+                    'name' => $relativePath,
                     'size' => $file->getSize(),
                     'modified' => $file->getMTime(),
                     'path' => $file->getPathname()
@@ -230,8 +236,8 @@ class TemplateEditorController extends Controller
      */
     protected function isValidFilename($filename)
     {
-        // Prevent directory traversal
-        if (Str::contains($filename, ['..', '/', '\\'])) {
+        // Prevent directory traversal outside templates directory
+        if (Str::contains($filename, ['..'])) {
             return false;
         }
 

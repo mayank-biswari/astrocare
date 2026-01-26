@@ -5,7 +5,7 @@
 @section('content')
 @php
     $fields = $page->custom_fields ?? [];
-    $name = $fields['name'] ?? 'Astrologer';
+    $name = $page->title ?? 'Astrologer';
     $title = $fields['title'] ?? '';
     $status = $fields['status'] ?? 'offline';
     $rating = $fields['rating'] ?? 0;
@@ -17,7 +17,29 @@
     $expertise = $fields['expertise'] ?? '';
     $about = $page->body ?? '';
     $education = $fields['education'] ?? '';
-    
+
+    // Product data
+    $product = $page->product;
+    $hasProduct = $product !== null;
+    $currentCurrency = session('currency', \App\Models\Currency::getDefaultCurrency()->code);
+
+    if ($product && $product->currency_prices && is_array($product->currency_prices) && isset($product->currency_prices[$currentCurrency])) {
+        $currencyPrice = $product->currency_prices[$currentCurrency];
+        $price = $currencyPrice['price'] ?? $product->price;
+        $salePrice = $currencyPrice['sale_price'] ?? null;
+    } else {
+        $price = $product->price ?? 0;
+        $salePrice = $product->sale_price ?? null;
+    }
+
+    $effectivePrice = $salePrice ?? $price;
+    $sku = $product->sku ?? '';
+    $inStock = $product ? $product->isInStock() : false;
+    $isFeatured = $product->is_featured ?? false;
+    $minQuantity = $product->min_quantity ?? 1;
+    $quantityStep = $product->quantity_step ?? 1;
+    $quantityUnit = $product->quantity_unit ?? 'item';
+
     $expertiseList = array_filter(array_map('trim', explode(',', $expertise)));
     $languageList = array_filter(array_map('trim', explode(',', $languages)));
     $educationList = array_filter(array_map('trim', explode("\n", $education)));
@@ -42,7 +64,7 @@
                         <div>
                             <h1 class="text-3xl font-bold text-gray-800">{{ $name }}</h1>
                             <p class="text-lg text-gray-600 mt-1">{{ $title }}</p>
-                            
+
                             <!-- Rating -->
                             <div class="flex items-center gap-2 mt-2">
                                 <div class="flex">
@@ -67,25 +89,58 @@
                                     <svg class="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
                                     </svg>
-                                    <span class="text-gray-700"><strong>{{ number_format((int) ($consultations ?? 0)) }}</strong> Consultations</span>
+                                    @if($consultations)<span class="text-gray-700"><strong>{{ $consultations ?? 0 }}</strong> Consultations</span>@endif
                                 </div>
                             </div>
                         </div>
 
                         <!-- Action Buttons -->
                         <div class="flex flex-col gap-3">
-                            @if($status === 'online')
+                            @if($status === 'online' && $hasProduct && $product->variants && $product->variants->where('is_active', true)->count() > 0)
+                                @foreach($product->variants->where('is_active', true) as $variant)
+                                @php
+                                    $vCurrentCurrency = session('currency', \App\Models\Currency::getDefaultCurrency()->code);
+                                    if ($variant->currency_prices && is_array($variant->currency_prices) && isset($variant->currency_prices[$vCurrentCurrency])) {
+                                        $vCurrencyPrice = $variant->currency_prices[$vCurrentCurrency];
+                                        $vPrice = $vCurrencyPrice['price'] ?? $variant->price;
+                                        $vSalePrice = $vCurrencyPrice['sale_price'] ?? null;
+                                    } else {
+                                        $vPrice = $variant->price;
+                                        $vSalePrice = $variant->sale_price;
+                                    }
+                                    $vEffectivePrice = $vSalePrice ?? $vPrice;
+                                    $isCall = stripos($variant->name, 'call') !== false;
+                                @endphp
+                                <form action="{{ route('cart.add') }}" method="POST">
+                                    @csrf
+                                    <input type="hidden" name="product_type" value="cms_page_variant">
+                                    <input type="hidden" name="product_id" value="{{ $page->id }}">
+                                    <input type="hidden" name="variant_id" value="{{ $variant->id }}">
+                                    <input type="hidden" name="quantity" value="{{ $variant->min_quantity ?? 1 }}">
+                                    <button type="submit" class="{{ $isCall ? 'bg-orange-500 hover:bg-orange-600' : 'bg-green-500 hover:bg-green-600' }} text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2 transition w-full">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            @if($isCall)
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                                            @else
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                                            @endif
+                                        </svg>
+                                        {{ $variant->name }} Now - {{ currencySymbol() }}{{ number_format($vEffectivePrice, 2) }}/{{ $variant->quantity_unit ?? 'min' }}
+                                    </button>
+                                </form>
+                                @endforeach
+                            @elseif($status === 'online')
                                 <button class="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2 transition">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
                                     </svg>
-                                    Call Now - ₹{{ $callRate }}/min
+                                    Call Now - {{ formatPrice($callRate) }}/min
                                 </button>
                                 <button class="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2 transition">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
                                     </svg>
-                                    Chat Now - ₹{{ $chatRate }}/min
+                                    Chat Now - {{ formatPrice($chatRate) }}/min
                                 </button>
                             @else
                                 <button class="bg-gray-400 text-white px-6 py-3 rounded-lg font-semibold cursor-not-allowed" disabled>
@@ -174,29 +229,7 @@
                 @endif
 
                 <!-- Pricing Card -->
-                <div class="bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg shadow-md p-6 text-white">
-                    <h3 class="text-xl font-bold mb-4">Consultation Rates</h3>
-                    <div class="space-y-3">
-                        <div class="flex justify-between items-center">
-                            <span class="flex items-center gap-2">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
-                                </svg>
-                                Call
-                            </span>
-                            <span class="text-2xl font-bold">₹{{ $callRate }}/min</span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span class="flex items-center gap-2">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-                                </svg>
-                                Chat
-                            </span>
-                            <span class="text-2xl font-bold">₹{{ $chatRate }}/min</span>
-                        </div>
-                    </div>
-                </div>
+                {{-- @include('dynamic-pages.custom-templates.components.pricing-card') --}}
 
                 <!-- Status Card -->
                 <div class="bg-white rounded-lg shadow-md p-6">

@@ -27,14 +27,14 @@ class CmsController extends Controller
         $page = CmsPage::where('slug', $slug)
                       ->where('is_published', true)
                       ->where('language_code', $languageCode)
-                      ->with('pageType')
+                      ->with(['pageType', 'product.variants'])
                       ->first();
 
         // If not found, try to find the base page and get its translation
         if (!$page) {
             $basePage = CmsPage::where('slug', $slug)
                               ->where('is_published', true)
-                              ->with('pageType')
+                              ->with(['pageType', 'product.variants'])
                               ->first();
 
             if ($basePage) {

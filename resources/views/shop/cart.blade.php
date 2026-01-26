@@ -21,7 +21,11 @@
                     <div class="flex items-center justify-between border-b pb-4 mb-4">
                         <div class="flex items-center space-x-4">
                             @if(isset($item['image']) && $item['image'])
-                                <img src="{{ asset($item['image']) }}" alt="{{ $item['name'] }}" class="w-20 h-20 rounded object-cover">
+                                @if(isset($item['type']) && ($item['type'] === 'cms_page' || $item['type'] === 'cms_page_variant'))
+                                    <img src="{{ asset('storage/' . $item['image']) }}" alt="{{ $item['name'] }}" class="w-20 h-20 rounded object-cover">
+                                @else
+                                    <img src="{{ asset($item['image']) }}" alt="{{ $item['name'] }}" class="w-20 h-20 rounded object-cover">
+                                @endif
                             @else
                                 <div class="w-20 h-20 bg-indigo-600 rounded flex items-center justify-center">
                                     <span class="text-white text-xs font-bold">{{ substr($item['name'], 0, 3) }}</span>
@@ -29,12 +33,35 @@
                             @endif
                             <div>
                                 <h3 class="font-bold">{{ $item['name'] }}</h3>
-                                <p class="text-gray-600">Quantity: {{ $item['quantity'] }}</p>
-                                <p class="text-indigo-600 font-bold">{{ formatPrice($item['price']) }} each</p>
+                                <div class="flex items-center gap-2 mt-2">
+                                    <form action="{{ route('cart.update') }}" method="POST" class="flex items-center gap-2">
+                                        @csrf
+                                        <input type="hidden" name="product_id" value="{{ $id }}">
+                                        <button type="submit" name="action" value="decrease" class="bg-gray-200 hover:bg-gray-300 w-8 h-8 rounded flex items-center justify-center">-</button>
+                                        <input type="number" name="quantity" value="{{ $item['quantity'] }}" min="{{ $item['min_quantity'] ?? 1 }}" step="{{ $item['quantity_step'] ?? 1 }}" class="w-16 text-center border rounded px-2 py-1" readonly>
+                                        <button type="submit" name="action" value="increase" class="bg-gray-200 hover:bg-gray-300 w-8 h-8 rounded flex items-center justify-center">+</button>
+                                        @if(isset($item['quantity_unit']))
+                                        <span class="text-sm text-gray-600">{{ $item['quantity_unit'] }}</span>
+                                        @endif
+                                    </form>
+                                </div>
+                                <p class="text-indigo-600 font-bold mt-2">
+                                    @if(isset($item['currency']) && $item['currency'] === currencyCode())
+                                        {{ currencySymbol() }}{{ number_format($item['price'], 2) }} each
+                                    @else
+                                        {{ formatPrice($item['price']) }} each
+                                    @endif
+                                </p>
                             </div>
                         </div>
                         <div class="text-right">
-                            <p class="text-xl font-bold">{{ formatPrice($item['price'] * $item['quantity']) }}</p>
+                            <p class="text-xl font-bold">
+                                @if(isset($item['currency']) && $item['currency'] === currencyCode())
+                                    {{ currencySymbol() }}{{ number_format($item['price'] * $item['quantity'], 2) }}
+                                @else
+                                    {{ formatPrice($item['price'] * $item['quantity']) }}
+                                @endif
+                            </p>
                             <form action="{{ route('cart.remove') }}" method="POST" class="mt-2">
                                 @csrf
                                 <input type="hidden" name="product_id" value="{{ $id }}">
@@ -48,7 +75,15 @@
                     <div class="flex justify-between items-center">
                         <a href="{{ route('shop.index') }}" class="bg-gray-500 text-white px-6 py-3 rounded-lg hover:bg-gray-600">Continue Shopping</a>
                         <div class="text-right">
-                            <div class="text-xl font-bold mb-4">Total: {{ formatPrice($total) }}</div>
+                            <div class="text-xl font-bold mb-4">Total: 
+                                @php
+                                    $displayTotal = 0;
+                                    foreach($cart as $item) {
+                                        $displayTotal += $item['price'] * $item['quantity'];
+                                    }
+                                @endphp
+                                {{ currencySymbol() }}{{ number_format($displayTotal, 2) }}
+                            </div>
                             @auth
                                 <form action="{{ route('checkout') }}" method="POST" class="inline">
                                     @csrf

@@ -33,7 +33,7 @@
                 $layout = $section['layout'] ?? 'grid';
             @endphp
 
-            @if($items->count() > 0)
+            @if(($items instanceof \Illuminate\Pagination\LengthAwarePaginator && $items->count() > 0) || ($items instanceof \Illuminate\Support\Collection && $items->count() > 0))
                 @if(!empty($section['custom_template']))
                     @if(str_starts_with($section['custom_template'], 'view:'))
                         @php
@@ -66,6 +66,12 @@
                     @include('dynamic-pages.layouts.default-list', ['items' => $items, 'section' => $section])
                 @elseif($layout === 'slider')
                     @include('dynamic-pages.layouts.default-slider', ['items' => $items, 'section' => $section, 'loopIndex' => $loop->index])
+                @endif
+                
+                @if($items instanceof \Illuminate\Pagination\LengthAwarePaginator)
+                    <div class="mt-6">
+                        {{ $items->links() }}
+                    </div>
                 @endif
             @endif
         </div>
