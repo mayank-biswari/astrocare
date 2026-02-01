@@ -132,6 +132,18 @@ class AdminMenuService
                 'icon' => 'fas fa-users',
                 'children' => [
                     [
+                        'title' => 'All Users',
+                        'icon' => 'far fa-circle',
+                        'route' => 'admin.user-management.index',
+                        'active' => 'admin.user-management*'
+                    ],
+                    [
+                        'title' => 'Manage Roles',
+                        'icon' => 'far fa-circle',
+                        'route' => 'admin.user-management.roles',
+                        'active' => 'admin.user-management.roles*'
+                    ],
+                    [
                         'title' => 'Customers',
                         'icon' => 'far fa-circle',
                         'route' => 'admin.users',

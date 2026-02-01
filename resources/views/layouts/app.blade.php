@@ -48,7 +48,7 @@
     <!-- Navigation -->
     <nav class="gradient-bg text-white shadow-lg om-shadow">
         <div class="container mx-auto px-4">
-            <div class="flex justify-between items-center py-4">
+            <div class="flex justify-between items-center py-4 lg:gap-24">
                 <!-- Logo -->
                 <div class="flex items-center lg:flex-1">
                     <a href="{{ route('home') }}" class="flex items-center space-x-2 lg:ml-0 absolute left-1/2 transform -translate-x-1/2 lg:static lg:transform-none">
@@ -66,11 +66,11 @@
                 <!-- Desktop Menu -->
                 <div class="hidden lg:flex space-x-6">
                     <a href="{{ route('home') }}" class="hover:text-divine-gold transition-colors duration-300 flex items-center">
-                        <i class="fas fa-home mr-1"></i>{{ __('messages.home') }}
+                        {{ __('messages.home') }}
                     </a>
                     <div class="relative" id="services-dropdown">
                         <button onclick="toggleDropdown()" class="hover:text-divine-gold flex items-center transition-colors duration-300">
-                            <i class="fas fa-star-and-crescent mr-1"></i>{{ __('messages.services') }}
+                            {{ __('messages.services') }}
                             <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                             </svg>
@@ -85,22 +85,25 @@
                         </div>
                     </div>
                     <a href="{{ route('pooja.index') }}" class="hover:text-divine-gold transition-colors duration-300 flex items-center">
-                        <i class="fas fa-fire mr-1"></i>{{ __('messages.pooja_rituals') }}
+                        {{ __('messages.pooja_rituals') }}
                     </a>
                     <a href="{{ route('shop.index') }}" class="hover:text-divine-gold transition-colors duration-300 flex items-center">
-                        <i class="fas fa-gem mr-1"></i>{{ __('messages.shop') }}
+                        {{ __('messages.shop') }}
+                    </a>
+                    <a href="/experts" class="hover:text-divine-gold transition-colors duration-300 flex items-center">
+                        Experts
                     </a>
                     <a href="{{ route('blogs.index') }}" class="hover:text-divine-gold transition-colors duration-300 flex items-center">
-                        <i class="fas fa-scroll mr-1"></i>{{ __('messages.blogs') }}
+                        {{ __('messages.blogs') }}
                     </a>
                     <a href="{{ route('testimonials') }}" class="hover:text-divine-gold transition-colors duration-300 flex items-center">
-                        <i class="fas fa-quote-left mr-1"></i>{{ __('messages.testimonials') }}
+                        {{ __('messages.testimonials') }}
                     </a>
                     <a href="{{ route('contact') }}" class="hover:text-divine-gold transition-colors duration-300 flex items-center">
-                        <i class="fas fa-phone mr-1"></i>{{ __('messages.contact') }}
+                        {{ __('messages.contact') }}
                     </a>
                     <a href="{{ route('about') }}" class="hover:text-divine-gold transition-colors duration-300 flex items-center">
-                        <i class="fas fa-info-circle mr-1"></i>{{ __('messages.about') }}
+                        {{ __('messages.about') }}
                     </a>
                 </div>
 
@@ -218,6 +221,9 @@
                     <a href="{{ route('shop.index') }}" class="block px-3 py-2 text-white hover:text-divine-gold hover:bg-white/10 rounded-lg transition-colors duration-300">
                         <i class="fas fa-gem mr-2"></i>{{ __('messages.shop') }}
                     </a>
+                    <a href="/experts" class="block px-3 py-2 text-white hover:text-divine-gold hover:bg-white/10 rounded-lg transition-colors duration-300">
+                        <i class="fas fa-user-astronaut mr-2"></i>Experts
+                    </a>
                     <a href="{{ route('blogs.index') }}" class="block px-3 py-2 text-white hover:text-divine-gold hover:bg-white/10 rounded-lg transition-colors duration-300">
                         <i class="fas fa-scroll mr-2"></i>{{ __('messages.blogs') }}
                     </a>
@@ -311,12 +317,13 @@
                 </div>
                 <div>
                     <h4 class="font-bold mb-4 text-divine-gold flex items-center">
-                        <i class="fas fa-star-and-crescent mr-2"></i>{{ __('messages.services') }}
+                        {{ __('messages.services') }}
                     </h4>
                     <ul class="space-y-2 text-orange-100">
-                        <li><a href="{{ route('consultations.index') }}" class="hover:text-divine-gold transition-colors duration-300 flex items-center"><i class="fas fa-user-astronaut mr-2 text-xs"></i>{{ __('messages.consultations') }}</a></li>
-                        <li><a href="{{ route('kundli.index') }}" class="hover:text-divine-gold transition-colors duration-300 flex items-center"><i class="fas fa-chart-pie mr-2 text-xs"></i>{{ __('messages.kundli_reading') }}</a></li>
-                        <li><a href="{{ route('pooja.index') }}" class="hover:text-divine-gold transition-colors duration-300 flex items-center"><i class="fas fa-fire mr-2 text-xs"></i>{{ __('messages.pooja_rituals') }}</a></li>
+                        <li><a href="{{ route('consultations.index') }}" class="hover:text-divine-gold transition-colors duration-300 flex items-center">{{ __('messages.consultations') }}</a></li>
+                        <li><a href="{{ route('kundli.index') }}" class="hover:text-divine-gold transition-colors duration-300 flex items-center">{{ __('messages.kundli_reading') }}</a></li>
+                        <li><a href="{{ route('pooja.index') }}" class="hover:text-divine-gold transition-colors duration-300 flex items-center">{{ __('messages.pooja_rituals') }}</a></li>
+                        <li><a href="/experts" class="hover:text-divine-gold transition-colors duration-300 flex items-center">Our Experts</a></li>
                     </ul>
                 </div>
                 <div>

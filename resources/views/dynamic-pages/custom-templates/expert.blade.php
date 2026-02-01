@@ -156,19 +156,6 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <!-- Main Content -->
             <div class="lg:col-span-2 space-y-6">
-                <!-- About Section -->
-                @if($about)
-                <div class="bg-white rounded-lg shadow-md p-6">
-                    <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-                        <svg class="w-6 h-6 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                        </svg>
-                        About
-                    </h2>
-                    <div class="text-gray-700 leading-relaxed whitespace-pre-line">{!! $about !!}</div>
-                </div>
-                @endif
-
                 <!-- Expertise Section -->
                 @if(count($expertiseList) > 0)
                 <div class="bg-white rounded-lg shadow-md p-6">
@@ -183,6 +170,19 @@
                             <span class="bg-orange-100 text-orange-700 px-4 py-2 rounded-full text-sm font-medium">{{ $item }}</span>
                         @endforeach
                     </div>
+                </div>
+                @endif
+
+                <!-- About Section -->
+                @if($about)
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                        <svg class="w-6 h-6 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                        </svg>
+                        About
+                    </h2>
+                    <div class="text-gray-700 leading-relaxed whitespace-pre-line">{!! $about !!}</div>
                 </div>
                 @endif
 
@@ -205,6 +205,29 @@
                             </li>
                         @endforeach
                     </ul>
+                </div>
+                @endif
+
+                @if(!empty($availability) && count($availability) > 0)
+                <!-- Availability Calendar -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                        <svg class="w-6 h-6 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                        Check Online Availability
+                    </h2>
+                    <div class="grid grid-cols-2 gap-3">
+                        @foreach($availability as $item)
+                        <div class="text-center p-3 border rounded-lg {{ $item['is_available'] ? 'border-green-200 bg-green-50' : 'border-gray-200 bg-gray-50' }}">
+                            <div class="font-semibold text-gray-900 text-sm">{{ $item['date']->format('D') }}</div>
+                            <div class="text-xs text-gray-600 mb-1">({{ $item['date']->format('M j') }})</div>
+                            <div class="text-xs font-medium {{ $item['is_available'] ? 'text-green-600' : 'text-red-600' }}">
+                                {{ $item['is_available'] ? 'Available' : 'Not Available' }}
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
                 </div>
                 @endif
             </div>

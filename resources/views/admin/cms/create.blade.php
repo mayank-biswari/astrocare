@@ -68,6 +68,16 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
+                                    <label>Created By</label>
+                                    <select name="created_by" class="form-control select2">
+                                        @if(auth()->user())
+                                            <option value="{{ auth()->id() }}" selected>{{ auth()->user()->name }} ({{ auth()->user()->email }})</option>
+                                        @endif
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
                                     <label>Featured Image</label>
                                     <input type="file" name="image" class="form-control" accept="image/*">
                                 </div>
@@ -415,3 +425,32 @@ document.getElementById('pageTypeSelect').addEventListener('change', function() 
 
 </script>
 @endsection
+
+@push('scripts')
+<script>
+// Initialize Select2 with AJAX for user search
+$(document).ready(function() {
+    $('.select2').select2({
+        ajax: {
+            url: '{{ route('api.users.search') }}',
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    q: params.term
+                };
+            },
+            processResults: function (data) {
+                return {
+                    results: data.results
+                };
+            },
+            cache: true
+        },
+        placeholder: 'Search user by name or email...',
+        allowClear: true,
+        minimumInputLength: 2
+    });
+});
+</script>
+@endpush

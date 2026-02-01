@@ -10,7 +10,7 @@ class CmsPage extends Model
     protected $fillable = [
         'title', 'slug', 'body', 'image', 'meta_title', 'meta_description', 
         'meta_keywords', 'rating', 'rating_count', 'is_published', 'allow_comments', 
-        'cms_category_id', 'cms_page_type_id', 'custom_fields', 'language_code'
+        'cms_category_id', 'cms_page_type_id', 'custom_fields', 'language_code', 'created_by'
     ];
 
     protected $casts = [
@@ -43,6 +43,11 @@ class CmsPage extends Model
     public function product()
     {
         return $this->hasOne(CmsPageProduct::class);
+    }
+
+    public function createdBy()
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
 
     public function isProduct()

@@ -702,6 +702,7 @@ class AdminController extends Controller
             'cms_page_type_id' => $request->cms_page_type_id,
             'custom_fields' => $request->custom_fields,
             'language_code' => $request->language_code,
+            'created_by' => auth()->id(),
             'is_published' => $request->has('is_published'),
             'allow_comments' => $request->has('allow_comments')
         ];
@@ -752,7 +753,7 @@ class AdminController extends Controller
 
     public function editCmsPage($id)
     {
-        $page = \App\Models\CmsPage::with(['translations', 'product.variants'])->findOrFail($id);
+        $page = \App\Models\CmsPage::with(['translations', 'product.variants', 'createdBy'])->findOrFail($id);
         $categories = CmsCategory::where('is_active', true)->get();
         $pageTypes = CmsPageType::where('is_active', true)->get();
         $languages = Language::getActiveLanguages();
@@ -786,6 +787,7 @@ class AdminController extends Controller
             'cms_page_type_id' => $request->cms_page_type_id,
             'custom_fields' => $request->custom_fields,
             'language_code' => $request->language_code,
+            'created_by' => $request->created_by,
             'is_published' => $request->has('is_published'),
             'allow_comments' => $request->has('allow_comments')
         ];

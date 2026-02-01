@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\CmsPage;
 use App\Models\CmsComment;
 use App\Models\Language;
+use App\Models\ExpertAvailability;
+use Carbon\Carbon;
 
 class CmsController extends Controller
 {
@@ -59,15 +61,30 @@ class CmsController extends Controller
 
         $comments = $page->comments()->latest()->get();
         
+        // Get availability for next 7 days if this is an expert page
+        $availability = [];
+        if ($page->created_by) {
+            for ($i = 0; $i < 7; $i++) {
+                $date = Carbon::today()->addDays($i);
+                $avail = ExpertAvailability::where('user_id', $page->created_by)
+                    ->whereDate('date', $date->format('Y-m-d'))
+                    ->first();
+                $availability[] = [
+                    'date' => $date,
+                    'is_available' => $avail ? $avail->is_available : false
+                ];
+            }
+        }
+        
         // Check if page type has a custom template
         if ($page->pageType && $page->pageType->template) {
             $templatePath = 'dynamic-pages.custom-templates.' . str_replace('.blade.php', '', $page->pageType->template);
             if (view()->exists($templatePath)) {
-                return view($templatePath, compact('page', 'comments', 'languageCode'));
+                return view($templatePath, compact('page', 'comments', 'languageCode', 'availability'));
             }
         }
         
-        return view('cms.show', compact('page', 'comments', 'languageCode'));
+        return view('cms.show', compact('page', 'comments', 'languageCode', 'availability'));
     }
 
     public function testimonials(Request $request)

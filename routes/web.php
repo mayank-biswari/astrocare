@@ -117,6 +117,18 @@ Route::middleware('auth')->prefix('dashboard')->group(function () {
     Route::post('/order/{id}/cancel', [DashboardController::class, 'cancelOrder'])->name('dashboard.order.cancel');
 });
 
+// Expert Dashboard Routes
+Route::middleware('auth')->prefix('expert')->name('expert.')->group(function () {
+    Route::get('/', [App\Http\Controllers\ExpertDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/profile', [App\Http\Controllers\ExpertDashboardController::class, 'profile'])->name('profile');
+    Route::post('/profile', [App\Http\Controllers\ExpertDashboardController::class, 'updateProfile'])->name('profile.update');
+    Route::get('/chats', [App\Http\Controllers\ExpertDashboardController::class, 'chats'])->name('chats');
+    Route::get('/calls', [App\Http\Controllers\ExpertDashboardController::class, 'calls'])->name('calls');
+    Route::get('/availability', [App\Http\Controllers\ExpertDashboardController::class, 'availability'])->name('availability');
+    Route::post('/availability', [App\Http\Controllers\ExpertDashboardController::class, 'updateAvailability'])->name('availability.update');
+    Route::post('/status', [App\Http\Controllers\ExpertDashboardController::class, 'updateStatus'])->name('status.update');
+});
+
 // CMS Routes
 Route::prefix('pages')->group(function () {
     Route::get('/', [App\Http\Controllers\CmsController::class, 'index'])->name('cms.index');
@@ -139,6 +151,11 @@ Route::get('captcha/{config?}', '\Mews\Captcha\CaptchaController@getCaptcha')->n
 
 // Auth Routes - Load before dynamic pages
 require __DIR__.'/auth.php';
+
+// Admin API Routes
+Route::middleware(['auth', 'admin'])->prefix('api')->group(function () {
+    Route::get('/users/search', [App\Http\Controllers\Api\UserController::class, 'search'])->name('api.users.search');
+});
 
 // Dynamic List Pages
 Route::get('/view/{slug}', [App\Http\Controllers\CmsController::class, 'viewListPage'])->name('list.view');
@@ -191,6 +208,19 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/questions', [App\Http\Controllers\AdminController::class, 'questions'])->name('questions');
     Route::get('/questions/{id}/view', [App\Http\Controllers\AdminController::class, 'viewQuestion'])->name('questions.view');
     Route::put('/questions/{id}/status', [App\Http\Controllers\AdminController::class, 'updateQuestionStatus'])->name('questions.status');
+
+    // User Management
+    Route::prefix('user-management')->name('user-management.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\UserManagementController::class, 'index'])->name('index');
+        Route::get('/create', [App\Http\Controllers\Admin\UserManagementController::class, 'create'])->name('create');
+        Route::post('/', [App\Http\Controllers\Admin\UserManagementController::class, 'store'])->name('store');
+        Route::get('/{user}/edit', [App\Http\Controllers\Admin\UserManagementController::class, 'edit'])->name('edit');
+        Route::put('/{user}', [App\Http\Controllers\Admin\UserManagementController::class, 'update'])->name('update');
+        Route::delete('/{user}', [App\Http\Controllers\Admin\UserManagementController::class, 'destroy'])->name('destroy');
+        Route::get('/roles', [App\Http\Controllers\Admin\UserManagementController::class, 'roles'])->name('roles');
+        Route::post('/roles', [App\Http\Controllers\Admin\UserManagementController::class, 'storeRole'])->name('roles.store');
+        Route::delete('/roles/{role}', [App\Http\Controllers\Admin\UserManagementController::class, 'destroyRole'])->name('roles.destroy');
+    });
 
     // Users
     Route::get('/users', [App\Http\Controllers\AdminController::class, 'users'])->name('users');

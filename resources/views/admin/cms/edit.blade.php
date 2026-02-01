@@ -69,6 +69,16 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
+                                    <label>Created By</label>
+                                    <select name="created_by" class="form-control select2">
+                                        @if($page->createdBy)
+                                            <option value="{{ $page->created_by }}" selected data-text="{{ $page->createdBy->name }} ({{ $page->createdBy->email }})">{{ $page->createdBy->name }} ({{ $page->createdBy->email }})</option>
+                                        @endif
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
                                     <label>Slug</label>
                                     <input type="text" name="slug" class="form-control" value="{{ $page->slug }}">
                                     <small class="form-text text-muted">URL-friendly version of the title</small>
@@ -671,3 +681,39 @@ function removeVariant(button) {
 }
 </script>
 @endsection
+
+@push('scripts')
+<script>
+// Initialize Select2 with AJAX for user search
+$(document).ready(function() {
+    $('.select2').select2({
+        ajax: {
+            url: '{{ route('api.users.search') }}',
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    q: params.term
+                };
+            },
+            processResults: function (data) {
+                return {
+                    results: data.results
+                };
+            },
+            cache: true
+        },
+        placeholder: 'Search user by name or email...',
+        allowClear: true,
+        minimumInputLength: 2,
+        templateResult: function(user) {
+            if (user.loading) return user.text;
+            return $('<span>' + user.text + '</span>');
+        },
+        templateSelection: function(user) {
+            return user.text;
+        }
+    });
+});
+</script>
+@endpush
