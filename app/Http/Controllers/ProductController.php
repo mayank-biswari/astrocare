@@ -37,6 +37,76 @@ class ProductController extends Controller
 
     public function addToCart(Request $request)
     {
+        $productType = $request->input('product_type', 'product');
+
+        if ($productType === 'cms_page_variant') {
+            $request->validate([
+                'product_id' => 'required|exists:cms_pages,id',
+                'variant_id' => 'required|exists:cms_page_product_variants,id',
+                'quantity' => 'required|integer|min:1'
+            ]);
+
+            $page = \App\Models\CmsPage::with('product.variants')->findOrFail($request->product_id);
+            $variant = \App\Models\CmsPageProductVariant::findOrFail($request->variant_id);
+
+            if (!$variant->is_active || !$variant->isInStock()) {
+                return redirect()->back()->with('error', 'This option is currently unavailable!');
+            }
+
+            $cart = session()->get('cart', []);
+            $cart['cms_variant_' . $variant->id] = [
+                'type' => 'cms_page_variant',
+                'id' => $page->id,
+                'variant_id' => $variant->id,
+                'name' => $page->title . ' - ' . $variant->name,
+                'price' => $variant->getPriceForCurrency(),
+                'currency' => session('currency', \App\Models\Currency::getDefaultCurrency()->code),
+                'quantity' => $request->quantity,
+                'image' => $page->image,
+                'min_quantity' => $variant->min_quantity ?? 1,
+                'quantity_step' => $variant->quantity_step ?? 1,
+                'quantity_unit' => $variant->quantity_unit ?? 'item'
+            ];
+            session()->put('cart', $cart);
+
+            return redirect()->route('cart.index')->with('success', 'Added to cart!');
+        }
+
+        if ($productType === 'cms_page') {
+            $request->validate([
+                'product_id' => 'required|exists:cms_pages,id',
+                'quantity' => 'required|integer|min:1'
+            ]);
+
+            $page = \App\Models\CmsPage::with('product')->findOrFail($request->product_id);
+
+            if (!$page->product) {
+                return redirect()->back()->with('error', 'This page is not available for booking!');
+            }
+
+            if (!$page->product->isInStock()) {
+                return redirect()->back()->with('error', 'This service is currently out of stock!');
+            }
+
+            $cart = session()->get('cart', []);
+            $cart['cms_' . $page->id] = [
+                'type' => 'cms_page',
+                'id' => $page->id,
+                'name' => $page->title,
+                'price' => $page->product->getPriceForCurrency(),
+                'currency' => session('currency', \App\Models\Currency::getDefaultCurrency()->code),
+                'quantity' => $request->quantity,
+                'image' => $page->image,
+                'sku' => $page->product->sku,
+                'min_quantity' => $page->product->min_quantity ?? 1,
+                'quantity_step' => $page->product->quantity_step ?? 1,
+                'quantity_unit' => $page->product->quantity_unit ?? 'item'
+            ];
+            session()->put('cart', $cart);
+
+            return redirect()->route('cart.index')->with('success', 'Added to cart!');
+        }
+
         $request->validate([
             'product_id' => 'required|exists:products,id',
             'quantity' => 'required|integer|min:1'
@@ -47,6 +117,8 @@ class ProductController extends Controller
         // Store in session cart
         $cart = session()->get('cart', []);
         $cart[$product->id] = [
+            'type' => 'product',
+            'id' => $product->id,
             'name' => $product->name,
             'price' => $product->price,
             'quantity' => $request->quantity,
@@ -54,7 +126,7 @@ class ProductController extends Controller
         ];
         session()->put('cart', $cart);
 
-        return redirect()->back()->with('success', 'Product added to cart!');
+        return redirect()->route('cart.index')->with('success', 'Product added to cart!');
     }
 
     public function cart()
@@ -71,6 +143,39 @@ class ProductController extends Controller
             session()->put('cart', $cart);
         }
         return redirect()->route('cart.index')->with('success', 'Product removed from cart!');
+    }
+
+    public function updateCart(Request $request)
+    {
+        $cart = session()->get('cart', []);
+        $productId = $request->product_id;
+
+        if (isset($cart[$productId])) {
+            $step = $cart[$productId]['quantity_step'] ?? 1;
+            $minQty = $cart[$productId]['min_quantity'] ?? 1;
+
+            if ($request->action === 'increase') {
+                $cart[$productId]['quantity'] += $step;
+            } elseif ($request->action === 'decrease') {
+                $newQty = $cart[$productId]['quantity'] - $step;
+                if ($newQty >= $minQty) {
+                    $cart[$productId]['quantity'] = $newQty;
+                }
+            }
+            
+            // Update price if variant to ensure currency consistency
+            if (isset($cart[$productId]['type']) && $cart[$productId]['type'] === 'cms_page_variant' && isset($cart[$productId]['variant_id'])) {
+                $variant = \App\Models\CmsPageProductVariant::find($cart[$productId]['variant_id']);
+                if ($variant) {
+                    $cart[$productId]['price'] = $variant->getPriceForCurrency();
+                    $cart[$productId]['currency'] = session('currency', \App\Models\Currency::getDefaultCurrency()->code);
+                }
+            }
+            
+            session()->put('cart', $cart);
+        }
+
+        return redirect()->route('cart.index')->with('success', 'Cart updated!');
     }
 
     public function checkout(Request $request)

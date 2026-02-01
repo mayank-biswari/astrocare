@@ -16,9 +16,7 @@ class CheckDynamicPage
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $path = trim($request->path(), '/');
-
-        $path = $path ? $path : "<home>";
+        $path = trim($request->path(), '/') ?: "<home>";
 
         // Check if a dynamic page exists for this URL
         $dynamicPage = DynamicPage::where('url', $path)

@@ -1,30 +1,59 @@
-@extends('layouts.app')
-
-@section('title', 'Checkout - AstroServices')
-
-@section('content')
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - AstroServices</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'saffron': '#FF9933',
+                        'deep-saffron': '#FF6600',
+                        'temple-red': '#DC143C',
+                        'divine-gold': '#FFD700'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gradient-to-br from-orange-50 via-yellow-50 to-red-50">
+<div class="bg-gradient-to-r from-saffron via-deep-saffron to-temple-red shadow-lg mb-6">
+    <div class="container mx-auto px-4 py-4">
+        @if(\App\Models\SiteSetting::get('site_logo'))
+            <img src="{{ asset(\App\Models\SiteSetting::get('site_logo')) }}" alt="Logo" class="h-10 w-auto">
+        @else
+            <div class="text-2xl font-bold text-white flex items-center">
+                <span class="text-divine-gold mr-2">🕉️</span>AstroServices
+            </div>
+        @endif
+    </div>
+</div>
 <div class="container mx-auto px-4 py-8">
     <h1 class="text-3xl font-bold mb-8">Checkout</h1>
-    
+
     <div class="grid md:grid-cols-2 gap-8">
         <!-- Order Summary -->
         <div class="bg-white rounded-lg shadow-lg p-6">
             <h2 class="text-xl font-bold mb-4">Order Summary</h2>
-            
+
             @if(isset($product))
                 <!-- Single Product Checkout -->
                 <div class="flex items-center space-x-4 border-b pb-4 mb-4">
                     @if($product->image)
                         <img src="{{ asset($product->image) }}" alt="{{ $product->name }}" class="w-20 h-20 rounded object-cover">
                     @else
-                        <div class="w-20 h-20 bg-indigo-600 rounded flex items-center justify-center">
+                        <div class="w-20 h-20 bg-saffron rounded flex items-center justify-center">
                             <span class="text-white text-xs font-bold">{{ substr($product->name, 0, 3) }}</span>
                         </div>
                     @endif
                     <div>
                         <h3 class="font-bold">{{ $product->name }}</h3>
                         <p class="text-gray-600">Quantity: {{ request('quantity', 1) }}</p>
-                        <p class="text-indigo-600 font-bold">{{ formatPrice($product->price) }} each</p>
+                        <p class="text-saffron font-bold">{{ formatPrice($product->price) }} each</p>
                     </div>
                 </div>
                 <div class="text-right">
@@ -37,21 +66,35 @@
                     @php $cartTotal += $item['price'] * $item['quantity']; @endphp
                     <div class="flex items-center space-x-4 border-b pb-4 mb-4">
                         @if(isset($item['image']) && $item['image'])
-                            <img src="{{ asset($item['image']) }}" alt="{{ $item['name'] }}" class="w-20 h-20 rounded object-cover">
+                            <img src="{{ isset($item['type']) && in_array($item['type'], ['cms_page', 'cms_page_variant']) ? asset('storage/' . $item['image']) : asset($item['image']) }}" alt="{{ $item['name'] }}" class="w-20 h-20 rounded object-cover">
                         @else
-                            <div class="w-20 h-20 bg-indigo-600 rounded flex items-center justify-center">
+                            <div class="w-20 h-20 bg-saffron rounded flex items-center justify-center">
                                 <span class="text-white text-xs font-bold">{{ substr($item['name'], 0, 3) }}</span>
                             </div>
                         @endif
                         <div>
                             <h3 class="font-bold">{{ $item['name'] }}</h3>
                             <p class="text-gray-600">Quantity: {{ $item['quantity'] }}</p>
-                            <p class="text-indigo-600 font-bold">{{ formatPrice($item['price']) }} each</p>
+                            <p class="text-saffron font-bold">
+                                @if(isset($item['currency']) && $item['currency'] === currencyCode())
+                                    {{ currencySymbol() }}{{ number_format($item['price'], 2) }} each
+                                @else
+                                    {{ formatPrice($item['price']) }} each
+                                @endif
+                            </p>
                         </div>
                     </div>
                 @endforeach
                 <div class="text-right">
-                    <p class="text-2xl font-bold">Total: {{ formatPrice($cartTotal) }}</p>
+                    <p class="text-2xl font-bold">Total: 
+                        @php
+                            $displayTotal = 0;
+                            foreach($cart as $item) {
+                                $displayTotal += $item['price'] * $item['quantity'];
+                            }
+                        @endphp
+                        {{ currencySymbol() }}{{ number_format($displayTotal, 2) }}
+                    </p>
                 </div>
             @endif
         </div>
@@ -59,44 +102,44 @@
         <!-- Checkout Form -->
         <div class="bg-white rounded-lg shadow-lg p-6">
             <h2 class="text-xl font-bold mb-4">Shipping Details</h2>
-            
+
             <form action="{{ route('order.place') }}" method="POST" class="space-y-4">
                 @csrf
-                
+
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Full Name <span class="text-red-500">*</span></label>
                     <input type="text" name="name" value="{{ auth()->user()->name ?? '' }}" required
-                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-saffron">
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Email <span class="text-red-500">*</span></label>
                     <input type="email" name="email" value="{{ auth()->user()->email ?? '' }}" required
-                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-saffron">
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Phone <span class="text-red-500">*</span></label>
                     <input type="tel" name="phone" value="{{ auth()->user()->phone ?? '' }}" required
-                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-saffron">
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Address <span class="text-red-500">*</span></label>
                     <textarea name="address" rows="3" required
-                              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">{{ auth()->user()->address ?? '' }}</textarea>
+                              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-saffron">{{ auth()->user()->address ?? '' }}</textarea>
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">City <span class="text-red-500">*</span></label>
                         <input type="text" name="city" value="{{ auth()->user()->city ?? '' }}" required
-                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-saffron">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Pincode <span class="text-red-500">*</span></label>
                         <input type="text" name="pincode" value="{{ auth()->user()->pincode ?? '' }}" required
-                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-saffron">
                     </div>
                 </div>
 
@@ -125,11 +168,12 @@
                     </div>
                 </div>
 
-                <button type="submit" class="w-full bg-indigo-600 text-white py-3 px-6 rounded-lg font-bold hover:bg-indigo-700">
+                <button type="submit" class="w-full bg-gradient-to-r from-saffron to-deep-saffron text-white py-3 px-6 rounded-lg font-bold hover:from-deep-saffron hover:to-temple-red transition-all duration-300 shadow-lg">
                     Place Order
                 </button>
             </form>
         </div>
     </div>
 </div>
-@endsection
+</body>
+</html>

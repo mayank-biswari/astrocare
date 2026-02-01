@@ -668,7 +668,14 @@ class AdminController extends Controller
         $categories = CmsCategory::where('is_active', true)->get();
         $pageTypes = CmsPageType::where('is_active', true)->get();
         $languages = Language::getActiveLanguages();
-        return view('admin.cms.create', compact('categories', 'pageTypes', 'languages'));
+        $currencies = \App\Models\Currency::getActiveCurrencies();
+        return view('admin.cms.create', compact('categories', 'pageTypes', 'languages', 'currencies'));
+    }
+
+    public function checkPageTypeProductFields($id)
+    {
+        $pageType = CmsPageType::findOrFail($id);
+        return response()->json(['has_product_fields' => $pageType->has_product_fields]);
     }
 
     public function storeCmsPage(Request $request)
@@ -680,7 +687,9 @@ class AdminController extends Controller
             'meta_title' => 'nullable|string|max:255',
             'meta_description' => 'nullable|string|max:500',
             'meta_keywords' => 'nullable|string|max:255',
-            'language_code' => 'required|exists:languages,code'
+            'language_code' => 'required|exists:languages,code',
+            'product.price' => 'required_if:is_product,1|nullable|numeric|min:0',
+            'product.sku' => 'nullable|string|unique:cms_page_products,sku'
         ]);
 
         $data = [
@@ -693,6 +702,7 @@ class AdminController extends Controller
             'cms_page_type_id' => $request->cms_page_type_id,
             'custom_fields' => $request->custom_fields,
             'language_code' => $request->language_code,
+            'created_by' => auth()->id(),
             'is_published' => $request->has('is_published'),
             'allow_comments' => $request->has('allow_comments')
         ];
@@ -702,6 +712,25 @@ class AdminController extends Controller
         }
 
         $page = \App\Models\CmsPage::create($data);
+        
+        // Create product if page type has product fields enabled
+        if ($request->cms_page_type_id) {
+            $pageType = CmsPageType::find($request->cms_page_type_id);
+            if ($pageType && $pageType->has_product_fields && $request->product) {
+                $page->product()->create([
+                    'price' => $request->product['price'],
+                    'sale_price' => $request->product['sale_price'] ?? null,
+                    'currency_prices' => $request->product['currency_prices'] ?? null,
+                    'sku' => $request->product['sku'] ?? null,
+                    'stock_quantity' => $request->product['stock_quantity'] ?? 0,
+                    'min_quantity' => $request->product['min_quantity'] ?? 1,
+                    'quantity_step' => $request->product['quantity_step'] ?? 1,
+                    'quantity_unit' => $request->product['quantity_unit'] ?? 'item',
+                    'manage_stock' => $request->has('product.manage_stock'),
+                    'is_featured' => $request->has('product.is_featured')
+                ]);
+            }
+        }
         
         // Save translations for other languages
         if ($request->translations) {
@@ -724,11 +753,12 @@ class AdminController extends Controller
 
     public function editCmsPage($id)
     {
-        $page = \App\Models\CmsPage::with('translations')->findOrFail($id);
+        $page = \App\Models\CmsPage::with(['translations', 'product.variants', 'createdBy'])->findOrFail($id);
         $categories = CmsCategory::where('is_active', true)->get();
         $pageTypes = CmsPageType::where('is_active', true)->get();
         $languages = Language::getActiveLanguages();
-        return view('admin.cms.edit', compact('page', 'categories', 'pageTypes', 'languages'));
+        $currencies = \App\Models\Currency::getActiveCurrencies();
+        return view('admin.cms.edit', compact('page', 'categories', 'pageTypes', 'languages', 'currencies'));
     }
 
     public function updateCmsPage(Request $request, $id)
@@ -757,6 +787,7 @@ class AdminController extends Controller
             'cms_page_type_id' => $request->cms_page_type_id,
             'custom_fields' => $request->custom_fields,
             'language_code' => $request->language_code,
+            'created_by' => $request->created_by,
             'is_published' => $request->has('is_published'),
             'allow_comments' => $request->has('allow_comments')
         ];
@@ -775,6 +806,52 @@ class AdminController extends Controller
         }
 
         $page->update($data);
+        
+        // Update or create product if page type has product fields enabled
+        if ($request->cms_page_type_id) {
+            $pageType = CmsPageType::find($request->cms_page_type_id);
+            if ($pageType && $pageType->has_product_fields && $request->product) {
+                $product = $page->product()->updateOrCreate(
+                    ['cms_page_id' => $page->id],
+                    [
+                        'price' => $request->product['price'],
+                        'sale_price' => $request->product['sale_price'] ?? null,
+                        'currency_prices' => $request->product['currency_prices'] ?? null,
+                        'sku' => $request->product['sku'] ?? null,
+                        'stock_quantity' => $request->product['stock_quantity'] ?? 0,
+                        'min_quantity' => $request->product['min_quantity'] ?? 1,
+                        'quantity_step' => $request->product['quantity_step'] ?? 1,
+                        'quantity_unit' => $request->product['quantity_unit'] ?? 'item',
+                        'manage_stock' => $request->has('product.manage_stock'),
+                        'is_featured' => $request->has('product.is_featured')
+                    ]
+                );
+                
+                // Handle variants
+                if ($request->variants) {
+                    $existingVariantIds = [];
+                    foreach ($request->variants as $variantData) {
+                        $variant = $product->variants()->updateOrCreate(
+                            ['id' => $variantData['id'] ?? null],
+                            [
+                                'name' => $variantData['name'],
+                                'price' => $variantData['price'],
+                                'sale_price' => $variantData['sale_price'] ?? null,
+                                'currency_prices' => $variantData['currency_prices'] ?? null,
+                                'stock_quantity' => $variantData['stock_quantity'] ?? 0,
+                                'min_quantity' => $variantData['min_quantity'] ?? 1,
+                                'quantity_step' => $variantData['quantity_step'] ?? 1,
+                                'quantity_unit' => $variantData['quantity_unit'] ?? 'min',
+                                'is_active' => isset($variantData['is_active'])
+                            ]
+                        );
+                        $existingVariantIds[] = $variant->id;
+                    }
+                    // Delete variants that were removed
+                    $product->variants()->whereNotIn('id', $existingVariantIds)->delete();
+                }
+            }
+        }
         
         // Update translations
         $page->translations()->delete();
@@ -906,22 +983,35 @@ class AdminController extends Controller
                     $customField['options'] = array_map('trim', explode(',', $field['options']));
                 }
                 
+                if ($field['type'] === 'number') {
+                    if (isset($field['min']) && $field['min'] !== '') $customField['min'] = $field['min'];
+                    if (isset($field['max']) && $field['max'] !== '') $customField['max'] = $field['max'];
+                    if (isset($field['step']) && $field['step'] !== '') $customField['step'] = $field['step'];
+                }
+                
+                if ($field['type'] === 'image') {
+                    $customField['multiple'] = (bool)($field['multiple'] ?? false);
+                    $customField['max_size'] = $field['max_size'] ?? 2;
+                    $customField['max_images'] = $field['max_images'] ?? 5;
+                    $customField['allowed_types'] = $field['allowed_types'] ?? ['jpg', 'png'];
+                }
+                
                 $customFields[] = $customField;
             }
         }
 
-        $fieldsConfig = [
-            'show_comments' => $request->has('fields_config.show_comments'),
-            'show_posted_date' => $request->has('fields_config.show_posted_date'),
-            'show_author' => $request->has('fields_config.show_author'),
-            'show_rating' => $request->has('fields_config.show_rating'),
-            'custom_fields' => $customFields
-        ];
-
         CmsPageType::create([
             'name' => $request->name,
             'description' => $request->description,
-            'fields_config' => $fieldsConfig,
+            'template' => $request->template,
+            'has_product_fields' => $request->has('has_product_fields'),
+            'fields_config' => [
+                'show_comments' => $request->has('fields_config.show_comments'),
+                'show_posted_date' => $request->has('fields_config.show_posted_date'),
+                'show_author' => $request->has('fields_config.show_author'),
+                'show_rating' => $request->has('fields_config.show_rating'),
+                'custom_fields' => $customFields
+            ],
             'is_active' => $request->has('is_active')
         ]);
 
@@ -957,6 +1047,19 @@ class AdminController extends Controller
                     $customField['options'] = array_map('trim', explode(',', $field['options']));
                 }
                 
+                if ($field['type'] === 'number') {
+                    if (isset($field['min']) && $field['min'] !== '') $customField['min'] = $field['min'];
+                    if (isset($field['max']) && $field['max'] !== '') $customField['max'] = $field['max'];
+                    if (isset($field['step']) && $field['step'] !== '') $customField['step'] = $field['step'];
+                }
+                
+                if ($field['type'] === 'image') {
+                    $customField['multiple'] = (bool)($field['multiple'] ?? false);
+                    $customField['max_size'] = $field['max_size'] ?? 2;
+                    $customField['max_images'] = $field['max_images'] ?? 5;
+                    $customField['allowed_types'] = $field['allowed_types'] ?? ['jpg', 'png'];
+                }
+                
                 $customFields[] = $customField;
             }
         }
@@ -972,6 +1075,8 @@ class AdminController extends Controller
         $pageType->update([
             'name' => $request->name,
             'description' => $request->description,
+            'template' => $request->template,
+            'has_product_fields' => $request->has('has_product_fields'),
             'fields_config' => $fieldsConfig,
             'is_active' => $request->has('is_active')
         ]);

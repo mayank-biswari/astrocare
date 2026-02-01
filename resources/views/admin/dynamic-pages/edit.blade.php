@@ -3,7 +3,7 @@
 @section('title', 'Edit Dynamic Page')
 
 @section('content')
-<div class="content-wrapper">
+<div class="content-fluid">
     <div class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">
@@ -19,7 +19,7 @@
             <form method="POST" action="{{ route('admin.dynamic-pages.update', $page) }}">
                 @csrf
                 @method('PUT')
-                
+
                 <div class="card">
                     <div class="card-header">
                         <h3 class="card-title">Page Information</h3>
@@ -150,6 +150,27 @@
                                         <div class="form-group list-field" style="{{ ($section['type'] ?? '') === 'html' ? 'display: none;' : '' }}">
                                             <label>Columns/Limit</label>
                                             <input type="number" name="sections[{{ $index }}][limit]" class="form-control" value="{{ $section['limit'] ?? 12 }}" min="1">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group list-field" style="{{ ($section['type'] ?? '') === 'html' ? 'display: none;' : '' }}">
+                                            <div class="custom-control custom-checkbox mt-4">
+                                                <input class="custom-control-input" type="checkbox" id="show_pagination_{{ $index }}" name="sections[{{ $index }}][show_pagination]" {{ ($section['show_pagination'] ?? false) ? 'checked' : '' }}>
+                                                <label for="show_pagination_{{ $index }}" class="custom-control-label">Pagination</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group list-field" style="{{ ($section['type'] ?? '') === 'html' ? 'display: none;' : '' }}">
+                                            <label>Per Page</label>
+                                            <select name="sections[{{ $index }}][items_per_page]" class="form-control">
+                                                <option value="6" {{ ($section['items_per_page'] ?? 12) == 6 ? 'selected' : '' }}>6</option>
+                                                <option value="9" {{ ($section['items_per_page'] ?? 12) == 9 ? 'selected' : '' }}>9</option>
+                                                <option value="12" {{ ($section['items_per_page'] ?? 12) == 12 ? 'selected' : '' }}>12</option>
+                                                <option value="18" {{ ($section['items_per_page'] ?? 12) == 18 ? 'selected' : '' }}>18</option>
+                                                <option value="24" {{ ($section['items_per_page'] ?? 12) == 24 ? 'selected' : '' }}>24</option>
+                                                <option value="50" {{ ($section['items_per_page'] ?? 12) == 50 ? 'selected' : '' }}>50</option>
+                                            </select>
                                         </div>
                                     </div>
                                     <div class="col-md-1">
@@ -451,11 +472,11 @@ document.addEventListener('click', function(e) {
     if (e.target.classList.contains('remove-section') || e.target.closest('.remove-section')) {
         e.target.closest('.section-item').remove();
     }
-    
+
     if (e.target.classList.contains('add-section-before')) {
         addSectionAt(e.target.closest('.section-item'), 'before');
     }
-    
+
     if (e.target.classList.contains('add-section-after')) {
         addSectionAt(e.target.closest('.section-item'), 'after');
     }
@@ -586,7 +607,7 @@ document.addEventListener('change', function(e) {
         const listFields = section.querySelectorAll('.list-field');
         const htmlField = section.querySelector('.html-field');
         const sliderOptions = section.querySelector('.slider-options');
-        
+
         if (e.target.value === 'html') {
             listFields.forEach(field => field.style.display = 'none');
             htmlField.style.display = 'block';
@@ -606,12 +627,12 @@ document.addEventListener('change', function(e) {
             }
         }
     }
-    
+
     if (e.target.classList.contains('layout-select')) {
         const section = e.target.closest('.section-item');
         const sliderOptions = section.querySelector('.slider-options');
         const sectionType = section.querySelector('.section-type');
-        
+
         if (e.target.value === 'slider' && sectionType.value === 'list') {
             sliderOptions.style.display = 'block';
         } else {
@@ -634,7 +655,7 @@ document.addEventListener('click', function(e) {
         `;
         container.insertAdjacentHTML('beforeend', newField);
     }
-    
+
     if (e.target.classList.contains('add-js-file')) {
         const container = document.getElementById('js-files-container');
         const newField = `
@@ -647,7 +668,7 @@ document.addEventListener('click', function(e) {
         `;
         container.insertAdjacentHTML('beforeend', newField);
     }
-    
+
     if (e.target.classList.contains('remove-css-file') || e.target.classList.contains('remove-js-file')) {
         e.target.closest('.input-group').remove();
     }

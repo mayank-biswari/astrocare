@@ -214,6 +214,25 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
+                                    <label>Template Name</label>
+                                    <input type="text" name="template_name" class="form-control" value="{{ $list->template_name }}" placeholder="e.g., Active Hero Pages">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Template Category</label>
+                                    <select name="template_category" class="form-control">
+                                        <option value="">Select Category</option>
+                                        <option value="hero" {{ $list->template_category == 'hero' ? 'selected' : '' }}>Hero Section</option>
+                                        <option value="grid" {{ $list->template_category == 'grid' ? 'selected' : '' }}>Grid Layout</option>
+                                        <option value="list" {{ $list->template_category == 'list' ? 'selected' : '' }}>List Layout</option>
+                                        <option value="carousel" {{ $list->template_category == 'carousel' ? 'selected' : '' }}>Carousel</option>
+                                        <option value="featured" {{ $list->template_category == 'featured' ? 'selected' : '' }}>Featured Items</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
                                     <label>Items per Page</label>
                                     <select name="items_per_page" class="form-control">
                                         <option value="6" {{ $list->items_per_page == 6 ? 'selected' : '' }}>6 items</option>

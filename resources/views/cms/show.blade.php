@@ -51,6 +51,24 @@
         <div class="prose max-w-none mb-12">
             {!! $page->body !!}
         </div>
+        
+        @if(!empty($availability) && count($availability) > 0)
+        <!-- Availability Section -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-12">
+            <h3 class="text-2xl font-bold mb-6">Check Online Availability</h3>
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
+                @foreach($availability as $item)
+                <div class="text-center p-4 border rounded-lg {{ $item['is_available'] ? 'border-green-200 bg-green-50' : 'border-gray-200 bg-gray-50' }}">
+                    <div class="font-semibold text-gray-900 mb-1">{{ $item['date']->format('l') }}</div>
+                    <div class="text-sm text-gray-600 mb-2">({{ $item['date']->format('F j') }})</div>
+                    <div class="text-sm font-medium {{ $item['is_available'] ? 'text-green-600' : 'text-red-600' }}">
+                        {{ $item['is_available'] ? 'Available' : 'Not Available' }}
+                    </div>
+                </div>
+                @endforeach
+            </div>
+        </div>
+        @endif
     </article>
     
     @if($page->pageType && $page->pageType->fields_config['show_comments'] ?? $page->allow_comments)

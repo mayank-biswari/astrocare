@@ -77,6 +77,19 @@
             <h3 class="text-base sm:text-lg font-bold mb-1 sm:mb-2 text-gray-800">{{ __('messages.account_settings') }}</h3>
             <p class="text-gray-600 text-xs sm:text-sm">{{ __('messages.settings_desc') }}</p>
         </a>
+
+        @if(auth()->user()->hasRole('expert'))
+        <a href="{{ route('expert.dashboard') }}" class="group border border-gray-200 p-4 sm:p-6 rounded-lg hover:shadow-md transition">
+            <div class="flex items-center justify-between mb-3 sm:mb-4">
+                <div class="w-10 h-10 sm:w-12 sm:h-12 bg-indigo-100 rounded-lg flex items-center justify-center text-indigo-600 text-lg sm:text-xl group-hover:bg-indigo-600 group-hover:text-white transition">
+                    <i class="fas fa-star"></i>
+                </div>
+                <i class="fas fa-arrow-right text-gray-400 group-hover:text-indigo-600 transition"></i>
+            </div>
+            <h3 class="text-base sm:text-lg font-bold mb-1 sm:mb-2 text-gray-800">Expert Dashboard</h3>
+            <p class="text-gray-600 text-xs sm:text-sm">Manage your astrologer profile and consultations</p>
+        </a>
+        @endif
     </div>
 </div>
 @endsection
