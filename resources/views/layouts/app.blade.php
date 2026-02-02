@@ -48,7 +48,7 @@
     <!-- Navigation -->
     <nav class="gradient-bg text-white shadow-lg om-shadow">
         <div class="container mx-auto px-4">
-            <div class="flex justify-between items-center py-4 lg:gap-24">
+            <div class="flex justify-between items-center py-4 lg:gap-16">
                 <!-- Logo -->
                 <div class="flex items-center lg:flex-1">
                     <a href="{{ route('home') }}" class="flex items-center space-x-2 lg:ml-0 absolute left-1/2 transform -translate-x-1/2 lg:static lg:transform-none">
