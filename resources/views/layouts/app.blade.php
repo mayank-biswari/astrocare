@@ -194,13 +194,13 @@
             <div id="mobile-menu" class="lg:hidden hidden bg-gradient-to-r from-deep-saffron to-temple-red border-t border-divine-gold/30">
                 <div class="px-2 pt-2 pb-3 space-y-1">
                     <a href="{{ route('home') }}" class="block px-3 py-2 text-white hover:text-divine-gold hover:bg-white/10 rounded-lg transition-colors duration-300">
-                        <i class="fas fa-home mr-2"></i>{{ __('messages.home') }}
+                        {{ __('messages.home') }}
                     </a>
 
                     <!-- Mobile Services Dropdown -->
                     <div class="block">
                         <button onclick="toggleMobileServices()" class="w-full text-left px-3 py-2 text-white hover:text-divine-gold hover:bg-white/10 rounded-lg flex items-center justify-between transition-colors duration-300">
-                            <span><i class="fas fa-star-and-crescent mr-2"></i>{{ __('messages.services') }}</span>
+                            <span>{{ __('messages.services') }}</span>
                             <svg id="mobile-services-icon" class="w-4 h-4 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                             </svg>
@@ -216,25 +216,25 @@
                     </div>
 
                     <a href="{{ route('pooja.index') }}" class="block px-3 py-2 text-white hover:text-divine-gold hover:bg-white/10 rounded-lg transition-colors duration-300">
-                        <i class="fas fa-fire mr-2"></i>{{ __('messages.pooja_rituals') }}
+                        {{ __('messages.pooja_rituals') }}
                     </a>
                     <a href="{{ route('shop.index') }}" class="block px-3 py-2 text-white hover:text-divine-gold hover:bg-white/10 rounded-lg transition-colors duration-300">
-                        <i class="fas fa-gem mr-2"></i>{{ __('messages.shop') }}
+                        {{ __('messages.shop') }}
                     </a>
                     <a href="/experts" class="block px-3 py-2 text-white hover:text-divine-gold hover:bg-white/10 rounded-lg transition-colors duration-300">
-                        <i class="fas fa-user-astronaut mr-2"></i>Experts
+                        Experts
                     </a>
                     <a href="{{ route('blogs.index') }}" class="block px-3 py-2 text-white hover:text-divine-gold hover:bg-white/10 rounded-lg transition-colors duration-300">
-                        <i class="fas fa-scroll mr-2"></i>{{ __('messages.blogs') }}
+                        {{ __('messages.blogs') }}
                     </a>
                     <a href="{{ route('testimonials') }}" class="block px-3 py-2 text-white hover:text-divine-gold hover:bg-white/10 rounded-lg transition-colors duration-300">
-                        <i class="fas fa-quote-left mr-2"></i>{{ __('messages.testimonials') }}
+                        {{ __('messages.testimonials') }}
                     </a>
                     <a href="{{ route('contact') }}" class="block px-3 py-2 text-white hover:text-divine-gold hover:bg-white/10 rounded-lg transition-colors duration-300">
-                        <i class="fas fa-phone mr-2"></i>{{ __('messages.contact') }}
+                        {{ __('messages.contact') }}
                     </a>
                     <a href="{{ route('about') }}" class="block px-3 py-2 text-white hover:text-divine-gold hover:bg-white/10 rounded-lg transition-colors duration-300">
-                        <i class="fas fa-info-circle mr-2"></i>{{ __('messages.about') }}
+                        {{ __('messages.about') }}
                     </a>
 
                     <hr class="border-divine-gold/30 my-2">
