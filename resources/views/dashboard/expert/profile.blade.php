@@ -41,10 +41,6 @@
                 <input type="text" name="title" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500" value="{{ $page->title ?? auth()->user()->name }}" required>
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Title/Designation *</label>
-                <input type="text" name="custom_fields[title]" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500" value="{{ $page->custom_fields['title'] ?? '' }}" placeholder="e.g., Vedic Astrologer" required>
-            </div>
-            <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Profile Page Image *</label>
                 @if($page && $page->image)
                     <div class="mb-2">
@@ -52,6 +48,21 @@
                     </div>
                 @endif
                 <input type="file" name="image" class="w-full px-4 py-2 border border-gray-300 rounded-lg" accept="image/*" {{ !$page || !$page->image ? 'required' : '' }}>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">About Me *</label>
+                <div id="editor" style="height: 300px;"></div>
+                <textarea name="body" id="body-content" style="display: none;" required>{{ $page->body ?? '' }}</textarea>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-sm p-4 sm:p-6 mb-4">
+        <h2 class="text-lg sm:text-xl font-bold mb-4">Professional Details</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Title/Designation *</label>
+                <input type="text" name="custom_fields[title]" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500" value="{{ $page->custom_fields['title'] ?? '' }}" placeholder="e.g., Vedic Astrologer" required>
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
@@ -62,7 +73,7 @@
                 </select>
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Rating</label>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Rating (1-5)</label>
                 <input type="number" name="custom_fields[rating]" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500" value="{{ $page->custom_fields['rating'] ?? '' }}" min="0" max="5" step="0.1">
             </div>
             <div>
@@ -85,38 +96,29 @@
                 <label class="block text-sm font-medium text-gray-700 mb-2">Education</label>
                 <input type="text" name="custom_fields[education]" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500" value="{{ $page->custom_fields['education'] ?? '' }}" placeholder="e.g., PhD in Astrology">
             </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">About Me *</label>
-                <div id="editor" style="height: 300px;"></div>
-                <textarea name="body" id="body-content" style="display: none;" required>{{ $page->body ?? '' }}</textarea>
-            </div>
+            @if($pageType && $pageType->fields_config['custom_fields'])
+                @foreach($pageType->fields_config['custom_fields'] as $field)
+                    @if(!in_array($field['name'], ['title', 'status', 'rating', 'experience', 'languages', 'consultations', 'expertise', 'education', 'call_rate', 'chat_rate']))
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">{{ $field['label'] }}{{ $field['required'] ? ' *' : '' }}</label>
+                        @if($field['type'] === 'select')
+                            <select name="custom_fields[{{ $field['name'] }}]" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500" {{ $field['required'] ? 'required' : '' }}>
+                                <option value="">Select...</option>
+                                @foreach($field['options'] as $option)
+                                    <option value="{{ $option }}" {{ ($page->custom_fields[$field['name']] ?? '') == $option ? 'selected' : '' }}>{{ $option }}</option>
+                                @endforeach
+                            </select>
+                        @elseif($field['type'] === 'textarea')
+                            <textarea name="custom_fields[{{ $field['name'] }}]" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500" rows="3" {{ $field['required'] ? 'required' : '' }}>{{ $page->custom_fields[$field['name']] ?? '' }}</textarea>
+                        @else
+                            <input type="{{ $field['type'] }}" name="custom_fields[{{ $field['name'] }}]" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500" value="{{ $page->custom_fields[$field['name']] ?? '' }}" {{ $field['required'] ? 'required' : '' }}>
+                        @endif
+                    </div>
+                    @endif
+                @endforeach
+            @endif
         </div>
     </div>
-
-    @if($pageType && $pageType->fields_config['custom_fields'])
-    <div class="bg-white rounded-lg shadow-sm p-4 sm:p-6 mb-4">
-        <h2 class="text-lg sm:text-xl font-bold mb-4">Professional Details</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            @foreach($pageType->fields_config['custom_fields'] as $field)
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">{{ $field['label'] }}{{ $field['required'] ? ' *' : '' }}</label>
-                @if($field['type'] === 'select')
-                    <select name="custom_fields[{{ $field['name'] }}]" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500" {{ $field['required'] ? 'required' : '' }}>
-                        <option value="">Select...</option>
-                        @foreach($field['options'] as $option)
-                            <option value="{{ $option }}" {{ ($page->custom_fields[$field['name']] ?? '') == $option ? 'selected' : '' }}>{{ $option }}</option>
-                        @endforeach
-                    </select>
-                @elseif($field['type'] === 'textarea')
-                    <textarea name="custom_fields[{{ $field['name'] }}]" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500" rows="3" {{ $field['required'] ? 'required' : '' }}>{{ $page->custom_fields[$field['name']] ?? '' }}</textarea>
-                @else
-                    <input type="{{ $field['type'] }}" name="custom_fields[{{ $field['name'] }}]" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500" value="{{ $page->custom_fields[$field['name']] ?? '' }}" {{ $field['required'] ? 'required' : '' }}>
-                @endif
-            </div>
-            @endforeach
-        </div>
-    </div>
-    @endif
 
     <div class="bg-white rounded-lg shadow-sm p-4 sm:p-6 mb-4">
         <h2 class="text-lg sm:text-xl font-bold mb-4">Service Pricing</h2>

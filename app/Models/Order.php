@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Order extends Model
 {
     protected $fillable = [
-        'user_id', 'order_number', 'total_amount', 'currency', 'status', 'items',
+        'user_id', 'orderable_type', 'orderable_id', 'order_number', 'total_amount', 'currency', 'status', 'items',
         'shipping_address', 'payment_method', 'payment_status', 'shipped_at', 'delivered_at'
     ];
 
@@ -22,5 +22,10 @@ class Order extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function orderable()
+    {
+        return $this->morphTo();
     }
 }

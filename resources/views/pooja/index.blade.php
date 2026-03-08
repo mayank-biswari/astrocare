@@ -16,12 +16,14 @@
         <h2 class="text-3xl font-bold mb-8">Temple Pooja Booking</h2>
         <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             @foreach($poojas->where('category', 'temple') as $pooja)
-            <div class="bg-white p-6 rounded-lg shadow-lg text-center">
-                <div class="text-4xl mb-4">{{ $pooja->icon }}</div>
-                <h3 class="text-xl font-bold mb-4">{{ $pooja->name }}</h3>
-                <p class="text-gray-600 mb-4">{{ Str::limit($pooja->description, 50) }}</p>
+            <div class="bg-white p-6 rounded-lg shadow-lg text-center hover:shadow-xl transition">
+                @if($pooja->image)
+                <img src="{{ asset('storage/' . $pooja->image) }}" alt="{{ $pooja->title }}" class="w-full h-40 object-cover rounded-lg mb-4">
+                @endif
+                <h3 class="text-xl font-bold mb-4">{{ $pooja->title }}</h3>
+                <p class="text-gray-600 mb-4">{{ Str::limit($pooja->body, 80) }}</p>
                 <div class="text-2xl font-bold text-orange-600 mb-4">{{ formatPrice($pooja->price) }}</div>
-                <a href="{{ route('pooja.show', $pooja->slug) }}" class="bg-indigo-600 text-white px-6 py-2 rounded hover:bg-indigo-700 w-full block text-center">View Details</a>
+                <a href="/pages/{{ $pooja->slug }}" class="bg-orange-600 text-white px-6 py-2 rounded hover:bg-orange-700 inline-block">View Details</a>
             </div>
             @endforeach
         </div>
@@ -64,50 +66,14 @@
     <section class="mb-16">
         <h2 class="text-3xl font-bold mb-8">Jaap & Homam</h2>
         <div class="grid md:grid-cols-2 gap-8">
-            <div class="bg-white p-6 rounded-lg shadow-lg">
-                <h3 class="text-xl font-bold mb-4">Maha Mrityunjay Jaap</h3>
-                <p class="text-gray-600 mb-4">Powerful mantra chanting for health, longevity, and protection from negative energies.</p>
-                <div class="text-2xl font-bold text-orange-600 mb-4">{{ formatPrice(2100) }}</div>
-                <ul class="text-sm text-gray-600 mb-4">
-                    <li>• 1,25,000 mantra chanting</li>
-                    <li>• Duration: 11 days</li>
-                    <li>• Includes havan and prasad</li>
-                </ul>
-                <button class="bg-orange-600 text-white px-6 py-2 rounded hover:bg-orange-700 w-full">Book Now</button>
+            @foreach($poojas->where('category', 'jaap') as $pooja)
+            <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition">
+                <h3 class="text-xl font-bold mb-4">{{ $pooja->title }}</h3>
+                <p class="text-gray-600 mb-4">{{ Str::limit($pooja->body, 120) }}</p>
+                <div class="text-2xl font-bold text-orange-600 mb-4">{{ formatPrice($pooja->price) }}</div>
+                <a href="/pages/{{ $pooja->slug }}" class="bg-orange-600 text-white px-6 py-2 rounded hover:bg-orange-700 inline-block">Book Now</a>
             </div>
-            <div class="bg-white p-6 rounded-lg shadow-lg">
-                <h3 class="text-xl font-bold mb-4">Kaal Sarp Dosh Puja</h3>
-                <p class="text-gray-600 mb-4">Special ritual to neutralize the negative effects of Kaal Sarp Dosha in your horoscope.</p>
-                <div class="text-2xl font-bold text-orange-600 mb-4">{{ formatPrice(3100) }}</div>
-                <ul class="text-sm text-gray-600 mb-4">
-                    <li>• Complete Kaal Sarp Dosh nivaran</li>
-                    <li>• Rudrabhishek included</li>
-                    <li>• Energized rudraksha provided</li>
-                </ul>
-                <button class="bg-orange-600 text-white px-6 py-2 rounded hover:bg-orange-700 w-full">Book Now</button>
-            </div>
-            <div class="bg-white p-6 rounded-lg shadow-lg">
-                <h3 class="text-xl font-bold mb-4">Navgraha Shanti</h3>
-                <p class="text-gray-600 mb-4">Comprehensive ritual to appease all nine planets and reduce their malefic effects.</p>
-                <div class="text-2xl font-bold text-orange-600 mb-4">{{ formatPrice(5100) }}</div>
-                <ul class="text-sm text-gray-600 mb-4">
-                    <li>• All 9 planetary mantras</li>
-                    <li>• Havan for each planet</li>
-                    <li>• Gemstone recommendations</li>
-                </ul>
-                <button class="bg-orange-600 text-white px-6 py-2 rounded hover:bg-orange-700 w-full">Book Now</button>
-            </div>
-            <div class="bg-white p-6 rounded-lg shadow-lg">
-                <h3 class="text-xl font-bold mb-4">Lakshmi Pooja</h3>
-                <p class="text-gray-600 mb-4">Special worship of Goddess Lakshmi for wealth, prosperity, and financial stability.</p>
-                <div class="text-2xl font-bold text-orange-600 mb-4">{{ formatPrice(2100) }}</div>
-                <ul class="text-sm text-gray-600 mb-4">
-                    <li>• Lakshmi mantra chanting</li>
-                    <li>• Gold coin offering</li>
-                    <li>• Prosperity yantra energized</li>
-                </ul>
-                <button class="bg-orange-600 text-white px-6 py-2 rounded hover:bg-orange-700 w-full">Book Now</button>
-            </div>
+            @endforeach
         </div>
     </section>
 
@@ -115,36 +81,13 @@
     <section class="mb-16">
         <h2 class="text-3xl font-bold mb-8">Special Occasion Pooja</h2>
         <div class="grid md:grid-cols-5 gap-6">
-            <div class="bg-white p-6 rounded-lg shadow-lg text-center">
-                <div class="text-3xl mb-3">🏥</div>
-                <h4 class="font-bold mb-2">Health</h4>
-                <p class="text-sm text-gray-600 mb-4">Healing rituals and health-focused poojas</p>
-                <button class="bg-orange-600 text-white px-4 py-2 rounded hover:bg-orange-700 text-sm">Explore</button>
+            @foreach($poojas->where('category', 'special') as $pooja)
+            <div class="bg-white p-6 rounded-lg shadow-lg text-center hover:shadow-xl transition">
+                <h4 class="font-bold mb-2">{{ $pooja->title }}</h4>
+                <p class="text-sm text-gray-600 mb-4">{{ Str::limit($pooja->body, 60) }}</p>
+                <a href="/pages/{{ $pooja->slug }}" class="bg-orange-600 text-white px-4 py-2 rounded hover:bg-orange-700 text-sm inline-block">Explore</a>
             </div>
-            <div class="bg-white p-6 rounded-lg shadow-lg text-center">
-                <div class="text-3xl mb-3">💒</div>
-                <h4 class="font-bold mb-2">Marriage</h4>
-                <p class="text-sm text-gray-600 mb-4">Wedding ceremonies and marriage blessings</p>
-                <button class="bg-orange-600 text-white px-4 py-2 rounded hover:bg-orange-700 text-sm">Explore</button>
-            </div>
-            <div class="bg-white p-6 rounded-lg shadow-lg text-center">
-                <div class="text-3xl mb-3">💰</div>
-                <h4 class="font-bold mb-2">Wealth</h4>
-                <p class="text-sm text-gray-600 mb-4">Prosperity and financial growth rituals</p>
-                <button class="bg-orange-600 text-white px-4 py-2 rounded hover:bg-orange-700 text-sm">Explore</button>
-            </div>
-            <div class="bg-white p-6 rounded-lg shadow-lg text-center">
-                <div class="text-3xl mb-3">📚</div>
-                <h4 class="font-bold mb-2">Education</h4>
-                <p class="text-sm text-gray-600 mb-4">Academic success and knowledge enhancement</p>
-                <button class="bg-orange-600 text-white px-4 py-2 rounded hover:bg-orange-700 text-sm">Explore</button>
-            </div>
-            <div class="bg-white p-6 rounded-lg shadow-lg text-center">
-                <div class="text-3xl mb-3">☮️</div>
-                <h4 class="font-bold mb-2">Peace</h4>
-                <p class="text-sm text-gray-600 mb-4">Harmony and spiritual peace rituals</p>
-                <button class="bg-orange-600 text-white px-4 py-2 rounded hover:bg-orange-700 text-sm">Explore</button>
-            </div>
+            @endforeach
         </div>
     </section>
 

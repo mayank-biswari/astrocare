@@ -78,7 +78,11 @@ class DashboardController extends Controller
             $query->where('status', $request->status);
         }
 
-        $orders = $query->latest()->get();
+        if ($request->payment_status && $request->payment_status !== 'all') {
+            $query->where('payment_status', $request->payment_status);
+        }
+
+        $orders = $query->latest()->paginate(10);
         return view('dashboard.orders', compact('orders'));
     }
 
@@ -425,6 +429,10 @@ class DashboardController extends Controller
     public function poojaDetails($id)
     {
         $pooja = auth()->user()->poojas()->findOrFail($id);
-        return view('dashboard.pooja-details', compact('pooja'));
+        $cmsPage = \App\Models\CmsPage::where('title', $pooja->name)->first();
+        $order = \App\Models\Order::where('orderable_type', 'App\\Models\\Pooja')
+            ->where('orderable_id', $pooja->id)
+            ->first();
+        return view('dashboard.pooja-details', compact('pooja', 'cmsPage', 'order'));
     }
 }

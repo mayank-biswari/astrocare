@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Question;
+use App\Events\QuestionSubmitted;
 
 class ServiceController extends Controller
 {
@@ -61,6 +62,9 @@ class ServiceController extends Controller
             'amount' => $amount,
             'status' => 'pending'
         ]);
+
+        // Dispatch event to send emails
+        event(new QuestionSubmitted($question));
 
         // Store question details in session for checkout
         session([

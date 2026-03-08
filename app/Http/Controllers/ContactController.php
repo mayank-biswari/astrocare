@@ -40,18 +40,8 @@ class ContactController extends Controller
             'message' => $request->message,
         ]);
 
-        // Send email notification
-        $adminEmail = ContactSetting::get('admin_email');
-        if ($adminEmail) {
-            try {
-                Mail::send('emails.contact-notification', compact('submission'), function ($message) use ($adminEmail, $submission) {
-                    $message->to($adminEmail)
-                            ->subject('New Contact Form Submission: ' . $submission->subject);
-                });
-            } catch (\Exception $e) {
-                // Log error but don't fail the submission
-            }
-        }
+        // Dispatch event
+        event(new \App\Events\ContactFormSubmitted($submission));
 
         // Create notification
         \App\Models\Notification::create(

@@ -68,6 +68,12 @@
                 </div>
                 <div class="col-md-12">
                     <div class="form-group">
+                        <label>Disclaimer</label>
+                        <textarea name="disclaimer" rows="3" class="form-control">{{ old('disclaimer', \App\Models\FooterSetting::get('disclaimer')) }}</textarea>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="form-group">
                         <label>Copyright Text</label>
                         <input type="text" name="copyright_text" class="form-control" value="{{ old('copyright_text', \App\Models\FooterSetting::get('copyright_text', '© 2024 AstroServices. All rights reserved.')) }}">
                     </div>

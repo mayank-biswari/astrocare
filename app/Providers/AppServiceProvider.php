@@ -19,6 +19,19 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        \Event::listen(
+            \App\Events\PoojaBooked::class,
+            \App\Listeners\SendPoojaBookingNotification::class,
+        );
+        
+        \Event::listen(
+            \App\Events\ContactFormSubmitted::class,
+            \App\Listeners\SendContactNotification::class,
+        );
+        
+        \Event::listen(
+            \App\Events\QuestionSubmitted::class,
+            \App\Listeners\SendQuestionNotifications::class,
+        );
     }
 }

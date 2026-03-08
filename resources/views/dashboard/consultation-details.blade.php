@@ -1,22 +1,20 @@
-@extends('layouts.app')
+@extends('dashboard.layout')
 
 @section('title', 'Consultation Details - Dashboard')
 
-@section('content')
-<div class="container mx-auto px-4 py-8">
-    <div class="max-w-4xl mx-auto">
-        <div class="flex justify-between items-center mb-8">
-            <h1 class="text-3xl font-bold">Consultation Details</h1>
-            <a href="{{ route('dashboard.consultations') }}" class="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700">
-                Back to Consultations
-            </a>
-        </div>
+@section('dashboard-content')
+<div class="bg-white p-4 sm:p-6 rounded-lg shadow-sm mb-4 sm:mb-6" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+    <div class="flex items-center">
+        <a href="{{ route('dashboard.consultations') }}" class="text-white hover:text-white/80 mr-4">← Back to Consultations</a>
+        <h1 class="text-xl sm:text-2xl font-bold">Consultation Details</h1>
+    </div>
+</div>
 
-        <div class="bg-white rounded-lg shadow-lg p-8">
-            <div class="grid md:grid-cols-2 gap-8">
+<div class="bg-white rounded-lg shadow-sm p-4 sm:p-6">
+    <div class="grid md:grid-cols-2 gap-4 sm:gap-8">
                 <!-- Consultation Info -->
                 <div>
-                    <h2 class="text-xl font-bold mb-4">Consultation Information</h2>
+                    <h2 class="text-lg sm:text-xl font-bold mb-4">Consultation Information</h2>
                     
                     <div class="space-y-4">
                         <div>
@@ -54,7 +52,7 @@
                 
                 <!-- Contact & Notes -->
                 <div>
-                    <h2 class="text-xl font-bold mb-4">Contact Information</h2>
+                    <h2 class="text-lg sm:text-xl font-bold mb-4">Contact Information</h2>
                     
                     <div class="space-y-4">
                         <div>
@@ -98,20 +96,20 @@
             </div>
             
             <!-- Actions -->
-            <div class="border-t pt-6 mt-8">
-                <div class="flex space-x-3">
+            <div class="border-t pt-4 sm:pt-6 mt-4 sm:mt-8">
+                <div class="flex flex-col sm:flex-row gap-2 sm:gap-3">
                     @if($consultation->status == 'completed')
-                        <a href="{{ route('dashboard.consultation.report', $consultation->id) }}" class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+                        <a href="{{ route('dashboard.consultation.report', $consultation->id) }}" class="px-4 sm:px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-center text-sm sm:text-base">
                             Download Report
                         </a>
-                        <a href="{{ route('consultations.index') }}" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                        <a href="{{ route('consultations.index') }}" class="px-4 sm:px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-center text-sm sm:text-base">
                             Book Follow-up
                         </a>
                     @elseif($consultation->status == 'scheduled')
-                        <a href="{{ route('dashboard.consultation.reschedule', $consultation->id) }}" class="px-6 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600">
+                        <a href="{{ route('dashboard.consultation.reschedule', $consultation->id) }}" class="px-4 sm:px-6 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 text-center text-sm sm:text-base">
                             Reschedule
                         </a>
-                        <button type="button" class="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600" onclick="document.getElementById('cancelModal').style.display='block'">
+                        <button type="button" class="px-4 sm:px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 text-sm sm:text-base" onclick="document.getElementById('cancelModal').style.display='block'">
                             Cancel Consultation
                         </button>
                     @endif

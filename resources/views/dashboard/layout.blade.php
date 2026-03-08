@@ -3,7 +3,7 @@
 @section('content')
 <div class="flex min-h-screen bg-gray-50">
     <!-- Mobile Menu Button -->
-    <button id="mobile-menu-btn" class="lg:hidden fixed top-4 left-4 z-50 bg-white p-2 rounded-lg shadow-lg">
+    <button id="mobile-menu-btn" class="lg:hidden fixed top-20 left-4 z-30 bg-white p-2 rounded-lg shadow-lg">
         <i class="fas fa-bars text-xl"></i>
     </button>
 
