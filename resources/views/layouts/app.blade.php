@@ -51,7 +51,7 @@
             <div class="flex justify-between items-center py-4 lg:gap-16">
                 <!-- Logo -->
                 <div class="flex items-center lg:flex-1">
-                    <a href="{{ route('home') }}" class="flex items-center space-x-2 lg:ml-0 absolute left-1/2 transform -translate-x-1/2 lg:static lg:transform-none">
+                    <a href="{{ route('home') }}" class="flex items-center space-x-2">
                         @if(\App\Models\SiteSetting::get('site_logo'))
                             <img src="{{ asset(\App\Models\SiteSetting::get('site_logo')) }}" alt="Logo" class="h-8 w-auto">
                         @else
@@ -397,6 +397,9 @@
                     <span class="text-orange-100">May the stars guide your path to prosperity</span>
                     <span class="text-divine-gold text-2xl ml-2">ॐ</span>
                 </div>
+                @if(\App\Models\FooterSetting::get('disclaimer'))
+                    <p class="text-orange-100 text-sm mb-4">{{ \App\Models\FooterSetting::get('disclaimer') }}</p>
+                @endif
                 <p class="text-orange-100">{{ \App\Models\FooterSetting::get('copyright_text', '© 2024 AstroServices. ' . __('messages.all_rights_reserved')) }}</p>
             </div>
         </div>

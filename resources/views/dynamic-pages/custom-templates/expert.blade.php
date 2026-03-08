@@ -47,6 +47,12 @@
 
 <div class="bg-gray-50 min-h-screen py-8">
     <div class="container mx-auto px-4 max-w-6xl">
+        <nav class="text-sm text-gray-500 mb-6">
+            <a href="/" class="hover:text-orange-600">Home</a> > 
+            <a href="/experts" class="hover:text-orange-600">Experts</a> > 
+            {{ $name }}
+        </nav>
+
         <!-- Profile Header -->
         <div class="bg-white rounded-lg shadow-md p-6 mb-6">
             <div class="flex flex-col md:flex-row gap-6">

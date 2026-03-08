@@ -11,16 +11,22 @@
 <div class="bg-white rounded-lg shadow-sm p-4 sm:p-6">
     <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 sm:mb-6 gap-3">
         <h2 class="text-lg sm:text-xl font-bold">Orders History</h2>
-        <div class="flex gap-2">
-            <select onchange="window.location.href='{{ route('dashboard.orders') }}?status='+this.value" class="px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 text-sm sm:text-base w-full sm:w-auto">
+        <div class="flex flex-col sm:flex-row gap-2">
+            <select onchange="window.location.href='{{ route('dashboard.orders') }}?status='+this.value+'&payment_status={{ request('payment_status', 'all') }}'" class="px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 text-sm sm:text-base w-full sm:w-auto">
                 <option value="all" {{ !request('status') || request('status') == 'all' ? 'selected' : '' }}>All Status</option>
                 <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>{{ __('messages.pending') }}</option>
                 <option value="processing" {{ request('status') == 'processing' ? 'selected' : '' }}>{{ __('messages.processing') }}</option>
                 <option value="shipped" {{ request('status') == 'shipped' ? 'selected' : '' }}>{{ __('messages.shipped') }}</option>
                 <option value="delivered" {{ request('status') == 'delivered' ? 'selected' : '' }}>{{ __('messages.delivered') }}</option>
             </select>
-            <a href="{{ route('shop.index') }}" class="px-3 sm:px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 text-sm sm:text-base whitespace-nowrap">
-                <i class="fas fa-shopping-bag mr-1"></i><span class="hidden sm:inline">Shop Now</span><span class="sm:inline hidden">Shop</span>
+            <select onchange="window.location.href='{{ route('dashboard.orders') }}?status={{ request('status', 'all') }}&payment_status='+this.value" class="px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 text-sm sm:text-base w-full sm:w-auto">
+                <option value="all" {{ !request('payment_status') || request('payment_status') == 'all' ? 'selected' : '' }}>All Payments</option>
+                <option value="paid" {{ request('payment_status') == 'paid' ? 'selected' : '' }}>Paid</option>
+                <option value="pending" {{ request('payment_status') == 'pending' ? 'selected' : '' }}>Pending</option>
+                <option value="failed" {{ request('payment_status') == 'failed' ? 'selected' : '' }}>Failed</option>
+            </select>
+            <a href="{{ route('shop.index') }}" class="px-3 sm:px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 text-sm sm:text-base whitespace-nowrap text-center">
+                <i class="fas fa-shopping-bag mr-1"></i><span class="hidden sm:inline">Shop Now</span><span class="sm:hidden">Shop</span>
             </a>
         </div>
     </div>
@@ -61,6 +67,10 @@
                     </div>
                 </div>
             @endforeach
+        </div>
+        
+        <div class="mt-6">
+            {{ $orders->appends(request()->query())->links() }}
         </div>
     @else
         <div class="text-center py-8 sm:py-12 px-4">

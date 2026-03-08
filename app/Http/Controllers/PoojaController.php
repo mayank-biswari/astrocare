@@ -8,7 +8,18 @@ class PoojaController extends Controller
 {
     public function index()
     {
-        $poojas = \App\Models\PoojaService::where('is_active', true)->get();
+        $pageTypeId = \DB::table('cms_page_types')->where('slug', 'pooja-page')->value('id');
+        $poojas = \App\Models\CmsPage::where('cms_page_type_id', $pageTypeId)
+            ->where('is_published', 1)
+            ->get()
+            ->map(function($page) {
+                $customFields = is_array($page->custom_fields) ? $page->custom_fields : json_decode($page->custom_fields, true);
+                $page->category = $customFields['category'] ?? 'temple';
+                $page->price = $customFields['price'] ?? 0;
+                $page->duration = $customFields['duration'] ?? 0;
+                return $page;
+            });
+
         return view('pooja.index', compact('poojas'));
     }
 
@@ -50,13 +61,13 @@ class PoojaController extends Controller
             session(['pooja_booking_data' => $request->all()]);
             return redirect()->route('login')->with('error', 'Please login to book a pooja.');
         }
-        
+
         // Check if we have stored booking data from before login
         $bookingData = session('pooja_booking_data', $request->all());
         session()->forget('pooja_booking_data');
-        
+
         $request->merge($bookingData);
-        
+
         $request->validate([
             'name' => 'required|string|max:255',
             'type' => 'required|string',
@@ -91,13 +102,13 @@ class PoojaController extends Controller
     public function checkout()
     {
         $booking = session('pooja_booking');
-        
+
         if (!$booking) {
             return redirect()->route('pooja.index')->with('error', 'No booking found.');
         }
 
         $paymentGateways = \App\Models\PaymentGateway::where('is_active', true)->get();
-        
+
         return view('pooja.checkout', compact('booking', 'paymentGateways'));
     }
 
@@ -108,7 +119,7 @@ class PoojaController extends Controller
         ]);
 
         $booking = session('pooja_booking');
-        
+
         if (!$booking) {
             return redirect()->route('pooja.index')->with('error', 'No booking found.');
         }
@@ -125,9 +136,40 @@ class PoojaController extends Controller
             'status' => 'booked'
         ]);
 
+        // Get pooja image from CMS page
+        $cmsPage = \App\Models\CmsPage::where('title', $booking['name'])->first();
+        $image = $cmsPage && $cmsPage->image ? 'storage/' . $cmsPage->image : null;
+
+        // Create order
+        $user = auth()->user();
+        $order = \App\Models\Order::create([
+            'user_id' => auth()->id(),
+            'orderable_type' => 'App\\Models\\Pooja',
+            'orderable_id' => $pooja->id,
+            'order_number' => 'ORD-' . strtoupper(uniqid()),
+            'total_amount' => $booking['amount'],
+            'currency' => session('currency', 'USD'),
+            'status' => 'pending',
+            'payment_method' => $request->payment_gateway,
+            'payment_status' => 'paid',
+            'items' => [[
+                'name' => $booking['name'],
+                'quantity' => 1,
+                'price' => $booking['amount'],
+                'image' => $image
+            ]],
+            'shipping_address' => [
+                'phone' => $booking['phone'] ?? $user->phone,
+                'address' => $user->address ?? $booking['phone'] ?? $user->phone
+            ]
+        ]);
+
+        // Dispatch event
+        event(new \App\Events\PoojaBooked($pooja));
+
         // Clear session
         session()->forget('pooja_booking');
 
-        return redirect()->route('dashboard.poojas')->with('success', 'Pooja booked successfully!');
+        return redirect()->route('dashboard.pooja.details', $pooja->id)->with('success', 'Pooja booked successfully!');
     }
 }

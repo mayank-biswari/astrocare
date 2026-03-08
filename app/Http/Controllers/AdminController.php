@@ -1133,6 +1133,7 @@ class AdminController extends Controller
             'twitter_url' => 'nullable|url',
             'instagram_url' => 'nullable|url',
             'youtube_url' => 'nullable|url',
+            'disclaimer' => 'nullable|string',
             'copyright_text' => 'nullable|string'
         ]);
 
