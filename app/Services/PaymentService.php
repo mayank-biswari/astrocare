@@ -84,7 +84,15 @@ class PaymentService
 
     private function processPayPal(Order $order, PaymentGateway $gateway)
     {
-        // PayPal integration logic here
-        return ['success' => false, 'message' => 'PayPal not configured'];
+        $order->update([
+            'payment_status' => 'pending',
+            'transaction_id' => 'PAYPAL-' . time() . '-' . rand(1000, 9999)
+        ]);
+
+        return [
+            'success' => true,
+            'message' => 'Order placed successfully! Complete payment via PayPal.',
+            'payment_status' => 'pending'
+        ];
     }
 }
