@@ -149,6 +149,10 @@ Route::post('/contact', [ContactController::class, 'store'])->name('contact.stor
 // Captcha Route
 Route::get('captcha/{config?}', '\Mews\Captcha\CaptchaController@getCaptcha')->name('captcha');
 
+// PayPal Routes
+Route::get('/paypal/success', [App\Http\Controllers\PayPalController::class, 'success'])->name('paypal.success');
+Route::get('/paypal/cancel', [App\Http\Controllers\PayPalController::class, 'cancel'])->name('paypal.cancel');
+
 // Auth Routes - Load before dynamic pages
 require __DIR__.'/auth.php';
 

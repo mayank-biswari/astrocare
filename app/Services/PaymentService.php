@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Order;
 use App\Models\PaymentGateway;
+use Srmklive\PayPal\Services\PayPal as PayPalClient;
 
 class PaymentService
 {
@@ -42,7 +43,6 @@ class PaymentService
 
     private function processFakePayment(Order $order)
     {
-        // Mock payment - randomly succeeds or fails for testing
         $success = rand(0, 1) === 1;
 
         if ($success) {
@@ -72,27 +72,68 @@ class PaymentService
 
     private function processRazorpay(Order $order, PaymentGateway $gateway)
     {
-        // Razorpay integration logic here
         return ['success' => false, 'message' => 'Razorpay not configured'];
     }
 
     private function processStripe(Order $order, PaymentGateway $gateway)
     {
-        // Stripe integration logic here
         return ['success' => false, 'message' => 'Stripe not configured'];
     }
 
     private function processPayPal(Order $order, PaymentGateway $gateway)
     {
-        $order->update([
-            'payment_status' => 'pending',
-            'transaction_id' => 'PAYPAL-' . time() . '-' . rand(1000, 9999)
+        $credentials = $gateway->credentials;
+        $mode = $gateway->is_test_mode ? 'sandbox' : 'live';
+
+        config([
+            'paypal.mode' => $mode,
+            "paypal.{$mode}.client_id" => $credentials['client_id'],
+            "paypal.{$mode}.client_secret" => $credentials['client_secret'],
         ]);
 
+        $provider = new PayPalClient;
+        $provider->setApiCredentials(config('paypal'));
+        $provider->getAccessToken();
+
+        $amount = number_format((float) $order->total_amount, 2, '.', '');
+
+        $response = $provider->createOrder([
+            'intent' => 'CAPTURE',
+            'purchase_units' => [
+                [
+                    'reference_id' => $order->order_number,
+                    'amount' => [
+                        'currency_code' => 'USD',
+                        'value' => $amount,
+                    ],
+                ],
+            ],
+            'application_context' => [
+                'return_url' => route('paypal.success'),
+                'cancel_url' => route('paypal.cancel'),
+                'brand_name' => config('app.name', 'AstroServices'),
+            ],
+        ]);
+
+        if (isset($response['id']) && isset($response['links'])) {
+            session(['paypal_order_id' => $order->id]);
+
+            $approveUrl = collect($response['links'])->firstWhere('rel', 'approve')['href'] ?? null;
+
+            if ($approveUrl) {
+                return [
+                    'success' => true,
+                    'redirect' => $approveUrl,
+                    'payment_status' => 'pending'
+                ];
+            }
+        }
+
+        $order->update(['payment_status' => 'failed', 'status' => 'cancelled']);
+
         return [
-            'success' => true,
-            'message' => 'Order placed successfully! Complete payment via PayPal.',
-            'payment_status' => 'pending'
+            'success' => false,
+            'message' => 'Unable to create PayPal payment. Please try again.',
         ];
     }
 }
