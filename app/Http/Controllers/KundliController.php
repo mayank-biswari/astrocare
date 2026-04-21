@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Kundli;
+use App\Services\PaymentService;
 
 class KundliController extends Controller
 {
@@ -97,7 +98,6 @@ class KundliController extends Controller
             return redirect()->route('kundli.create')->with('error', 'No kundli data found.');
         }
 
-        // Update user phone if not already filled
         if (auth()->check() && !auth()->user()->phone) {
             auth()->user()->update(['phone' => $request->phone]);
         }
@@ -105,13 +105,36 @@ class KundliController extends Controller
         $kundliData = session('kundli_checkout');
         $kundli = Kundli::findOrFail($kundliData['kundli_id']);
 
-        // Update kundli status to completed (after payment processing)
-        $kundli->update(['status' => 'completed']);
+        // Create order
+        $order = \App\Models\Order::create([
+            'user_id' => auth()->id(),
+            'orderable_type' => 'App\\Models\\Kundli',
+            'orderable_id' => $kundli->id,
+            'order_number' => 'ORD-' . strtoupper(uniqid()),
+            'total_amount' => $kundliData['amount'],
+            'status' => 'pending',
+            'payment_method' => $request->payment_gateway,
+            'payment_status' => 'pending',
+            'items' => [['name' => 'Kundli - ' . ucfirst($kundliData['type']), 'quantity' => 1, 'price' => $kundliData['amount']]],
+            'shipping_address' => ['phone' => $request->phone],
+        ]);
 
-        // Clear session
+        // Process payment
+        $paymentService = new PaymentService();
+        $result = $paymentService->processPayment($order, $request->payment_gateway);
+
+        if (isset($result['redirect'])) {
+            return redirect()->away($result['redirect']);
+        }
+
+        $kundli->update(['status' => 'completed']);
         session()->forget('kundli_checkout');
 
-        return redirect()->route('dashboard.kundlis')->with('success', 'Kundli generated successfully!');
+        if ($result['success']) {
+            return redirect()->route('dashboard.kundlis')->with('success', 'Kundli generated successfully!');
+        }
+
+        return redirect()->route('kundli.create')->with('error', $result['message']);
     }
 
     public function download($id)

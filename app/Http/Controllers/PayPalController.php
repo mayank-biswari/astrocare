@@ -46,7 +46,7 @@ class PayPalController extends Controller
                         'transaction_id' => $response['id'] ?? $token,
                     ]);
 
-                    session()->forget(['paypal_order_id', 'cart']);
+                    session()->forget(['paypal_order_id', 'cart', 'consultation_booking', 'kundli_checkout', 'pooja_booking', 'question_checkout']);
 
                     return redirect()->route('dashboard.orders')->with('success', 'Payment successful! Order #' . $order->order_number . ' confirmed.');
                 }

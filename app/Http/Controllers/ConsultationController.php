@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Services\PaymentService;
 
 class ConsultationController extends Controller
 {
@@ -111,9 +112,34 @@ class ConsultationController extends Controller
             'status' => 'scheduled'
         ]);
 
-        // Clear session
+        // Create order
+        $order = \App\Models\Order::create([
+            'user_id' => auth()->id(),
+            'orderable_type' => 'App\\Models\\Consultation',
+            'orderable_id' => $consultation->id,
+            'order_number' => 'ORD-' . strtoupper(uniqid()),
+            'total_amount' => $booking['amount'],
+            'status' => 'pending',
+            'payment_method' => $request->payment_gateway,
+            'payment_status' => 'pending',
+            'items' => [['name' => ucfirst($booking['type']) . ' Consultation', 'quantity' => 1, 'price' => $booking['amount']]],
+            'shipping_address' => ['phone' => auth()->user()->phone ?? ''],
+        ]);
+
+        // Process payment
+        $paymentService = new PaymentService();
+        $result = $paymentService->processPayment($order, $request->payment_gateway);
+
+        if (isset($result['redirect'])) {
+            return redirect()->away($result['redirect']);
+        }
+
         session()->forget('consultation_booking');
 
-        return redirect()->route('dashboard.consultations')->with('success', 'Consultation booked successfully!');
+        if ($result['success']) {
+            return redirect()->route('dashboard.consultations')->with('success', 'Consultation booked successfully!');
+        }
+
+        return redirect()->route('consultations.index')->with('error', $result['message']);
     }
 }

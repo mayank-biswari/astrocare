@@ -151,7 +151,7 @@ class PoojaController extends Controller
             'currency' => session('currency', 'USD'),
             'status' => 'pending',
             'payment_method' => $request->payment_gateway,
-            'payment_status' => 'paid',
+            'payment_status' => 'pending',
             'items' => [[
                 'name' => $booking['name'],
                 'quantity' => 1,
@@ -164,12 +164,23 @@ class PoojaController extends Controller
             ]
         ]);
 
+        // Process payment
+        $paymentService = new \App\Services\PaymentService();
+        $result = $paymentService->processPayment($order, $request->payment_gateway);
+
+        if (isset($result['redirect'])) {
+            return redirect()->away($result['redirect']);
+        }
+
         // Dispatch event
         event(new \App\Events\PoojaBooked($pooja));
 
-        // Clear session
         session()->forget('pooja_booking');
 
-        return redirect()->route('dashboard.pooja.details', $pooja->id)->with('success', 'Pooja booked successfully!');
+        if ($result['success']) {
+            return redirect()->route('dashboard.pooja.details', $pooja->id)->with('success', 'Pooja booked successfully!');
+        }
+
+        return redirect()->route('pooja.index')->with('error', $result['message']);
     }
 }
