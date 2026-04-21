@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Question;
 use App\Events\QuestionSubmitted;
+use App\Services\PaymentService;
 
 class ServiceController extends Controller
 {
@@ -103,7 +104,6 @@ class ServiceController extends Controller
             return redirect()->route('ask.question')->with('error', 'No question data found.');
         }
 
-        // Update user phone if not already filled
         if (auth()->check() && !auth()->user()->phone) {
             auth()->user()->update(['phone' => $request->phone]);
         }
@@ -111,13 +111,36 @@ class ServiceController extends Controller
         $questionData = session('question_checkout');
         $question = Question::findOrFail($questionData['question_id']);
 
-        // Update question status to completed (after payment processing)
-        $question->update(['status' => 'completed']);
+        // Create order
+        $order = \App\Models\Order::create([
+            'user_id' => auth()->id(),
+            'orderable_type' => 'App\\Models\\Question',
+            'orderable_id' => $question->id,
+            'order_number' => 'ORD-' . strtoupper(uniqid()),
+            'total_amount' => $questionData['amount'],
+            'status' => 'pending',
+            'payment_method' => $request->payment_gateway,
+            'payment_status' => 'pending',
+            'items' => [['name' => 'Ask Question - ' . ucfirst($questionData['category']), 'quantity' => 1, 'price' => $questionData['amount']]],
+            'shipping_address' => ['phone' => $request->phone],
+        ]);
 
-        // Clear session
+        // Process payment
+        $paymentService = new PaymentService();
+        $result = $paymentService->processPayment($order, $request->payment_gateway);
+
+        if (isset($result['redirect'])) {
+            return redirect()->away($result['redirect']);
+        }
+
+        $question->update(['status' => 'completed']);
         session()->forget('question_checkout');
 
-        return redirect()->route('dashboard')->with('success', 'Question submitted successfully! You will receive an answer within 24-48 hours.');
+        if ($result['success']) {
+            return redirect()->route('dashboard')->with('success', 'Question submitted successfully! You will receive an answer within 24-48 hours.');
+        }
+
+        return redirect()->route('ask.question')->with('error', $result['message']);
     }
 
     public function predictions()

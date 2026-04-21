@@ -250,6 +250,10 @@ class ProductController extends Controller
         $paymentService = new PaymentService();
         $result = $paymentService->processPayment($order, $request->payment_gateway);
 
+        if (isset($result['redirect'])) {
+            return redirect()->away($result['redirect']);
+        }
+
         if ($result['success']) {
             session()->forget('cart');
             return redirect()->route('shop.index')->with('success', $result['message']);
