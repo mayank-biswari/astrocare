@@ -95,9 +95,22 @@ class PaymentService
         try {
             $provider = new PayPalClient;
             $provider->setApiCredentials(config('paypal'));
-            $provider->getAccessToken();
+            $tokenResponse = $provider->getAccessToken();
+            
+            if (isset($tokenResponse['error'])) {
+                \Log::error('PayPal Token Error', ['error' => $tokenResponse['error']]);
+                $order->update(['payment_status' => 'failed', 'status' => 'cancelled']);
+                return ['success' => false, 'message' => 'PayPal authentication failed.'];
+            }
 
-            $amount = number_format((float) $order->total_amount, 2, '.', '');
+            // Convert to PayPal currency (configurable, defaults to USD)
+            $paypalCurrency = $credentials['currency'] ?? 'USD';
+            $orderCurrency = $order->currency ?? 'INR';
+            $totalAmount = (float) $order->total_amount;
+            if ($orderCurrency !== $paypalCurrency) {
+                $totalAmount = round(\App\Models\Currency::convert($totalAmount, $orderCurrency, $paypalCurrency), 2);
+            }
+            $amount = number_format($totalAmount, 2, '.', '');
 
             $response = $provider->createOrder([
                 'intent' => 'CAPTURE',
@@ -105,7 +118,7 @@ class PaymentService
                     [
                         'reference_id' => $order->order_number,
                         'amount' => [
-                            'currency_code' => 'USD',
+                            'currency_code' => $paypalCurrency,
                             'value' => $amount,
                         ],
                     ],
@@ -117,7 +130,7 @@ class PaymentService
                 ],
             ]);
 
-            \Log::info('PayPal Response', ['status' => $response['status'] ?? 'no status']);
+            \Log::info('PayPal Response', ['response' => $response, 'currency' => $paypalCurrency, 'amount' => $amount]);
 
             if (isset($response['id']) && isset($response['links'])) {
                 session(['paypal_order_id' => $order->id]);
