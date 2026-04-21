@@ -89,51 +89,68 @@ class PaymentService
             'paypal.mode' => $mode,
             "paypal.{$mode}.client_id" => $credentials['client_id'],
             "paypal.{$mode}.client_secret" => $credentials['client_secret'],
+            'paypal.validate_ssl' => !$gateway->is_test_mode,
         ]);
 
-        $provider = new PayPalClient;
-        $provider->setApiCredentials(config('paypal'));
-        $provider->getAccessToken();
+        try {
+            $provider = new PayPalClient;
+            $provider->setApiCredentials(config('paypal'));
+            $provider->getAccessToken();
 
-        $amount = number_format((float) $order->total_amount, 2, '.', '');
+            $amount = number_format((float) $order->total_amount, 2, '.', '');
 
-        $response = $provider->createOrder([
-            'intent' => 'CAPTURE',
-            'purchase_units' => [
-                [
-                    'reference_id' => $order->order_number,
-                    'amount' => [
-                        'currency_code' => 'USD',
-                        'value' => $amount,
+            $response = $provider->createOrder([
+                'intent' => 'CAPTURE',
+                'purchase_units' => [
+                    [
+                        'reference_id' => $order->order_number,
+                        'amount' => [
+                            'currency_code' => 'USD',
+                            'value' => $amount,
+                        ],
                     ],
                 ],
-            ],
-            'application_context' => [
-                'return_url' => route('paypal.success'),
-                'cancel_url' => route('paypal.cancel'),
-                'brand_name' => config('app.name', 'AstroServices'),
-            ],
-        ]);
+                'application_context' => [
+                    'return_url' => route('paypal.success'),
+                    'cancel_url' => route('paypal.cancel'),
+                    'brand_name' => config('app.name', 'AstroServices'),
+                ],
+            ]);
 
-        if (isset($response['id']) && isset($response['links'])) {
-            session(['paypal_order_id' => $order->id]);
+            \Log::info('PayPal Response', ['status' => $response['status'] ?? 'no status']);
 
-            $approveUrl = collect($response['links'])->firstWhere('rel', 'approve')['href'] ?? null;
+            if (isset($response['id']) && isset($response['links'])) {
+                session(['paypal_order_id' => $order->id]);
 
-            if ($approveUrl) {
-                return [
-                    'success' => true,
-                    'redirect' => $approveUrl,
-                    'payment_status' => 'pending'
-                ];
+                $approveUrl = collect($response['links'])->firstWhere('rel', 'approve')['href'] ?? null;
+
+                if ($approveUrl) {
+                    return [
+                        'success' => true,
+                        'redirect' => $approveUrl,
+                        'payment_status' => 'pending'
+                    ];
+                }
             }
+
+            $order->update(['payment_status' => 'failed', 'status' => 'cancelled']);
+
+            $errorMsg = is_array($response['message'] ?? null) ? json_encode($response['message']) : ($response['message'] ?? 'Unknown error');
+            if (isset($response['error'])) {
+                $errorMsg = is_array($response['error']) ? ($response['error']['message'] ?? json_encode($response['error'])) : $response['error'];
+            }
+            return [
+                'success' => false,
+                'message' => 'PayPal error: ' . $errorMsg,
+            ];
+        } catch (\Exception $e) {
+            \Log::error('PayPal Exception', ['error' => $e->getMessage()]);
+            $order->update(['payment_status' => 'failed', 'status' => 'cancelled']);
+
+            return [
+                'success' => false,
+                'message' => 'PayPal error: ' . $e->getMessage(),
+            ];
         }
-
-        $order->update(['payment_status' => 'failed', 'status' => 'cancelled']);
-
-        return [
-            'success' => false,
-            'message' => 'Unable to create PayPal payment. Please try again.',
-        ];
     }
 }
