@@ -96,7 +96,7 @@ class PaymentService
             $provider = new PayPalClient;
             $provider->setApiCredentials(config('paypal'));
             $tokenResponse = $provider->getAccessToken();
-            
+
             if (isset($tokenResponse['error'])) {
                 \Log::error('PayPal Token Error', ['error' => $tokenResponse['error']]);
                 $order->update(['payment_status' => 'failed', 'status' => 'cancelled']);
