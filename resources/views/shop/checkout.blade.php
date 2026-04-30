@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkout - AstroServices</title>
+    @if(\App\Models\SiteSetting::get('site_icon'))
+        @php $siteIcon = asset(\App\Models\SiteSetting::get('site_icon')); @endphp
+        <link rel="icon" type="image/png" href="{{ $siteIcon }}">
+        <link rel="apple-touch-icon" href="{{ $siteIcon }}">
+    @endif
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -34,6 +39,12 @@
 </div>
 <div class="container mx-auto px-4 py-8">
     <h1 class="text-3xl font-bold mb-8">Checkout</h1>
+
+    @if(session('error'))
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+            {{ session('error') }}
+        </div>
+    @endif
 
     <div class="grid md:grid-cols-2 gap-8">
         <!-- Order Summary -->

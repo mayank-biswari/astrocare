@@ -140,6 +140,6 @@ class ConsultationController extends Controller
             return redirect()->route('dashboard.consultations')->with('success', 'Consultation booked successfully!');
         }
 
-        return redirect()->route('consultations.index')->with('error', $result['message']);
+        return redirect()->back()->with('error', $result['message']);
     }
 }

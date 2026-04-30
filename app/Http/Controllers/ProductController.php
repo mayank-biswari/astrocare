@@ -259,6 +259,6 @@ class ProductController extends Controller
             return redirect()->route('shop.index')->with('success', $result['message']);
         }
 
-        return redirect()->route('shop.index')->with('error', $result['message']);
+        return redirect()->back()->with('error', $result['message']);
     }
 }

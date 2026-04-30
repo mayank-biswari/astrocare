@@ -5,7 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Astrology Services')</title>
     @if(\App\Models\SiteSetting::get('site_icon'))
-        <link rel="icon" type="image/x-icon" href="{{ asset(\App\Models\SiteSetting::get('site_icon')) }}">
+        @php $siteIcon = asset(\App\Models\SiteSetting::get('site_icon')); @endphp
+        <link rel="icon" type="image/png" href="{{ $siteIcon }}">
+        <link rel="icon" type="image/png" sizes="32x32" href="{{ $siteIcon }}">
+        <link rel="icon" type="image/png" sizes="16x16" href="{{ $siteIcon }}">
+        <link rel="apple-touch-icon" href="{{ $siteIcon }}">
+        <link rel="shortcut icon" href="{{ $siteIcon }}">
     @endif
     @stack('meta')
     <script src="https://cdn.tailwindcss.com"></script>
