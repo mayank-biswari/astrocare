@@ -80,14 +80,14 @@
             
             <p style="margin-top: 30px;">
                 <strong>May the divine blessings be with you!</strong><br>
-                Team AstroServices
+                Team {{ \App\Models\SiteSetting::get('site_name', 'AstroServices') }}
             </p>
         </div>
         
         <div class="footer">
             <div class="om-symbol">ॐ</div>
             <p>May the stars guide your path to prosperity</p>
-            <p>&copy; {{ date('Y') }} AstroServices. All rights reserved.</p>
+            <p>&copy; {{ date('Y') }} {{ \App\Models\SiteSetting::get('site_name', 'AstroServices') }}. All rights reserved.</p>
         </div>
     </div>
 </body>

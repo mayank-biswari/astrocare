@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Forgot Password - AstroServices')
+@section('title', 'Forgot Password - ' . \App\Models\SiteSetting::get('site_name', 'AstroServices'))
 
 @section('content')
 <div class="min-h-screen flex items-center justify-center bg-gradient-to-r from-indigo-900 to-purple-900 py-12 px-4 sm:px-6 lg:px-8">

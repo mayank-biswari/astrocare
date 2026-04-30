@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Checkout - AstroServices</title>
+    <title>Checkout - {{ \App\Models\SiteSetting::get('site_name', 'AstroServices') }}</title>
     @if(\App\Models\SiteSetting::get('site_icon'))
         @php $siteIcon = asset(\App\Models\SiteSetting::get('site_icon')); @endphp
         <link rel="icon" type="image/png" href="{{ $siteIcon }}">
@@ -32,7 +32,7 @@
             <img src="{{ asset(\App\Models\SiteSetting::get('site_logo')) }}" alt="Logo" class="h-10 w-auto">
         @else
             <div class="text-2xl font-bold text-white flex items-center">
-                <span class="text-divine-gold mr-2">🕉️</span>AstroServices
+                <span class="text-divine-gold mr-2">🕉️</span>{{ \App\Models\SiteSetting::get('site_name', 'AstroServices') }}
             </div>
         @endif
     </div>

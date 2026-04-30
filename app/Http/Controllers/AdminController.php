@@ -263,9 +263,14 @@ class AdminController extends Controller
     public function updateSettings(Request $request)
     {
         $request->validate([
+            'site_name' => 'nullable|string|max:255',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'icon' => 'nullable|image|mimes:jpeg,png,jpg,gif,ico|max:1024',
         ]);
+
+        if ($request->filled('site_name')) {
+            \App\Models\SiteSetting::set('site_name', $request->site_name);
+        }
 
         if ($request->hasFile('logo')) {
             $logoPath = $request->file('logo')->store('site', 'public');

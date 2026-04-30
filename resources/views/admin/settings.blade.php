@@ -11,12 +11,19 @@
 @section('content')
 <div class="card">
     <div class="card-header">
-        <h3 class="card-title">Site Logo & Icon</h3>
+        <h3 class="card-title">Site Settings</h3>
     </div>
     <form action="{{ route('admin.settings.update') }}" method="POST" enctype="multipart/form-data">
         @csrf
         <div class="card-body">
             <div class="row">
+                <div class="col-md-12 mb-3">
+                    <div class="form-group">
+                        <label for="site_name">Site Name</label>
+                        <input type="text" class="form-control" id="site_name" name="site_name" value="{{ \App\Models\SiteSetting::get('site_name', 'AstroServices') }}">
+                        <small class="form-text text-muted">Used across the site in titles, emails, invoices etc.</small>
+                    </div>
+                </div>
                 <div class="col-md-6">
                     <div class="form-group">
                         <label for="logo">Site Logo</label>

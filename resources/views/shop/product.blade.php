@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
-@section('title', $product->name . ' - Buy Online at AstroServices')
+@section('title', $product->name . ' - Buy Online')
 
 @push('meta')
-<meta name="description" content="{{ Str::limit($product->description, 160) }} Buy authentic {{ $product->name }} online at AstroServices with free shipping.">
+<meta name="description" content="{{ Str::limit($product->description, 160) }} Buy authentic {{ $product->name }} online with free shipping.">
 <meta name="keywords" content="{{ $product->name }}, {{ $product->category }}, astrology, spiritual, buy online">
-<meta property="og:title" content="{{ $product->name }} - AstroServices">
+<meta property="og:title" content="{{ $product->name }}">
 <meta property="og:description" content="{{ Str::limit($product->description, 160) }}">
 <meta property="og:type" content="product">
 <meta property="product:price:amount" content="{{ $product->price }}">

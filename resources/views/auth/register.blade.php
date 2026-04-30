@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Register - Vijay Astro Care And Relief Centre')
+@section('title', 'Register - ' . \App\Models\SiteSetting::get('site_name', 'AstroServices'))
 
 @section('content')
     <div
@@ -9,7 +9,7 @@
             <div class="bg-white rounded-lg shadow-xl p-8">
                 <div class="text-center">
                     <h2 class="text-3xl font-bold text-gray-900 mb-2">Create Account</h2>
-                    <p class="text-gray-600">Join Vijay Astro Care And Relief Centre for spiritual guidance</p>
+                    <p class="text-gray-600">Join {{ \App\Models\SiteSetting::get('site_name', 'AstroServices') }} for spiritual guidance</p>
                 </div>
 
                 <form method="POST" action="{{ route('register') }}" class="mt-8 space-y-6" id="registerForm">

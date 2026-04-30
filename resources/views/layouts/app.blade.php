@@ -62,7 +62,7 @@
                         @else
                             <span class="text-xl md:text-2xl font-bold flex items-center">
                                 <span class="text-divine-gold mr-2">🕉️</span>
-                                <span class="bg-gradient-to-r from-divine-gold to-holy-yellow bg-clip-text text-transparent">AstroServices</span>
+                                <span class="bg-gradient-to-r from-divine-gold to-holy-yellow bg-clip-text text-transparent">{{ \App\Models\SiteSetting::get('site_name', 'AstroServices') }}</span>
                             </span>
                         @endif
                     </a>
