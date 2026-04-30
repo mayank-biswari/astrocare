@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Terms and Conditions - AstroServices')
+@section('title', 'Terms and Conditions - ' . \App\Models\SiteSetting::get('site_name', 'AstroServices'))
 
 @section('content')
 <div class="bg-gradient-to-r from-indigo-900 to-purple-900 text-white py-16">
@@ -17,14 +17,14 @@
         <section class="mb-8">
             <h2 class="text-2xl font-bold mb-4">1. Acceptance of Terms</h2>
             <p class="text-gray-600 mb-4">
-                By accessing and using AstroServices, you accept and agree to be bound by the terms and provision of this agreement. If you do not agree to these terms, please do not use our services.
+                By accessing and using {{ \App\Models\SiteSetting::get('site_name', 'AstroServices') }}, you accept and agree to be bound by the terms and provision of this agreement. If you do not agree to these terms, please do not use our services.
             </p>
         </section>
 
         <section class="mb-8">
             <h2 class="text-2xl font-bold mb-4">2. Services Description</h2>
             <p class="text-gray-600 mb-4">
-                AstroServices provides astrology consultations, kundli generation, pooja booking services, and spiritual products. All services are provided for informational and spiritual guidance purposes only.
+                {{ \App\Models\SiteSetting::get('site_name', 'AstroServices') }} provides astrology consultations, kundli generation, pooja booking services, and spiritual products. All services are provided for informational and spiritual guidance purposes only.
             </p>
         </section>
 
@@ -72,14 +72,14 @@
         <section class="mb-8">
             <h2 class="text-2xl font-bold mb-4">8. Intellectual Property</h2>
             <p class="text-gray-600 mb-4">
-                All content, including text, graphics, logos, and software, is the property of AstroServices and protected by copyright laws. Unauthorized use is prohibited.
+                All content, including text, graphics, logos, and software, is the property of {{ \App\Models\SiteSetting::get('site_name', 'AstroServices') }} and protected by copyright laws. Unauthorized use is prohibited.
             </p>
         </section>
 
         <section class="mb-8">
             <h2 class="text-2xl font-bold mb-4">9. Limitation of Liability</h2>
             <p class="text-gray-600 mb-4">
-                AstroServices shall not be liable for any indirect, incidental, special, or consequential damages arising from the use of our services. Our liability is limited to the amount paid for the specific service.
+                {{ \App\Models\SiteSetting::get('site_name', 'AstroServices') }} shall not be liable for any indirect, incidental, special, or consequential damages arising from the use of our services. Our liability is limited to the amount paid for the specific service.
             </p>
         </section>
 
@@ -104,7 +104,7 @@
 
         <div class="border-t pt-6 mt-8">
             <p class="text-gray-600 text-center">
-                By using AstroServices, you acknowledge that you have read, understood, and agree to be bound by these Terms and Conditions.
+                By using {{ \App\Models\SiteSetting::get('site_name', 'AstroServices') }}, you acknowledge that you have read, understood, and agree to be bound by these Terms and Conditions.
             </p>
         </div>
     </div>

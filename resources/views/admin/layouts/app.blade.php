@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>@yield('title', 'Admin Panel') - AstroServices</title>
+  <title>@yield('title', 'Admin Panel') - {{ \App\Models\SiteSetting::get('site_name', 'AstroServices') }}</title>
   @if(\App\Models\SiteSetting::get('site_icon'))
     <link rel="icon" type="image/x-icon" href="{{ \App\Models\SiteSetting::get('site_icon') }}">
   @endif
@@ -89,7 +89,7 @@
       @if(\App\Models\SiteSetting::get('site_logo'))
         <img src="{{ \App\Models\SiteSetting::get('site_logo') }}" alt="Logo" class="brand-image img-circle elevation-3" style="opacity: .8; max-height: 33px;">
       @endif
-      <span class="brand-text font-weight-light">AstroServices Admin</span>
+      <span class="brand-text font-weight-light">{{ \App\Models\SiteSetting::get('site_name', 'AstroServices') }} Admin</span>
     </a>
 
     <!-- Sidebar -->
@@ -134,7 +134,7 @@
 
   <!-- Footer -->
   <footer class="main-footer">
-    <strong>Copyright &copy; 2024 AstroServices.</strong> All rights reserved.
+    <strong>Copyright &copy; 2024 {{ \App\Models\SiteSetting::get('site_name', 'AstroServices') }}.</strong> All rights reserved.
   </footer>
 </div>
 

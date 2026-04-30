@@ -29,7 +29,11 @@ class PaymentGateway extends Model
         $query = self::where('is_active', true)->orderBy('sort_order');
         
         if ($currency) {
-            $query->whereJsonContains('supported_currencies', $currency);
+            $query->where(function ($q) use ($currency) {
+                $q->whereJsonContains('supported_currencies', $currency)
+                  ->orWhereNull('supported_currencies')
+                  ->orWhereIn('code', ['paypal']); // PayPal handles currency conversion
+            });
         }
         
         return $query->get();

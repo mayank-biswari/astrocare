@@ -5,7 +5,7 @@
 @section('content')
 <div class="bg-gradient-to-r from-indigo-900 to-purple-900 text-white py-16">
     <div class="container mx-auto px-4 text-center">
-        <h1 class="text-4xl font-bold mb-4">About AstroServices</h1>
+        <h1 class="text-4xl font-bold mb-4">About {{ \App\Models\SiteSetting::get('site_name', 'AstroServices') }}</h1>
         <p class="text-xl">Your trusted partner in spiritual guidance and astrology</p>
     </div>
 </div>
@@ -17,7 +17,7 @@
             <div>
                 <h2 class="text-3xl font-bold mb-6">Our Story</h2>
                 <p class="text-gray-600 mb-4">
-                    Founded with a vision to make authentic astrology services accessible to everyone, AstroServices has been guiding people on their spiritual journey for over a decade. We combine traditional Vedic wisdom with modern technology to provide accurate and meaningful insights.
+                    Founded with a vision to make authentic astrology services accessible to everyone, {{ \App\Models\SiteSetting::get('site_name', 'AstroServices') }} has been guiding people on their spiritual journey for over a decade. We combine traditional Vedic wisdom with modern technology to provide accurate and meaningful insights.
                 </p>
                 <p class="text-gray-600 mb-4">
                     Our team of certified astrologers and spiritual experts are dedicated to helping you understand your life's purpose, overcome challenges, and make informed decisions based on cosmic guidance.
@@ -125,7 +125,7 @@
 
     <!-- Why Choose Us -->
     <section class="bg-indigo-50 p-8 rounded-lg">
-        <h2 class="text-3xl font-bold text-center mb-8">Why Choose AstroServices?</h2>
+        <h2 class="text-3xl font-bold text-center mb-8">Why Choose {{ \App\Models\SiteSetting::get('site_name', 'AstroServices') }}?</h2>
         <div class="grid md:grid-cols-2 gap-8">
             <div class="space-y-4">
                 <div class="flex items-start space-x-4">

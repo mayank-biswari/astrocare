@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Login - AstroServices')
+@section('title', 'Login - ' . \App\Models\SiteSetting::get('site_name', 'AstroServices'))
 
 @section('content')
 <div class="min-h-screen flex items-center justify-center bg-gradient-to-r from-indigo-900 to-purple-900 py-12 px-4 sm:px-6 lg:px-8">
@@ -8,7 +8,7 @@
         <div class="bg-white rounded-lg shadow-xl p-8">
             <div class="text-center">
                 <h2 class="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h2>
-                <p class="text-gray-600">Sign in to your AstroServices account</p>
+                <p class="text-gray-600">Sign in to your account</p>
             </div>
 
             @if (session('status'))

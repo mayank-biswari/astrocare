@@ -96,11 +96,11 @@ class PaymentService
             $provider = new PayPalClient;
             $provider->setApiCredentials(config('paypal'));
             $tokenResponse = $provider->getAccessToken();
-            
+
             if (isset($tokenResponse['error'])) {
                 \Log::error('PayPal Token Error', ['error' => $tokenResponse['error']]);
                 $order->update(['payment_status' => 'failed', 'status' => 'cancelled']);
-                return ['success' => false, 'message' => 'PayPal authentication failed.'];
+                return ['success' => false, 'message' => 'Payment failed: Unable to connect to PayPal. Please try again or choose a different payment method.'];
             }
 
             // Convert to PayPal currency (configurable, defaults to USD)

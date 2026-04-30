@@ -134,7 +134,7 @@ class KundliController extends Controller
             return redirect()->route('dashboard.kundlis')->with('success', 'Kundli generated successfully!');
         }
 
-        return redirect()->route('kundli.create')->with('error', $result['message']);
+        return redirect()->back()->with('error', $result['message']);
     }
 
     public function download($id)

@@ -27,7 +27,7 @@
         
         <p>You will receive the answer via email at <strong>{{ $question->email }}</strong></p>
         
-        <p style="margin-top: 30px;">Best regards,<br>Astrology Team</p>
+        <p style="margin-top: 30px;">Best regards,<br>{{ \App\Models\SiteSetting::get('site_name', 'AstroServices') }} Team</p>
     </div>
 </body>
 </html>

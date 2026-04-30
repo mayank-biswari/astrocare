@@ -140,7 +140,7 @@ class ServiceController extends Controller
             return redirect()->route('dashboard')->with('success', 'Question submitted successfully! You will receive an answer within 24-48 hours.');
         }
 
-        return redirect()->route('ask.question')->with('error', $result['message']);
+        return redirect()->back()->with('error', $result['message']);
     }
 
     public function predictions()

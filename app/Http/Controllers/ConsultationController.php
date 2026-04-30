@@ -20,11 +20,11 @@ class ConsultationController extends Controller
         $service = \App\Models\Service::where('type', 'consultation')
             ->where('name', 'like', '%' . ucfirst($type) . '%')
             ->first();
-        
+
         if (!$service) {
             abort(404);
         }
-        
+
         return view('consultations.show', compact('service', 'type'));
     }
 
@@ -35,13 +35,13 @@ class ConsultationController extends Controller
             session(['consultation_booking_data' => $request->all()]);
             return redirect()->route('login')->with('error', 'Please login to book a consultation.');
         }
-        
+
         // Check if we have stored booking data from before login
         $bookingData = session('consultation_booking_data', $request->all());
         session()->forget('consultation_booking_data');
-        
+
         $request->merge($bookingData);
-        
+
         $request->validate([
             'service_id' => 'required|exists:services,id',
             'type' => 'required|string',
@@ -52,14 +52,14 @@ class ConsultationController extends Controller
         ]);
 
         $service = \App\Models\Service::findOrFail($request->service_id);
-        
+
         // Calculate price based on duration
         $multiplier = 1;
         if ($request->duration == 45) $multiplier = 1.5;
         elseif ($request->duration == 60) $multiplier = 2;
-        
+
         $amount = $service->price * $multiplier;
-        
+
         // Store booking details in session
         session([
             'consultation_booking' => [
@@ -74,17 +74,17 @@ class ConsultationController extends Controller
 
         return redirect()->route('consultations.checkout');
     }
-    
+
     public function checkout()
     {
         $booking = session('consultation_booking');
-        
+
         if (!$booking) {
             return redirect()->route('consultations.index')->with('error', 'No booking found.');
         }
 
         $paymentGateways = \App\Models\PaymentGateway::where('is_active', true)->get();
-        
+
         return view('consultations.checkout', compact('booking', 'paymentGateways'));
     }
 
@@ -95,7 +95,7 @@ class ConsultationController extends Controller
         ]);
 
         $booking = session('consultation_booking');
-        
+
         if (!$booking) {
             return redirect()->route('consultations.index')->with('error', 'No booking found.');
         }
@@ -140,6 +140,6 @@ class ConsultationController extends Controller
             return redirect()->route('dashboard.consultations')->with('success', 'Consultation booked successfully!');
         }
 
-        return redirect()->route('consultations.index')->with('error', $result['message']);
+        return redirect()->back()->with('error', $result['message']);
     }
 }

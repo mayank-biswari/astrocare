@@ -181,6 +181,6 @@ class PoojaController extends Controller
             return redirect()->route('dashboard.pooja.details', $pooja->id)->with('success', 'Pooja booked successfully!');
         }
 
-        return redirect()->route('pooja.index')->with('error', $result['message']);
+        return redirect()->back()->with('error', $result['message']);
     }
 }

@@ -22,7 +22,7 @@
 </head>
 <body>
     <div class="header">
-        <div class="company-name">🔮 AstroServices</div>
+        <div class="company-name">🔮 {{ \App\Models\SiteSetting::get('site_name', 'AstroServices') }}</div>
         <div class="company-tagline">Your trusted partner for astrology services and spiritual products</div>
     </div>
 
@@ -80,7 +80,7 @@
 
     <div class="footer">
         <p><strong>Thank you for your business!</strong></p>
-        <p>AstroServices | Email: info@astroservices.com | Phone: +91 9876543210</p>
+        <p>{{ \App\Models\SiteSetting::get('site_name', 'AstroServices') }}</p>
         <p>For any queries regarding this invoice, please contact our customer support.</p>
     </div>
 </body>
