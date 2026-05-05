@@ -5,17 +5,17 @@
 @section('content')
 <div class="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-red-50">
     <!-- Hero Section -->
-    <div class="gradient-bg text-white py-12">
+    <div class="gradient-bg text-white py-6 sm:py-12">
         <div class="container mx-auto px-4">
-            <h1 class="text-3xl md:text-4xl font-bold mb-4">{{ $page->title ?? 'Talk to Astrologer' }}</h1>
-            <p class="text-lg text-orange-100">Connect with India's best astrologers for instant guidance</p>
+            <h1 class="text-xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4">{{ $page->title ?? 'Talk to Astrologer' }}</h1>
+            <p class="text-sm sm:text-lg text-orange-100">Connect with India's best astrologers for instant guidance</p>
         </div>
     </div>
 
-    <div class="container mx-auto px-4 py-8">
+    <div class="container mx-auto px-4 py-4 sm:py-8">
         <!-- Filters -->
-        <div class="bg-white rounded-lg shadow-md p-4 mb-6">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="bg-white rounded-lg shadow-md p-3 sm:p-4 mb-3 sm:mb-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Expertise</label>
                     <select id="expertiseFilter" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
@@ -59,7 +59,7 @@
         </div>
 
         <!-- Astrologers Grid -->
-        <div id="astrologersGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div id="astrologersGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
             @php
             $astrologers = [
                 ['name' => 'Pandit Rajesh Sharma', 'expertise' => 'Vedic Astrology, Numerology', 'experience' => 15, 'rating' => 4.9, 'consultations' => 5000, 'languages' => 'Hindi, English', 'price' => 25, 'status' => 'online', 'image' => 'https://ui-avatars.com/api/?name=Rajesh+Sharma&size=200&background=FF9933&color=fff'],
@@ -72,13 +72,13 @@
             @endphp
 
             @foreach($astrologers as $astrologer)
-            <div class="astrologer-card bg-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden" 
-                 data-expertise="{{ strtolower($astrologer['expertise']) }}" 
-                 data-experience="{{ $astrologer['experience'] }}" 
-                 data-price="{{ $astrologer['price'] }}" 
+            <div class="astrologer-card bg-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden"
+                 data-expertise="{{ strtolower($astrologer['expertise']) }}"
+                 data-experience="{{ $astrologer['experience'] }}"
+                 data-price="{{ $astrologer['price'] }}"
                  data-rating="{{ $astrologer['rating'] }}">
                 <div class="relative">
-                    <img src="{{ $astrologer['image'] }}" alt="{{ $astrologer['name'] }}" class="w-full h-48 object-cover">
+                    <img src="{{ $astrologer['image'] }}" alt="{{ $astrologer['name'] }}" class="w-full h-32 sm:h-48 object-cover">
                     <div class="absolute top-3 right-3">
                         @if($astrologer['status'] === 'online')
                             <span class="px-3 py-1 bg-green-500 text-white text-xs font-bold rounded-full flex items-center">
@@ -91,8 +91,8 @@
                         @endif
                     </div>
                 </div>
-                <div class="p-4">
-                    <h3 class="text-xl font-bold text-gray-900 mb-2">{{ $astrologer['name'] }}</h3>
+                <div class="p-3 sm:p-4">
+                    <h3 class="text-base sm:text-xl font-bold text-gray-900 mb-2">{{ $astrologer['name'] }}</h3>
                     <p class="text-sm text-gray-600 mb-2">{{ $astrologer['expertise'] }}</p>
                     <div class="flex items-center mb-3">
                         <div class="flex items-center text-yellow-500 mr-3">
@@ -111,11 +111,11 @@
                     </div>
                     <div class="flex items-center justify-between pt-3 border-t">
                         <div>
-                            <span class="text-2xl font-bold text-indigo-600">₹{{ $astrologer['price'] }}</span>
+                            <span class="text-lg sm:text-2xl font-bold text-indigo-600">₹{{ $astrologer['price'] }}</span>
                             <span class="text-sm text-gray-600">/min</span>
                         </div>
                         @if($astrologer['status'] === 'online')
-                            <button onclick="startConsultation('{{ $astrologer['name'] }}', {{ $astrologer['price'] }})" 
+                            <button onclick="startConsultation('{{ $astrologer['name'] }}', {{ $astrologer['price'] }})"
                                     class="px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:from-green-600 hover:to-green-700 transition-all font-semibold">
                                 <i class="fas fa-phone mr-2"></i>Call Now
                             </button>
@@ -131,34 +131,34 @@
         </div>
 
         <!-- Why Choose Us -->
-        <div class="mt-12 grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div class="bg-white rounded-lg shadow-md p-6 text-center">
-                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class="fas fa-shield-alt text-3xl text-green-600"></i>
+        <div class="mt-6 sm:mt-12 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
+            <div class="bg-white rounded-lg shadow-md p-3 sm:p-6 text-center">
+                <div class="w-12 h-12 sm:w-16 sm:h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                    <i class="fas fa-shield-alt text-xl sm:text-3xl text-green-600"></i>
                 </div>
-                <h3 class="font-bold text-lg mb-2">100% Verified</h3>
-                <p class="text-sm text-gray-600">All astrologers are verified and certified</p>
+                <h3 class="font-bold text-sm sm:text-lg mb-2">100% Verified</h3>
+                <p class="text-xs sm:text-sm text-gray-600">All astrologers are verified and certified</p>
             </div>
-            <div class="bg-white rounded-lg shadow-md p-6 text-center">
-                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class="fas fa-lock text-3xl text-blue-600"></i>
+            <div class="bg-white rounded-lg shadow-md p-3 sm:p-6 text-center">
+                <div class="w-12 h-12 sm:w-16 sm:h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                    <i class="fas fa-lock text-xl sm:text-3xl text-blue-600"></i>
                 </div>
-                <h3 class="font-bold text-lg mb-2">100% Private</h3>
-                <p class="text-sm text-gray-600">Your conversations are completely confidential</p>
+                <h3 class="font-bold text-sm sm:text-lg mb-2">100% Private</h3>
+                <p class="text-xs sm:text-sm text-gray-600">Your conversations are completely confidential</p>
             </div>
-            <div class="bg-white rounded-lg shadow-md p-6 text-center">
-                <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class="fas fa-clock text-3xl text-purple-600"></i>
+            <div class="bg-white rounded-lg shadow-md p-3 sm:p-6 text-center">
+                <div class="w-12 h-12 sm:w-16 sm:h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                    <i class="fas fa-clock text-xl sm:text-3xl text-purple-600"></i>
                 </div>
-                <h3 class="font-bold text-lg mb-2">24/7 Available</h3>
-                <p class="text-sm text-gray-600">Connect anytime, anywhere</p>
+                <h3 class="font-bold text-sm sm:text-lg mb-2">24/7 Available</h3>
+                <p class="text-xs sm:text-sm text-gray-600">Connect anytime, anywhere</p>
             </div>
-            <div class="bg-white rounded-lg shadow-md p-6 text-center">
-                <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class="fas fa-rupee-sign text-3xl text-orange-600"></i>
+            <div class="bg-white rounded-lg shadow-md p-3 sm:p-6 text-center">
+                <div class="w-12 h-12 sm:w-16 sm:h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                    <i class="fas fa-rupee-sign text-xl sm:text-3xl text-orange-600"></i>
                 </div>
-                <h3 class="font-bold text-lg mb-2">Best Prices</h3>
-                <p class="text-sm text-gray-600">Affordable rates starting from ₹20/min</p>
+                <h3 class="font-bold text-sm sm:text-lg mb-2">Best Prices</h3>
+                <p class="text-xs sm:text-sm text-gray-600">Affordable rates starting from ₹20/min</p>
             </div>
         </div>
     </div>
@@ -207,16 +207,16 @@ function filterAstrologers() {
     const expertise = document.getElementById('expertiseFilter').value.toLowerCase();
     const language = document.getElementById('languageFilter').value.toLowerCase();
     const experience = parseInt(document.getElementById('experienceFilter').value) || 0;
-    
+
     document.querySelectorAll('.astrologer-card').forEach(card => {
         const cardExpertise = card.dataset.expertise.toLowerCase();
         const cardExperience = parseInt(card.dataset.experience);
-        
+
         let show = true;
-        
+
         if (expertise && !cardExpertise.includes(expertise)) show = false;
         if (experience && cardExperience < experience) show = false;
-        
+
         card.style.display = show ? 'block' : 'none';
     });
 }
@@ -225,7 +225,7 @@ function sortAstrologers() {
     const sortBy = document.getElementById('sortFilter').value;
     const grid = document.getElementById('astrologersGrid');
     const cards = Array.from(document.querySelectorAll('.astrologer-card'));
-    
+
     cards.sort((a, b) => {
         switch(sortBy) {
             case 'rating':
@@ -240,7 +240,7 @@ function sortAstrologers() {
                 return 0;
         }
     });
-    
+
     cards.forEach(card => grid.appendChild(card));
 }
 </script>

@@ -1,6 +1,6 @@
 {{-- Expert Card Template --}}
 @php
-    $gridClasses = $section['grid_classes'] ?? 'grid md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8';
+    $gridClasses = $section['grid_classes'] ?? 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6 mb-4 sm:mb-8';
 @endphp
 
 <div class="{{ $gridClasses }}">
@@ -16,13 +16,13 @@
             $languageList = array_filter(array_map('trim', explode(',', $languages)));
             $expertiseList = array_filter(array_map('trim', explode(',', $expertise)));
             $itemUrl = route('cms.show', ['slug' => $item->slug]);
-            
+
             $product = $item->product;
             $currentCurrency = session('currency', \App\Models\Currency::getDefaultCurrency()->code);
             $callVariant = $product?->variants->where('is_active', true)->first(fn($v) => stripos($v->name, 'call') !== false);
             $chatVariant = $product?->variants->where('is_active', true)->first(fn($v) => stripos($v->name, 'chat') !== false);
         @endphp
-        
+
         <div class="bg-white border rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow cursor-pointer" onclick="location.href='{{ $itemUrl }}'">
             <div class="overflow-hidden relative">
                 <ul class="list-none flex mb-0 p-0 w-full">
@@ -32,14 +32,14 @@
                             <div class="absolute -top-0.5 -right-0.5 w-3 h-3 rounded-full {{ $status === 'online' ? 'bg-green-500' : ($status === 'busy' ? 'bg-yellow-500' : 'bg-gray-400') }} border-2 border-white" title="{{ ucfirst($status) }}"></div>
                         </div>
                     </li>
-                    
+
                     <li class="flex-1 min-w-0">
                         <h3 class="font-semibold text-base truncate hover:text-orange-600 transition-colors">{{ $item->title }}</h3>
                         <div class="space-y-1">
                             @if($expertiseList)<p class="text-sm text-gray-700">{{ implode(', ', array_slice($expertiseList, 0, 2)) }}</p>@endif
                             @if($languageList)<p class="text-sm text-gray-600">{{ implode(', ', $languageList) }}</p>@endif
                             @if($experience)<p class="text-sm text-gray-700">Exp: {{ $experience }} Years</p>@endif
-                            
+
                             @if($callVariant)
                                 @php
                                     if ($callVariant->currency_prices && isset($callVariant->currency_prices[$currentCurrency])) {
@@ -61,7 +61,7 @@
                         </div>
                     </li>
                 </ul>
-                
+
                 <div class="flex items-center justify-between mt-4 pt-3 border-t border-gray-100">
                     <div class="flex-1">
                         @if($consultations)
@@ -73,7 +73,7 @@
                             </p>
                         @endif
                     </div>
-                    
+
                     <div class="flex flex-col gap-1 ml-4 min-w-[80px]">
                         @if($status === 'online' && $callVariant)
                             <form action="{{ route('cart.add') }}" method="POST" onclick="event.stopPropagation()">
