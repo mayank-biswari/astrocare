@@ -53,9 +53,9 @@
     <!-- Navigation -->
     <nav class="gradient-bg text-white shadow-lg om-shadow">
         <div class="container mx-auto px-4">
-            <div class="flex justify-between items-center py-4 lg:gap-16">
+            <div class="flex justify-between items-center py-4 xl:gap-16">
                 <!-- Logo -->
-                <div class="flex items-center lg:flex-1">
+                <div class="flex items-center xl:flex-1">
                     <a href="{{ route('home') }}" class="flex items-center space-x-2">
                         @if(\App\Models\SiteSetting::get('site_logo'))
                             <img src="{{ asset(\App\Models\SiteSetting::get('site_logo')) }}" alt="Logo" class="h-8 w-auto">
@@ -69,7 +69,7 @@
                 </div>
 
                 <!-- Desktop Menu -->
-                <div class="hidden lg:flex space-x-6">
+                <div class="hidden lg:flex lg:flex-wrap lg:justify-center lg:gap-x-3 lg:gap-y-1 xl:gap-x-6 text-xs xl:text-sm py-2">
                     <a href="{{ route('home') }}" class="hover:text-divine-gold transition-colors duration-300 flex items-center">
                         {{ __('messages.home') }}
                     </a>
@@ -113,7 +113,7 @@
                 </div>
 
                 <!-- Desktop Right Menu -->
-                <div class="hidden lg:flex items-center space-x-4">
+                <div class="hidden lg:flex items-center space-x-2 xl:space-x-4">
                     <a href="{{ route('cart.index') }}" class="hover:text-divine-gold relative transition-colors duration-300">
                         <i class="fas fa-shopping-cart text-lg"></i>
                         <span class="hidden xl:inline ml-1">{{ __('messages.cart') }}</span>
@@ -126,7 +126,7 @@
                         <button onclick="toggleLanguageDropdown()" class="hover:text-divine-gold flex items-center transition-colors duration-300">
                             <i class="fas fa-language"></i>
                             <span class="hidden xl:inline ml-1">{{ __('messages.language') }}</span>
-                            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-4 h-4 ml-1 hidden xl:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                             </svg>
                         </button>
@@ -141,7 +141,7 @@
                             @php $currentCurrency = \App\Models\Currency::where('code', session('currency', \App\Models\Currency::getDefaultCurrency()->code))->first(); @endphp
                             <i class="fas fa-coins"></i>
                             <span class="hidden xl:inline ml-1">{{ $currentCurrency->code }}</span>
-                            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-4 h-4 ml-1 hidden xl:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                             </svg>
                         </button>
@@ -170,8 +170,8 @@
                             </button>
                         </form>
                     @else
-                        <a href="{{ route('login') }}" class="hover:text-divine-gold transition-colors duration-300">{{ __('messages.login') }}</a>
-                        <a href="{{ route('register') }}" class="bg-divine-gold text-temple-red px-3 py-2 rounded-lg hover:bg-holy-yellow transition-colors duration-300 text-sm font-semibold divine-glow">{{ __('messages.register') }}</a>
+                        <a href="{{ route('login') }}" class="hover:text-divine-gold transition-colors duration-300"><i class="fas fa-sign-in-alt"></i><span class="hidden xl:inline ml-1">{{ __('messages.login') }}</span></a>
+                        <a href="{{ route('register') }}" class="bg-divine-gold text-temple-red px-2 xl:px-3 py-2 rounded-lg hover:bg-holy-yellow transition-colors duration-300 text-xs xl:text-sm font-semibold divine-glow">{{ __('messages.register') }}</a>
                     @endauth
                 </div>
 
