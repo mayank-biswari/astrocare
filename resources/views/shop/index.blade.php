@@ -3,14 +3,14 @@
 @section('title', 'Shop - Sacred Products')
 
 @section('content')
-<div class="bg-gradient-to-r from-indigo-900 to-purple-900 text-white py-16">
+<div class="bg-gradient-to-r from-indigo-900 to-purple-900 text-white py-8 sm:py-16">
     <div class="container mx-auto px-4 text-center">
-        <h1 class="text-4xl font-bold mb-4">Sacred Products Shop</h1>
-        <p class="text-xl">Authentic spiritual items for your journey</p>
+        <h1 class="text-2xl sm:text-4xl font-bold mb-2 sm:mb-4">Sacred Products Shop</h1>
+        <p class="text-base sm:text-xl">Authentic spiritual items for your journey</p>
     </div>
 </div>
 
-<div class="container mx-auto px-4 py-12">
+<div class="container mx-auto px-4 py-6 sm:py-12">
     @if(session('success'))
         <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6 relative" role="alert">
             <span class="block sm:inline">{{ session('success') }}</span>
@@ -19,71 +19,71 @@
             </span>
         </div>
     @endif
-    
+
     <!-- Categories -->
-    <section class="mb-16">
-        <h2 class="text-3xl font-bold mb-8">Shop by Category</h2>
-        <div class="grid md:grid-cols-3 lg:grid-cols-6 gap-6">
-            <a href="{{ route('shop.category', 'gemstones') }}" class="bg-white p-6 rounded-lg shadow-lg text-center hover:shadow-xl transition">
-                <div class="text-4xl mb-3">💎</div>
-                <h3 class="font-bold">Gemstones</h3>
-                <p class="text-sm text-gray-600">Ruby, Emerald, Sapphire</p>
+    <section class="mb-10 sm:mb-16">
+        <h2 class="text-xl sm:text-3xl font-bold mb-4 sm:mb-8">Shop by Category</h2>
+        <div class="grid grid-cols-3 md:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-6">
+            <a href="{{ route('shop.category', 'gemstones') }}" class="bg-white p-3 sm:p-6 rounded-lg shadow-lg text-center hover:shadow-xl transition overflow-hidden">
+                <div class="text-2xl sm:text-4xl mb-2 sm:mb-3">💎</div>
+                <h3 class="font-bold text-xs sm:text-base">Gemstones</h3>
+                <p class="text-xs text-gray-600 hidden sm:block">Ruby, Emerald, Sapphire</p>
             </a>
-            <a href="{{ route('shop.category', 'rudraksha') }}" class="bg-white p-6 rounded-lg shadow-lg text-center hover:shadow-xl transition">
-                <div class="text-4xl mb-3">📿</div>
-                <h3 class="font-bold">Rudraksha</h3>
-                <p class="text-sm text-gray-600">1-21 Mukhi varieties</p>
+            <a href="{{ route('shop.category', 'rudraksha') }}" class="bg-white p-3 sm:p-6 rounded-lg shadow-lg text-center hover:shadow-xl transition overflow-hidden">
+                <div class="text-2xl sm:text-4xl mb-2 sm:mb-3">📿</div>
+                <h3 class="font-bold text-xs sm:text-base">Rudraksha</h3>
+                <p class="text-xs text-gray-600 hidden sm:block">1-21 Mukhi varieties</p>
             </a>
-            <a href="{{ route('shop.category', 'yantras') }}" class="bg-white p-6 rounded-lg shadow-lg text-center hover:shadow-xl transition">
-                <div class="text-4xl mb-3">🔯</div>
-                <h3 class="font-bold">Yantras</h3>
-                <p class="text-sm text-gray-600">Sacred geometric designs</p>
+            <a href="{{ route('shop.category', 'yantras') }}" class="bg-white p-3 sm:p-6 rounded-lg shadow-lg text-center hover:shadow-xl transition overflow-hidden">
+                <div class="text-2xl sm:text-4xl mb-2 sm:mb-3">🔯</div>
+                <h3 class="font-bold text-xs sm:text-base">Yantras</h3>
+                <p class="text-xs text-gray-600 hidden sm:block">Sacred geometric designs</p>
             </a>
-            <a href="{{ route('shop.category', 'crystals') }}" class="bg-white p-6 rounded-lg shadow-lg text-center hover:shadow-xl transition">
-                <div class="text-4xl mb-3">💎</div>
-                <h3 class="font-bold">Crystals</h3>
-                <p class="text-sm text-gray-600">Healing crystal products</p>
+            <a href="{{ route('shop.category', 'crystals') }}" class="bg-white p-3 sm:p-6 rounded-lg shadow-lg text-center hover:shadow-xl transition overflow-hidden">
+                <div class="text-2xl sm:text-4xl mb-2 sm:mb-3">💎</div>
+                <h3 class="font-bold text-xs sm:text-base">Crystals</h3>
+                <p class="text-xs text-gray-600 hidden sm:block">Healing crystal products</p>
             </a>
-            <a href="{{ route('shop.category', 'pooja_samagri') }}" class="bg-white p-6 rounded-lg shadow-lg text-center hover:shadow-xl transition">
-                <div class="text-4xl mb-3">🕯️</div>
-                <h3 class="font-bold">Pooja Kits</h3>
-                <p class="text-sm text-gray-600">Complete ritual sets</p>
+            <a href="{{ route('shop.category', 'pooja_samagri') }}" class="bg-white p-3 sm:p-6 rounded-lg shadow-lg text-center hover:shadow-xl transition overflow-hidden">
+                <div class="text-2xl sm:text-4xl mb-2 sm:mb-3">🕯️</div>
+                <h3 class="font-bold text-xs sm:text-base">Pooja Kits</h3>
+                <p class="text-xs text-gray-600 hidden sm:block">Complete ritual sets</p>
             </a>
-            <a href="{{ route('shop.category', 'books') }}" class="bg-white p-6 rounded-lg shadow-lg text-center hover:shadow-xl transition">
-                <div class="text-4xl mb-3">📚</div>
-                <h3 class="font-bold">Books</h3>
-                <p class="text-sm text-gray-600">Astrology & spirituality</p>
+            <a href="{{ route('shop.category', 'books') }}" class="bg-white p-3 sm:p-6 rounded-lg shadow-lg text-center hover:shadow-xl transition overflow-hidden">
+                <div class="text-2xl sm:text-4xl mb-2 sm:mb-3">📚</div>
+                <h3 class="font-bold text-xs sm:text-base">Books</h3>
+                <p class="text-xs text-gray-600 hidden sm:block">Astrology & spirituality</p>
             </a>
         </div>
     </section>
 
     <!-- Featured Products -->
-    <section class="mb-16">
-        <h2 class="text-3xl font-bold mb-8">Featured Products</h2>
-        <div class="grid md:grid-cols-4 gap-6">
+    <section class="mb-10 sm:mb-16">
+        <h2 class="text-xl sm:text-3xl font-bold mb-4 sm:mb-8">Featured Products</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
             @foreach($featuredProducts as $product)
                 <div class="bg-white rounded-lg shadow-lg overflow-hidden">
                     <a href="{{ route('product.show', [$product->id, $product->slug]) }}">
                         @if($product->image)
-                            <img src="{{ asset($product->image) }}" alt="{{ $product->name }}" class="w-full h-48 object-cover hover:opacity-90 transition">
+                            <img src="{{ asset($product->image) }}" alt="{{ $product->name }}" class="w-full h-32 sm:h-48 object-cover hover:opacity-90 transition">
                         @else
-                            <div class="w-full h-48 bg-indigo-600 flex items-center justify-center text-white text-lg font-bold hover:opacity-90 transition">
+                            <div class="w-full h-32 sm:h-48 bg-indigo-600 flex items-center justify-center text-white text-sm sm:text-lg font-bold hover:opacity-90 transition">
                                 {{ $product->name }}
                             </div>
                         @endif
                     </a>
-                    <div class="p-4">
+                    <div class="p-2 sm:p-4">
                         <a href="{{ route('product.show', [$product->id, $product->slug]) }}" class="hover:text-indigo-600">
-                            <h3 class="font-bold mb-2">{{ $product->name }}</h3>
+                            <h3 class="font-bold text-xs sm:text-base mb-1 sm:mb-2 truncate">{{ $product->name }}</h3>
                         </a>
-                        <p class="text-gray-600 text-sm mb-2">{{ Str::limit($product->description, 50) }}</p>
-                        <div class="flex justify-between items-center">
-                            <span class="text-xl font-bold text-indigo-600">{{ formatPrice($product->price) }}</span>
+                        <p class="text-gray-600 text-xs mb-2 hidden sm:block">{{ Str::limit($product->description, 50) }}</p>
+                        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+                            <span class="text-sm sm:text-xl font-bold text-indigo-600">{{ formatPrice($product->price) }}</span>
                             <form action="{{ route('cart.add') }}" method="POST" class="inline">
                                 @csrf
                                 <input type="hidden" name="product_id" value="{{ $product->id }}">
                                 <input type="hidden" name="quantity" value="1">
-                                <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">Add to Cart</button>
+                                <button type="submit" class="w-full sm:w-auto bg-indigo-600 text-white px-2 sm:px-4 py-1.5 sm:py-2 rounded text-xs sm:text-sm hover:bg-indigo-700">Add to Cart</button>
                             </form>
                         </div>
                     </div>
@@ -93,12 +93,12 @@
     </section>
 
     <!-- Gemstones Section -->
-    <section class="mb-16">
-        <h2 class="text-3xl font-bold mb-8">Premium Gemstones</h2>
-        <div class="bg-white p-8 rounded-lg shadow-lg">
+    <section class="mb-10 sm:mb-16">
+        <h2 class="text-xl sm:text-3xl font-bold mb-4 sm:mb-8">Premium Gemstones</h2>
+        <div class="bg-white p-4 sm:p-8 rounded-lg shadow-lg">
             <div class="grid md:grid-cols-2 gap-8">
                 <div>
-                    <h3 class="text-xl font-bold mb-4">Why Choose Our Gemstones?</h3>
+                    <h3 class="text-lg sm:text-xl font-bold mb-4">Why Choose Our Gemstones?</h3>
                     <ul class="space-y-2 text-gray-600">
                         <li>✓ Lab certified authentic stones</li>
                         <li>✓ Astrologically recommended cuts</li>
@@ -135,11 +135,11 @@
 
     <!-- Special Offers -->
     <section>
-        <h2 class="text-3xl font-bold mb-8">Special Offers</h2>
-        <div class="bg-gradient-to-r from-yellow-400 to-orange-500 text-white p-8 rounded-lg">
+        <h2 class="text-xl sm:text-3xl font-bold mb-4 sm:mb-8">Special Offers</h2>
+        <div class="bg-gradient-to-r from-yellow-400 to-orange-500 text-white p-4 sm:p-8 rounded-lg">
             <div class="text-center">
-                <h3 class="text-2xl font-bold mb-4">Navratri Special - 20% Off</h3>
-                <p class="mb-6">Get 20% discount on all Pooja Samagri Kits and Yantras</p>
+                <h3 class="text-lg sm:text-2xl font-bold mb-2 sm:mb-4">Navratri Special - 20% Off</h3>
+                <p class="text-sm sm:text-base mb-4 sm:mb-6">Get 20% discount on all Pooja Samagri Kits and Yantras</p>
                 <a href="{{ route('shop.category', 'pooja_samagri') }}" class="bg-white text-orange-500 px-8 py-3 rounded-lg font-bold hover:bg-gray-100">Shop Now</a>
             </div>
         </div>

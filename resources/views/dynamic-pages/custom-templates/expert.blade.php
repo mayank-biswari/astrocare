@@ -45,31 +45,31 @@
     $educationList = array_filter(array_map('trim', explode("\n", $education)));
 @endphp
 
-<div class="bg-gray-50 min-h-screen py-8">
+<div class="bg-gray-50 min-h-screen py-4 sm:py-8">
     <div class="container mx-auto px-4 max-w-6xl">
-        <nav class="text-sm text-gray-500 mb-6">
-            <a href="/" class="hover:text-orange-600">Home</a> > 
-            <a href="/experts" class="hover:text-orange-600">Experts</a> > 
+        <nav class="text-xs sm:text-sm text-gray-500 mb-4 sm:mb-6">
+            <a href="/" class="hover:text-orange-600">Home</a> >
+            <a href="/experts" class="hover:text-orange-600">Experts</a> >
             {{ $name }}
         </nav>
 
         <!-- Profile Header -->
-        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-            <div class="flex flex-col md:flex-row gap-6">
+        <div class="bg-white rounded-lg shadow-md p-3 sm:p-6 mb-4 sm:mb-6">
+            <div class="flex flex-col md:flex-row gap-4 sm:gap-6">
                 <!-- Profile Image -->
-                <div class="flex-shrink-0">
+                <div class="flex-shrink-0 flex justify-center md:justify-start">
                     <div class="relative">
-                        <img src="{{ asset('storage/' . $page->image) }}" alt="{{ $name }}" class="w-32 h-32 rounded-full object-cover border-4 border-orange-500">
-                        <span class="absolute bottom-0 right-0 w-6 h-6 rounded-full border-2 border-white {{ $status === 'online' ? 'bg-green-500' : ($status === 'busy' ? 'bg-yellow-500' : 'bg-gray-400') }}"></span>
+                        <img src="{{ asset('storage/' . $page->image) }}" alt="{{ $name }}" class="w-24 h-24 sm:w-32 sm:h-32 rounded-full object-cover border-4 border-orange-500">
+                        <span class="absolute bottom-0 right-0 w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 border-white {{ $status === 'online' ? 'bg-green-500' : ($status === 'busy' ? 'bg-yellow-500' : 'bg-gray-400') }}"></span>
                     </div>
                 </div>
 
                 <!-- Profile Info -->
                 <div class="flex-1">
-                    <div class="flex items-start justify-between flex-wrap gap-4">
-                        <div>
-                            <h1 class="text-3xl font-bold text-gray-800">{{ $name }}</h1>
-                            <p class="text-lg text-gray-600 mt-1">{{ $title }}</p>
+                    <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                        <div class="text-center md:text-left">
+                            <h1 class="text-xl sm:text-3xl font-bold text-gray-800">{{ $name }}</h1>
+                            <p class="text-sm sm:text-lg text-gray-600 mt-1">{{ $title }}</p>
 
                             <!-- Rating -->
                             <div class="flex items-center gap-2 mt-2">
@@ -84,24 +84,24 @@
                             </div>
 
                             <!-- Stats -->
-                            <div class="flex flex-wrap gap-4 mt-4">
+                            <div class="flex flex-wrap gap-3 sm:gap-4 mt-3 sm:mt-4 justify-center md:justify-start">
                                 <div class="flex items-center gap-2">
-                                    <svg class="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-4 h-4 sm:w-5 sm:h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                                     </svg>
-                                    <span class="text-gray-700"><strong>{{ $experience }}</strong> Years Exp.</span>
+                                    <span class="text-sm sm:text-base text-gray-700"><strong>{{ $experience }}</strong> Years Exp.</span>
                                 </div>
                                 <div class="flex items-center gap-2">
-                                    <svg class="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-4 h-4 sm:w-5 sm:h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
                                     </svg>
-                                    @if($consultations)<span class="text-gray-700"><strong>{{ $consultations ?? 0 }}</strong> Consultations</span>@endif
+                                    @if($consultations)<span class="text-sm sm:text-base text-gray-700"><strong>{{ $consultations ?? 0 }}</strong> Consultations</span>@endif
                                 </div>
                             </div>
                         </div>
 
                         <!-- Action Buttons -->
-                        <div class="flex flex-col gap-3">
+                        <div class="flex flex-col gap-2 sm:gap-3 w-full sm:w-auto">
                             @if($status === 'online' && $hasProduct && $product->variants && $product->variants->where('is_active', true)->count() > 0)
                                 @foreach($product->variants->where('is_active', true) as $variant)
                                 @php
@@ -159,13 +159,13 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
             <!-- Main Content -->
-            <div class="lg:col-span-2 space-y-6">
+            <div class="lg:col-span-2 space-y-4 sm:space-y-6">
                 <!-- Expertise Section -->
                 @if(count($expertiseList) > 0)
-                <div class="bg-white rounded-lg shadow-md p-6">
-                    <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <div class="bg-white rounded-lg shadow-md p-3 sm:p-6">
+                    <h2 class="text-lg sm:text-2xl font-bold text-gray-800 mb-3 sm:mb-4 flex items-center gap-2">
                         <svg class="w-6 h-6 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
                         </svg>
@@ -173,7 +173,7 @@
                     </h2>
                     <div class="flex flex-wrap gap-2">
                         @foreach($expertiseList as $item)
-                            <span class="bg-orange-100 text-orange-700 px-4 py-2 rounded-full text-sm font-medium">{{ $item }}</span>
+                            <span class="bg-orange-100 text-orange-700 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium">{{ $item }}</span>
                         @endforeach
                     </div>
                 </div>
@@ -181,21 +181,21 @@
 
                 <!-- About Section -->
                 @if($about)
-                <div class="bg-white rounded-lg shadow-md p-6">
-                    <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <div class="bg-white rounded-lg shadow-md p-3 sm:p-6">
+                    <h2 class="text-lg sm:text-2xl font-bold text-gray-800 mb-3 sm:mb-4 flex items-center gap-2">
                         <svg class="w-6 h-6 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                         </svg>
                         About
                     </h2>
-                    <div class="text-gray-700 leading-relaxed whitespace-pre-line">{!! $about !!}</div>
+                    <div class="text-sm sm:text-base text-gray-700 leading-relaxed whitespace-pre-line">{!! $about !!}</div>
                 </div>
                 @endif
 
                 <!-- Education Section -->
                 @if(count($educationList) > 0)
-                <div class="bg-white rounded-lg shadow-md p-6">
-                    <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <div class="bg-white rounded-lg shadow-md p-3 sm:p-6">
+                    <h2 class="text-lg sm:text-2xl font-bold text-gray-800 mb-3 sm:mb-4 flex items-center gap-2">
                         <svg class="w-6 h-6 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
                         </svg>
@@ -216,8 +216,8 @@
 
                 @if(!empty($availability) && count($availability) > 0)
                 <!-- Availability Calendar -->
-                <div class="bg-white rounded-lg shadow-md p-6">
-                    <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <div class="bg-white rounded-lg shadow-md p-3 sm:p-6">
+                    <h2 class="text-lg sm:text-2xl font-bold text-gray-800 mb-3 sm:mb-4 flex items-center gap-2">
                         <svg class="w-6 h-6 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                         </svg>
@@ -239,11 +239,11 @@
             </div>
 
             <!-- Sidebar -->
-            <div class="space-y-6">
+            <div class="space-y-4 sm:space-y-6">
                 <!-- Languages -->
                 @if(count($languageList) > 0)
-                <div class="bg-white rounded-lg shadow-md p-6">
-                    <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <div class="bg-white rounded-lg shadow-md p-3 sm:p-6">
+                    <h3 class="text-base sm:text-xl font-bold text-gray-800 mb-3 sm:mb-4 flex items-center gap-2">
                         <svg class="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"/>
                         </svg>
@@ -261,8 +261,8 @@
                 {{-- @include('dynamic-pages.custom-templates.components.pricing-card') --}}
 
                 <!-- Status Card -->
-                <div class="bg-white rounded-lg shadow-md p-6">
-                    <h3 class="text-xl font-bold text-gray-800 mb-4">Availability</h3>
+                <div class="bg-white rounded-lg shadow-md p-3 sm:p-6">
+                    <h3 class="text-base sm:text-xl font-bold text-gray-800 mb-3 sm:mb-4">Availability</h3>
                     <div class="flex items-center gap-3">
                         <span class="w-4 h-4 rounded-full {{ $status === 'online' ? 'bg-green-500' : ($status === 'busy' ? 'bg-yellow-500' : 'bg-gray-400') }}"></span>
                         <span class="text-lg font-semibold {{ $status === 'online' ? 'text-green-600' : ($status === 'busy' ? 'text-yellow-600' : 'text-gray-600') }}">

@@ -4,40 +4,40 @@
 
 @section('content')
     <div
-        class="min-h-screen flex items-center justify-center bg-gradient-to-r from-indigo-900 to-purple-900 py-12 px-4 sm:px-6 lg:px-8">
-        <div class="max-w-md w-full space-y-8">
-            <div class="bg-white rounded-lg shadow-xl p-8">
+        class="min-h-screen flex items-center justify-center bg-gradient-to-r from-indigo-900 to-purple-900 py-6 sm:py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-md w-full space-y-6 sm:space-y-8">
+            <div class="bg-white rounded-lg shadow-xl p-4 sm:p-8">
                 <div class="text-center">
-                    <h2 class="text-3xl font-bold text-gray-900 mb-2">Create Account</h2>
-                    <p class="text-gray-600">Join {{ \App\Models\SiteSetting::get('site_name', 'AstroServices') }} for spiritual guidance</p>
+                    <h2 class="text-xl sm:text-3xl font-bold text-gray-900 mb-2">Create Account</h2>
+                    <p class="text-sm sm:text-base text-gray-600">Join {{ \App\Models\SiteSetting::get('site_name', 'AstroServices') }} for spiritual guidance</p>
                 </div>
 
-                <form method="POST" action="{{ route('register') }}" class="mt-8 space-y-6" id="registerForm">
+                <form method="POST" action="{{ route('register') }}" class="mt-6 sm:mt-8 space-y-4 sm:space-y-6" id="registerForm">
                     @csrf
 
                     <div>
-                        <label for="name" class="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                        <label for="name" class="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">Full Name</label>
                         <input id="name" name="name" type="text" value="{{ old('name') }}" required autofocus
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                            class="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm sm:text-base">
                         @error('name')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
 
                     <div>
-                        <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">Email Address</label>
                         <input id="email" name="email" type="email" value="{{ old('email') }}" required
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                            class="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm sm:text-base">
                         @error('email')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
 
                     <div>
-                        <label for="password" class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                        <label for="password" class="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">Password</label>
                         <div class="relative">
                             <input id="password" name="password" type="password" required
-                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 pr-10">
+                                class="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 pr-10 text-sm sm:text-base">
                             <button type="button" onclick="togglePassword('password')"
                                 class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700">
                                 <i id="password-icon" class="fas fa-eye"></i>
@@ -50,11 +50,11 @@
                     </div>
 
                     <div>
-                        <label for="password_confirmation" class="block text-sm font-medium text-gray-700 mb-2">Confirm
+                        <label for="password_confirmation" class="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">Confirm
                             Password</label>
                         <div class="relative">
                             <input id="password_confirmation" name="password_confirmation" type="password" required
-                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 pr-10">
+                                class="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 pr-10 text-sm sm:text-base">
                             <button type="button" onclick="togglePassword('password_confirmation')"
                                 class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700">
                                 <i id="password_confirmation-icon" class="fas fa-eye"></i>
@@ -66,12 +66,12 @@
                     </div>
 
                     <button type="submit" id="submitBtn" disabled
-                        class="w-full bg-indigo-600 text-white py-3 px-4 rounded-lg font-bold hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition duration-200 disabled:bg-gray-400 disabled:cursor-not-allowed">
+                        class="w-full bg-indigo-600 text-white py-2.5 sm:py-3 px-4 rounded-lg font-bold hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition duration-200 disabled:bg-gray-400 disabled:cursor-not-allowed text-sm sm:text-base">
                         Create Account
                     </button>
 
                     <div class="text-center">
-                        <p class="text-sm text-gray-600">
+                        <p class="text-xs sm:text-sm text-gray-600">
                             Already have an account?
                             <a href="{{ route('login') }}" class="text-indigo-600 hover:text-indigo-500 font-medium">Sign
                                 in</a>
