@@ -6,7 +6,7 @@
 <div class="bg-gradient-to-r from-indigo-900 to-purple-900 text-white py-8 sm:py-16">
     <div class="container mx-auto px-4 text-center">
         <h1 class="text-xl sm:text-4xl font-bold mb-2 sm:mb-4">About {{ \App\Models\SiteSetting::get('site_name', 'AstroServices') }}</h1>
-        <p class="text-base sm:text-xl">Your trusted partner in spiritual guidance and astrology</p>
+        <p class="text-base sm:text-xl">Your trusted partner spiritual guidance and astrology</p>
     </div>
 </div>
 
