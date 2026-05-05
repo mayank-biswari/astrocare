@@ -162,7 +162,7 @@ class ProductController extends Controller
                     $cart[$productId]['quantity'] = $newQty;
                 }
             }
-            
+
             // Update price if variant to ensure currency consistency
             if (isset($cart[$productId]['type']) && $cart[$productId]['type'] === 'cms_page_variant' && isset($cart[$productId]['variant_id'])) {
                 $variant = \App\Models\CmsPageProductVariant::find($cart[$productId]['variant_id']);
@@ -171,7 +171,7 @@ class ProductController extends Controller
                     $cart[$productId]['currency'] = session('currency', \App\Models\Currency::getDefaultCurrency()->code);
                 }
             }
-            
+
             session()->put('cart', $cart);
         }
 
@@ -256,7 +256,7 @@ class ProductController extends Controller
 
         if ($result['success']) {
             session()->forget('cart');
-            return redirect()->route('shop.index')->with('success', $result['message']);
+            return redirect()->route('dashboard.orders')->with('success', $result['message']);
         }
 
         return redirect()->back()->with('error', $result['message']);

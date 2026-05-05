@@ -35,6 +35,7 @@ class User extends Authenticatable
         'address',
         'city',
         'pincode',
+        'user_code',
     ];
 
     /**
@@ -63,6 +64,40 @@ class User extends Authenticatable
     public function consultations()
     {
         return $this->hasMany(Consultation::class);
+    }
+
+    /**
+     * Boot method to auto-generate user_code on creation.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($user) {
+            if (empty($user->user_code)) {
+                $user->user_code = static::generateUserCode($user->role ?? 'user');
+            }
+        });
+    }
+
+    /**
+     * Generate a unique user code.
+     * Format: RoleLetter(1) + Day(2) + MonthLetter(1) + Random(4) = 8 chars
+     */
+    public static function generateUserCode(?string $role = 'user'): string
+    {
+        $monthLetters = ['J','F','M','A','Y','N','L','G','S','O','V','D']; // unique per month
+
+        do {
+            $roleLetter = strtoupper(substr($role ?? 'user', 0, 1)); // U, A, or E
+            $day = now()->format('d'); // 2-digit day
+            $monthIndex = (int) now()->format('n') - 1;
+            $monthLetter = $monthLetters[$monthIndex];
+            $random = strtoupper(substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'), 0, 4));
+            $code = $roleLetter . $day . $monthLetter . $random;
+        } while (static::where('user_code', $code)->exists());
+
+        return $code;
     }
 
     public function kundlis()

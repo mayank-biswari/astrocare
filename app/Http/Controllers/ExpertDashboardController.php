@@ -19,18 +19,18 @@ class ExpertDashboardController extends Controller
             ->whereHas('pageType', fn($q) => $q->where('name', 'LIKE', '%Astrologer%'))
             ->with(['product.variants'])
             ->first();
-        
+
         $pageType = \App\Models\CmsPageType::where('name', 'LIKE', '%Astrologer%')->first();
         $languages = \App\Models\Language::getActiveLanguages();
         $currencies = \App\Models\Currency::getActiveCurrencies();
-        
+
         return view('dashboard.expert.profile', compact('page', 'pageType', 'languages', 'currencies'));
     }
 
     public function updateProfile(Request $request)
     {
         $pageType = \App\Models\CmsPageType::where('name', 'LIKE', '%Astrologer%')->firstOrFail();
-        
+
         $request->validate([
             'title' => 'required|string|max:255',
             'body' => 'required|string',
@@ -106,12 +106,85 @@ class ExpertDashboardController extends Controller
 
     public function chats()
     {
-        return view('dashboard.expert.chats');
+        // Find the expert's CMS page
+        $page = \App\Models\CmsPage::where('created_by', auth()->id())
+            ->whereHas('pageType', fn($q) => $q->where('name', 'LIKE', '%Astrologer%'))
+            ->first();
+
+        $chatSessions = collect();
+
+        if ($page) {
+            // Find orders that contain items for this expert's chat variant
+            $orders = \App\Models\Order::whereNotNull('items')
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            foreach ($orders as $order) {
+                $items = is_array($order->items) ? $order->items : json_decode($order->items, true);
+                if (!$items) continue;
+
+                foreach ($items as $item) {
+                    $itemType = $item['type'] ?? '';
+                    $itemProductId = $item['product_id'] ?? ($item['id'] ?? null);
+                    $itemName = $item['name'] ?? '';
+
+                    $isChatItem = ($itemType === 'cms_page_variant' && (string)$itemProductId === (string)$page->id)
+                        || str_contains(strtolower($itemName), strtolower($page->title));
+
+                    if ($isChatItem && str_contains(strtolower($itemName), 'chat')) {
+                        $chatSessions->push([
+                            'order' => $order,
+                            'item' => $item,
+                            'customer' => $order->user,
+                        ]);
+                    }
+                }
+            }
+        }
+
+        return view('dashboard.expert.chats', compact('chatSessions'));
     }
 
     public function calls()
     {
-        return view('dashboard.expert.calls');
+        // Find the expert's CMS page
+        $page = \App\Models\CmsPage::where('created_by', auth()->id())
+            ->whereHas('pageType', fn($q) => $q->where('name', 'LIKE', '%Astrologer%'))
+            ->first();
+
+        $callSessions = collect();
+
+        if ($page) {
+            // Find orders that contain items for this expert's call variant
+            $orders = \App\Models\Order::whereNotNull('items')
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            foreach ($orders as $order) {
+                $items = is_array($order->items) ? $order->items : json_decode($order->items, true);
+                if (!$items) continue;
+
+                foreach ($items as $item) {
+                    // Check if this item is for this expert (cms_page_variant type with matching product_id)
+                    $itemType = $item['type'] ?? '';
+                    $itemProductId = $item['product_id'] ?? ($item['id'] ?? null);
+                    $itemName = $item['name'] ?? '';
+
+                    $isCallItem = ($itemType === 'cms_page_variant' && (string)$itemProductId === (string)$page->id)
+                        || str_contains(strtolower($itemName), strtolower($page->title));
+
+                    if ($isCallItem && str_contains(strtolower($itemName), 'call')) {
+                        $callSessions->push([
+                            'order' => $order,
+                            'item' => $item,
+                            'customer' => $order->user,
+                        ]);
+                    }
+                }
+            }
+        }
+
+        return view('dashboard.expert.calls', compact('callSessions'));
     }
 
     public function availability()
