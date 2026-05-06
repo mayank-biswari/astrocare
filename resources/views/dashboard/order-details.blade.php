@@ -100,7 +100,7 @@
                 </div>
             </div>
         @else
-            @php $items = json_decode($order->items, true) ?? []; @endphp
+            @php $items = is_array($order->items) ? $order->items : (json_decode($order->items, true) ?? []); @endphp
             @if(!empty($items))
                 <div class="space-y-4">
                     @foreach($items as $item)
@@ -157,32 +157,59 @@
         <h2 class="text-lg sm:text-xl font-bold mb-4">Order Timeline</h2>
 
         <div class="space-y-4">
+            @if($order->delivered_at)
             <div class="flex items-center space-x-4">
                 <div class="w-4 h-4 bg-green-500 rounded-full"></div>
                 <div>
                     <p class="font-bold">Order Delivered</p>
-                    <p class="text-gray-600 text-sm">Dec 13, 2024 at 2:30 PM</p>
+                    <p class="text-gray-600 text-sm">{{ $order->delivered_at->format('M d, Y \a\t h:i A') }}</p>
                 </div>
             </div>
+            @endif
+
+            @if($order->shipped_at)
             <div class="flex items-center space-x-4">
                 <div class="w-4 h-4 bg-blue-500 rounded-full"></div>
                 <div>
-                    <p class="font-bold">Out for Delivery</p>
-                    <p class="text-gray-600 text-sm">Dec 13, 2024 at 9:00 AM</p>
+                    <p class="font-bold">Order Shipped</p>
+                    <p class="text-gray-600 text-sm">{{ $order->shipped_at->format('M d, Y \a\t h:i A') }}</p>
                 </div>
             </div>
+            @endif
+
+            @if($order->payment_status === 'paid')
+            <div class="flex items-center space-x-4">
+                <div class="w-4 h-4 bg-purple-500 rounded-full"></div>
+                <div>
+                    <p class="font-bold">Payment Confirmed</p>
+                    <p class="text-gray-600 text-sm">{{ $order->updated_at->format('M d, Y \a\t h:i A') }}</p>
+                </div>
+            </div>
+            @elseif($order->payment_status === 'pending' && $order->payment_method === 'cod')
             <div class="flex items-center space-x-4">
                 <div class="w-4 h-4 bg-yellow-500 rounded-full"></div>
                 <div>
-                    <p class="font-bold">Order Shipped</p>
-                    <p class="text-gray-600 text-sm">Dec 11, 2024 at 4:00 PM</p>
+                    <p class="font-bold">Payment on Delivery</p>
+                    <p class="text-gray-600 text-sm">Pay when you receive the order</p>
                 </div>
             </div>
+            @endif
+
+            @if($order->status === 'cancelled')
+            <div class="flex items-center space-x-4">
+                <div class="w-4 h-4 bg-red-500 rounded-full"></div>
+                <div>
+                    <p class="font-bold">Order Cancelled</p>
+                    <p class="text-gray-600 text-sm">{{ $order->updated_at->format('M d, Y \a\t h:i A') }}</p>
+                </div>
+            </div>
+            @endif
+
             <div class="flex items-center space-x-4">
                 <div class="w-4 h-4 bg-gray-500 rounded-full"></div>
                 <div>
-                    <p class="font-bold">Order Confirmed</p>
-                    <p class="text-gray-600 text-sm">Dec 10, 2024 at 6:15 PM</p>
+                    <p class="font-bold">Order Placed</p>
+                    <p class="text-gray-600 text-sm">{{ $order->created_at->format('M d, Y \a\t h:i A') }}</p>
                 </div>
             </div>
         </div>

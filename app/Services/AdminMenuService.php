@@ -60,6 +60,13 @@ class AdminMenuService
                         'active' => 'admin.questions*'
                     ],
                     [
+                        'title' => 'Predictions',
+                        'icon' => 'far fa-circle',
+                        'route' => 'admin.predictions',
+                        'active' => 'admin.predictions*',
+                        'permission' => 'view predictions'
+                    ],
+                    [
                         'title' => 'Pooja Bookings',
                         'icon' => 'far fa-circle',
                         'route' => 'admin.consultations',
@@ -119,7 +126,7 @@ class AdminMenuService
                         'route' => 'admin.lists.pages',
                         'active' => 'admin.lists.pages*'
                     ],
-                    [  
+                    [
                         'title' => 'Templates',
                         'icon' => 'far fa-circle',
                         'route' => 'admin.lists.templates',

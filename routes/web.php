@@ -61,6 +61,8 @@ Route::prefix('services')->group(function () {
     Route::get('/predictions', [ServiceController::class, 'predictions'])->name('predictions.index');
     Route::post('/predictions/monthly', [ServiceController::class, 'monthlyPredictions'])->name('predictions.monthly');
     Route::post('/predictions/yearly', [ServiceController::class, 'yearlyPredictions'])->name('predictions.yearly');
+    Route::get('/predictions/checkout', [ServiceController::class, 'predictionCheckout'])->name('predictions.checkout')->middleware('auth');
+    Route::post('/predictions/order/place', [ServiceController::class, 'placePredictionOrder'])->name('predictions.order.place')->middleware('auth');
 });
 
 // Pooja & Rituals
@@ -94,6 +96,10 @@ Route::prefix('shop')->group(function () {
 Route::middleware('auth')->prefix('dashboard')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/orders', [DashboardController::class, 'orders'])->name('dashboard.orders');
+    Route::get('/predictions', [DashboardController::class, 'predictions'])->name('dashboard.predictions');
+    Route::get('/notifications', [DashboardController::class, 'notifications'])->name('dashboard.notifications');
+    Route::get('/notifications/{id}/read', [DashboardController::class, 'markNotificationRead'])->name('dashboard.notifications.read');
+    Route::post('/notifications/mark-all-read', [DashboardController::class, 'markAllNotificationsRead'])->name('dashboard.notifications.mark-all-read');
     Route::get('/consultations', [DashboardController::class, 'consultations'])->name('dashboard.consultations');
     Route::get('/consultation/{id}', [DashboardController::class, 'consultationDetails'])->name('dashboard.consultation.details');
     Route::get('/consultation/{id}/reschedule', [DashboardController::class, 'rescheduleConsultation'])->name('dashboard.consultation.reschedule');
@@ -212,6 +218,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/questions', [App\Http\Controllers\AdminController::class, 'questions'])->name('questions');
     Route::get('/questions/{id}/view', [App\Http\Controllers\AdminController::class, 'viewQuestion'])->name('questions.view');
     Route::put('/questions/{id}/status', [App\Http\Controllers\AdminController::class, 'updateQuestionStatus'])->name('questions.status');
+
+    // Predictions
+    Route::get('/predictions', [App\Http\Controllers\AdminController::class, 'predictions'])->name('predictions');
+    Route::get('/predictions/{id}/view', [App\Http\Controllers\AdminController::class, 'viewPrediction'])->name('predictions.view');
+    Route::put('/predictions/{id}/status', [App\Http\Controllers\AdminController::class, 'updatePredictionStatus'])->name('predictions.status');
 
     // User Management
     Route::prefix('user-management')->name('user-management.')->group(function () {

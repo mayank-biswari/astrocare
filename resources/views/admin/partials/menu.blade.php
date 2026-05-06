@@ -17,12 +17,14 @@ $menuItems = AdminMenuService::getMenuItems();
                     </a>
                     <ul class="nav nav-treeview">
                         @foreach($item['children'] as $child)
+                            @if(!isset($child['permission']) || auth()->user()->role === 'admin' || auth()->user()->hasPermissionTo($child['permission']))
                             <li class="nav-item">
                                 <a href="{{ route($child['route']) }}" class="nav-link {{ request()->routeIs($child['active']) ? 'active' : '' }}">
                                     <i class="{{ $child['icon'] }} nav-icon"></i>
                                     <p>{{ $child['title'] }}</p>
                                 </a>
                             </li>
+                            @endif
                         @endforeach
                     </ul>
                 </li>

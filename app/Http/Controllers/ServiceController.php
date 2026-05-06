@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Question;
+use App\Models\Prediction;
 use App\Events\QuestionSubmitted;
 use App\Services\PaymentService;
 
@@ -146,5 +147,151 @@ class ServiceController extends Controller
     public function predictions()
     {
         return view('services.predictions');
+    }
+
+    public function monthlyPredictions(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email',
+            'dob' => 'required|date',
+        ]);
+
+        if (!auth()->check()) {
+            session(['prediction_data' => $request->all(), 'prediction_type' => 'monthly']);
+            return redirect()->route('login')->with('info', 'Please login or create an account to get your predictions.');
+        }
+
+        $amount = 299;
+
+        $prediction = Prediction::create([
+            'user_id' => auth()->id(),
+            'name' => $request->name,
+            'email' => $request->email,
+            'phone' => $request->phone ?? auth()->user()->phone ?? '',
+            'dob' => $request->dob,
+            'time' => $request->time,
+            'place' => $request->place ?? '',
+            'type' => 'monthly',
+            'amount' => $amount,
+            'status' => 'pending',
+            'payment_status' => 'pending',
+        ]);
+
+        session([
+            'prediction_checkout' => [
+                'prediction_id' => $prediction->id,
+                'name' => $request->name,
+                'type' => 'Monthly',
+                'amount' => $amount,
+            ]
+        ]);
+
+        return redirect()->route('predictions.checkout');
+    }
+
+    public function yearlyPredictions(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email',
+            'dob' => 'required|date',
+            'place' => 'required|string|max:255',
+        ]);
+
+        if (!auth()->check()) {
+            session(['prediction_data' => $request->all(), 'prediction_type' => 'yearly']);
+            return redirect()->route('login')->with('info', 'Please login or create an account to get your predictions.');
+        }
+
+        $amount = 999;
+
+        $prediction = Prediction::create([
+            'user_id' => auth()->id(),
+            'name' => $request->name,
+            'email' => $request->email,
+            'phone' => $request->phone ?? auth()->user()->phone ?? '',
+            'dob' => $request->dob,
+            'time' => $request->time,
+            'place' => $request->place,
+            'type' => 'yearly',
+            'amount' => $amount,
+            'status' => 'pending',
+            'payment_status' => 'pending',
+        ]);
+
+        session([
+            'prediction_checkout' => [
+                'prediction_id' => $prediction->id,
+                'name' => $request->name,
+                'type' => 'Yearly',
+                'amount' => $amount,
+            ]
+        ]);
+
+        return redirect()->route('predictions.checkout');
+    }
+
+    public function predictionCheckout()
+    {
+        if (!session('prediction_checkout')) {
+            return redirect()->route('predictions.index')->with('error', 'No prediction data found. Please submit your request first.');
+        }
+
+        $predictionData = session('prediction_checkout');
+        $paymentGateways = \App\Models\PaymentGateway::getActiveGateways();
+        return view('services.prediction-checkout', compact('predictionData', 'paymentGateways'));
+    }
+
+    public function placePredictionOrder(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email',
+            'phone' => 'required|string',
+            'payment_gateway' => 'required|exists:payment_gateways,code'
+        ]);
+
+        if (!session('prediction_checkout')) {
+            return redirect()->route('predictions.index')->with('error', 'No prediction data found.');
+        }
+
+        if (auth()->check() && !auth()->user()->phone) {
+            auth()->user()->update(['phone' => $request->phone]);
+        }
+
+        $predictionData = session('prediction_checkout');
+        $prediction = Prediction::findOrFail($predictionData['prediction_id']);
+
+        // Create order
+        $order = \App\Models\Order::create([
+            'user_id' => auth()->id(),
+            'orderable_type' => 'App\\Models\\Prediction',
+            'orderable_id' => $prediction->id,
+            'order_number' => 'ORD-' . strtoupper(uniqid()),
+            'total_amount' => $predictionData['amount'],
+            'status' => 'pending',
+            'payment_method' => $request->payment_gateway,
+            'payment_status' => 'pending',
+            'items' => [['name' => $predictionData['type'] . ' Prediction', 'quantity' => 1, 'price' => $predictionData['amount']]],
+            'shipping_address' => ['phone' => $request->phone],
+        ]);
+
+        // Process payment
+        $paymentService = new PaymentService();
+        $result = $paymentService->processPayment($order, $request->payment_gateway);
+
+        if (isset($result['redirect'])) {
+            return redirect()->away($result['redirect']);
+        }
+
+        $prediction->update(['payment_status' => 'paid']);
+        session()->forget('prediction_checkout');
+
+        if ($result['success']) {
+            return redirect()->route('dashboard.order.details', $order->id)->with('success', 'Prediction order placed successfully! You will receive your report within 24-48 hours.');
+        }
+
+        return redirect()->back()->with('error', $result['message']);
     }
 }

@@ -17,6 +17,13 @@
 <!-- Profile Photo Section -->
 <div class="bg-white rounded-lg shadow-sm p-4 sm:p-6 mb-4 sm:mb-6">
     <h2 class="text-lg sm:text-xl font-bold mb-4 sm:mb-6">Profile Photo</h2>
+
+    @error('profile_photo')
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 text-sm">
+            {{ $message }}
+        </div>
+    @enderror
+
     <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
         <div class="relative">
             @if(auth()->user()->profile_photo)
@@ -30,7 +37,7 @@
         <div class="flex-1 w-full">
             <form action="{{ route('dashboard.profile.photo.update') }}" method="POST" enctype="multipart/form-data" id="photoForm">
                 @csrf
-                <input type="file" name="profile_photo" id="profile_photo" accept="image/*" class="hidden" onchange="this.form.submit()">
+                <input type="file" name="profile_photo" id="profile_photo" accept="image/jpeg,image/png,image/jpg,image/gif" class="hidden" onchange="validateAndSubmitPhoto(this)">
                 <div class="flex flex-col sm:flex-row gap-2 sm:gap-3">
                     <button type="button" onclick="document.getElementById('profile_photo').click()" class="px-3 sm:px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 text-sm sm:text-base">
                         <i class="fas fa-{{ auth()->user()->profile_photo ? 'edit' : 'upload' }} mr-2"></i>{{ auth()->user()->profile_photo ? 'Change Photo' : 'Upload Photo' }}
@@ -47,6 +54,7 @@
                 </div>
             </form>
             <p class="text-xs sm:text-sm text-gray-500 mt-2">JPG, PNG or GIF. Max size 2MB.</p>
+            <div id="photo-error" class="text-red-600 text-sm mt-2 hidden"></div>
         </div>
     </div>
 </div>
@@ -55,7 +63,7 @@
     <!-- Profile Information -->
     <div class="bg-white rounded-lg shadow-sm p-4 sm:p-6">
         <h2 class="text-lg sm:text-xl font-bold mb-4 sm:mb-6">Profile Information</h2>
-        
+
         <form action="{{ route('dashboard.profile.update') }}" method="POST" class="space-y-3 sm:space-y-4">
             @csrf
             <div>
@@ -91,7 +99,7 @@
     <!-- Change Password -->
     <div class="bg-white rounded-lg shadow-sm p-4 sm:p-6">
         <h2 class="text-lg sm:text-xl font-bold mb-4 sm:mb-6">Change Password</h2>
-        
+
         <form action="{{ route('dashboard.password.update') }}" method="POST" class="space-y-3 sm:space-y-4" id="passwordForm">
             @csrf
             <div>
@@ -135,7 +143,7 @@
 <!-- Preferences -->
 <div class="bg-white rounded-lg shadow-sm p-4 sm:p-6 mt-4 sm:mt-6">
     <h2 class="text-lg sm:text-xl font-bold mb-4 sm:mb-6">Preferences</h2>
-    
+
     <form action="{{ route('dashboard.preferences.update') }}" method="POST">
         @csrf
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
@@ -143,23 +151,23 @@
                 <h3 class="font-bold mb-3 sm:mb-4 text-sm sm:text-base">Notifications</h3>
                 <div class="space-y-2 sm:space-y-3">
                     <label class="flex items-center">
-                        <input type="checkbox" name="email_notifications" value="1" 
+                        <input type="checkbox" name="email_notifications" value="1"
                                {{ auth()->user()->email_notifications ? 'checked' : '' }} class="mr-2 sm:mr-3">
                         <span class="text-xs sm:text-sm">Email notifications for order updates</span>
                     </label>
                     <label class="flex items-center">
-                        <input type="checkbox" name="sms_notifications" value="1" 
+                        <input type="checkbox" name="sms_notifications" value="1"
                                {{ auth()->user()->sms_notifications ? 'checked' : '' }} class="mr-2 sm:mr-3">
                         <span class="text-xs sm:text-sm">SMS notifications for consultations</span>
                     </label>
                     <label class="flex items-center">
-                        <input type="checkbox" name="marketing_emails" value="1" 
+                        <input type="checkbox" name="marketing_emails" value="1"
                                {{ auth()->user()->marketing_emails ? 'checked' : '' }} class="mr-2 sm:mr-3">
                         <span class="text-xs sm:text-sm">Marketing emails</span>
                     </label>
                 </div>
             </div>
-            
+
             <div>
                 <h3 class="font-bold mb-3 sm:mb-4 text-sm sm:text-base">Language & Currency</h3>
                 <div class="space-y-3 sm:space-y-4">
@@ -181,7 +189,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="mt-4 sm:mt-6">
             <button type="submit" class="w-full sm:w-auto px-4 sm:px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 text-sm sm:text-base">
                 Save Preferences
@@ -193,6 +201,34 @@
 
 @push('scripts')
 <script>
+function validateAndSubmitPhoto(input) {
+    const errorDiv = document.getElementById('photo-error');
+    errorDiv.classList.add('hidden');
+    errorDiv.textContent = '';
+
+    if (!input.files || !input.files[0]) return;
+
+    const file = input.files[0];
+    const maxSize = 2 * 1024 * 1024; // 2MB
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'];
+
+    if (!allowedTypes.includes(file.type)) {
+        errorDiv.textContent = 'Please select a valid image file (JPG, PNG, or GIF).';
+        errorDiv.classList.remove('hidden');
+        input.value = '';
+        return;
+    }
+
+    if (file.size > maxSize) {
+        errorDiv.textContent = 'File size must be less than 2MB. Your file is ' + (file.size / 1024 / 1024).toFixed(1) + 'MB.';
+        errorDiv.classList.remove('hidden');
+        input.value = '';
+        return;
+    }
+
+    document.getElementById('photoForm').submit();
+}
+
 function confirmDelete() {
     Swal.fire({
         title: 'Delete Profile Photo?',
