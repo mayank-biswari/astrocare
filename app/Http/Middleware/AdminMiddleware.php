@@ -9,10 +9,22 @@ class AdminMiddleware
 {
     public function handle(Request $request, Closure $next)
     {
-        if (!auth()->check() || auth()->user()->role !== 'admin') {
-            abort(403, 'Access denied. Admin privileges required.');
+        if (!auth()->check()) {
+            abort(403, 'Access denied.');
         }
 
-        return $next($request);
+        $user = auth()->user();
+
+        // Allow admins full access
+        if ($user->role === 'admin') {
+            return $next($request);
+        }
+
+        // Allow users with any admin-level prediction permission
+        if ($user->hasAnyPermission(['view predictions', 'edit predictions', 'delete predictions'])) {
+            return $next($request);
+        }
+
+        abort(403, 'Access denied. Admin privileges required.');
     }
 }

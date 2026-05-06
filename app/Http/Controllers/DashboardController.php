@@ -13,14 +13,14 @@ class DashboardController extends Controller
         if (session('consultation_booking_data')) {
             $bookingData = session('consultation_booking_data');
             session()->forget('consultation_booking_data');
-            
+
             // Calculate price based on duration
             $service = \App\Models\Service::findOrFail($bookingData['service_id']);
             $multiplier = 1;
             if ($bookingData['duration'] == 45) $multiplier = 1.5;
             elseif ($bookingData['duration'] == 60) $multiplier = 2;
             $amount = $service->price * $multiplier;
-            
+
             // Store booking details in session for checkout
             session([
                 'consultation_booking' => [
@@ -32,15 +32,15 @@ class DashboardController extends Controller
                     'amount' => $amount
                 ]
             ]);
-            
+
             return redirect()->route('consultations.checkout');
         }
-        
+
         // Check for pending pooja booking after login
         if (session('pooja_booking_data')) {
             $bookingData = session('pooja_booking_data');
             session()->forget('pooja_booking_data');
-            
+
             // Store booking details in session for checkout
             session([
                 'pooja_booking' => [
@@ -55,18 +55,18 @@ class DashboardController extends Controller
                     'special_requirements' => $bookingData['special_requirements'] ?? null
                 ]
             ]);
-            
+
             return redirect()->route('pooja.checkout');
         }
-        
+
         // Check for pending kundli generation after login
         if (session('kundli_generation_data')) {
             $kundliData = session('kundli_generation_data');
             session()->forget('kundli_generation_data');
-            
+
             return redirect()->route('kundli.create')->with('kundli_data', $kundliData);
         }
-        
+
         return view('dashboard.index');
     }
 
@@ -84,6 +84,37 @@ class DashboardController extends Controller
 
         $orders = $query->latest()->paginate(10);
         return view('dashboard.orders', compact('orders'));
+    }
+
+    public function predictions()
+    {
+        $predictions = \App\Models\Prediction::where('user_id', auth()->id())
+            ->latest()
+            ->paginate(10);
+        return view('dashboard.predictions', compact('predictions'));
+    }
+
+    public function notifications()
+    {
+        $notifications = \App\Models\Notification::where('user_id', auth()->id())
+            ->latest()
+            ->paginate(15);
+        return view('dashboard.notifications', compact('notifications'));
+    }
+
+    public function markNotificationRead($id)
+    {
+        $notification = \App\Models\Notification::where('user_id', auth()->id())->findOrFail($id);
+        $notification->update(['is_read' => true]);
+        return redirect()->back()->with('success', 'Notification marked as read.');
+    }
+
+    public function markAllNotificationsRead()
+    {
+        \App\Models\Notification::where('user_id', auth()->id())
+            ->where('is_read', false)
+            ->update(['is_read' => true]);
+        return redirect()->back()->with('success', 'All notifications marked as read.');
     }
 
     public function consultations(Request $request)

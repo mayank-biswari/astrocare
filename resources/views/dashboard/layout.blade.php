@@ -28,9 +28,21 @@
                     <i class="fas fa-home w-5"></i>
                     <span>{{ __('messages.dashboard') }}</span>
                 </a>
-                <a href="{{ route('dashboard.orders') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg {{ request()->routeIs('dashboard.orders*') ? 'bg-indigo-50 text-indigo-600' : 'text-gray-700 hover:bg-gray-50' }}">
+                <a href="{{ route('dashboard.orders') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg {{ request()->routeIs('dashboard.orders*') || request()->routeIs('dashboard.order.*') ? 'bg-indigo-50 text-indigo-600' : 'text-gray-700 hover:bg-gray-50' }}">
                     <i class="fas fa-shopping-bag w-5"></i>
                     <span>{{ __('messages.my_orders') }}</span>
+                </a>
+                <a href="{{ route('dashboard.predictions') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg {{ request()->routeIs('dashboard.predictions*') ? 'bg-indigo-50 text-indigo-600' : 'text-gray-700 hover:bg-gray-50' }}">
+                    <i class="fas fa-star w-5"></i>
+                    <span>My Predictions</span>
+                </a>
+                <a href="{{ route('dashboard.notifications') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg {{ request()->routeIs('dashboard.notifications*') ? 'bg-indigo-50 text-indigo-600' : 'text-gray-700 hover:bg-gray-50' }}">
+                    <i class="fas fa-bell w-5"></i>
+                    <span>Notifications</span>
+                    @php $unreadCount = \App\Models\Notification::where('user_id', auth()->id())->where('is_read', false)->count(); @endphp
+                    @if($unreadCount > 0)
+                        <span class="ml-auto bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">{{ $unreadCount }}</span>
+                    @endif
                 </a>
                 <a href="{{ route('dashboard.consultations') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg {{ request()->routeIs('dashboard.consultations*') || request()->routeIs('dashboard.consultation.*') ? 'bg-indigo-50 text-indigo-600' : 'text-gray-700 hover:bg-gray-50' }}">
                     <i class="fas fa-comments w-5"></i>

@@ -25,7 +25,7 @@
                 <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>{{ __('messages.cancelled') }}</option>
             </select>
             <a href="{{ route('consultations.index') }}" class="px-3 sm:px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 text-sm sm:text-base whitespace-nowrap">
-                <i class="fas fa-plus mr-1"></i><span class="hidden sm:inline">Book Now</span><span class="sm:inline hidden">Book</span>
+                <i class="fas fa-plus mr-1"></i><span class="hidden sm:inline">Book Now</span>
             </a>
         </div>
     </div>

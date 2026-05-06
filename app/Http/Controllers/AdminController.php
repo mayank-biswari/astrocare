@@ -42,19 +42,19 @@ class AdminController extends Controller
     public function products(Request $request)
     {
         $query = Product::query();
-        
+
         if ($request->search) {
             $query->where('name', 'like', '%' . $request->search . '%');
         }
-        
+
         if ($request->category) {
             $query->where('category', $request->category);
         }
-        
+
         if ($request->status !== null) {
             $query->where('is_active', $request->status);
         }
-        
+
         $products = $query->latest()->paginate(10)->appends($request->query());
         return view('admin.products.index', compact('products'));
     }
@@ -167,23 +167,23 @@ class AdminController extends Controller
         $existingImages = $request->input('existing_gallery_images', []);
         $deletedImages = $request->input('deleted_gallery_images', []);
         $newImages = [];
-        
+
         // Delete files from storage
         if (!empty($deletedImages)) {
             foreach ($deletedImages as $deletedImage) {
                 \Storage::disk('public')->delete('products/' . $deletedImage);
             }
         }
-        
+
         if ($request->hasFile('gallery_images')) {
             foreach ($request->file('gallery_images') as $file) {
                 $newImages[] = $file->store('products', 'public');
             }
         }
-        
+
         // Remove deleted images from existing images array
         $existingImages = array_diff($existingImages, $deletedImages);
-        
+
         $updateData['images'] = array_merge($existingImages, $newImages);
 
         $product->update($updateData);
@@ -201,11 +201,11 @@ class AdminController extends Controller
     public function orders(Request $request)
     {
         $query = Order::with('user');
-        
+
         if ($request->status) {
             $query->where('status', $request->status);
         }
-        
+
         if ($request->search) {
             $query->where(function($q) use ($request) {
                 $q->where('order_number', 'like', '%' . $request->search . '%')
@@ -215,7 +215,7 @@ class AdminController extends Controller
                   });
             });
         }
-        
+
         $orders = $query->latest()->paginate(10)->appends($request->query());
         return view('admin.orders.index', compact('orders'));
     }
@@ -228,7 +228,7 @@ class AdminController extends Controller
 
         $order = Order::findOrFail($id);
         $order->update(['status' => $request->status]);
-        
+
         return redirect()->route('admin.orders')->with('success', 'Order status updated successfully!');
     }
 
@@ -345,7 +345,7 @@ class AdminController extends Controller
     public function updateCategory(Request $request, $id)
     {
         $category = Category::findOrFail($id);
-        
+
         $request->validate([
             'name' => 'required|string|max:255|unique:categories,name,' . $id,
             'description' => 'nullable|string',
@@ -386,22 +386,22 @@ class AdminController extends Controller
     public function consultations(Request $request)
     {
         $query = Consultation::with('user');
-        
+
         if ($request->status) {
             $query->where('status', $request->status);
         }
-        
+
         if ($request->type) {
             $query->where('type', $request->type);
         }
-        
+
         if ($request->search) {
             $query->whereHas('user', function($userQuery) use ($request) {
                 $userQuery->where('name', 'like', '%' . $request->search . '%')
                           ->orWhere('email', 'like', '%' . $request->search . '%');
             });
         }
-        
+
         $consultations = $query->latest()->paginate(10)->appends($request->query());
         return view('admin.consultations.index', compact('consultations'));
     }
@@ -422,18 +422,18 @@ class AdminController extends Controller
         ]);
 
         $consultation = Consultation::findOrFail($id);
-        
+
         $updateData = ['status' => $request->status];
-        
+
         if ($request->status === 'completed') {
             $updateData['suggestions'] = $request->suggestions;
             $updateData['remedies'] = $request->remedies;
         } elseif ($request->status === 'cancelled') {
             $updateData['cancellation_reason'] = $request->cancellation_reason;
         }
-        
+
         $consultation->update($updateData);
-        
+
         return redirect()->route('admin.consultations')->with('success', 'Consultation status updated successfully!');
     }
 
@@ -441,15 +441,15 @@ class AdminController extends Controller
     public function kundlis(Request $request)
     {
         $query = Kundli::with('user');
-        
+
         if ($request->status) {
             $query->where('status', $request->status);
         }
-        
+
         if ($request->type) {
             $query->where('type', $request->type);
         }
-        
+
         if ($request->search) {
             $query->where('name', 'like', '%' . $request->search . '%')
                   ->orWhereHas('user', function($userQuery) use ($request) {
@@ -457,7 +457,7 @@ class AdminController extends Controller
                                 ->orWhere('email', 'like', '%' . $request->search . '%');
                   });
         }
-        
+
         $kundlis = $query->latest()->paginate(10)->appends($request->query());
         return view('admin.kundlis.index', compact('kundlis'));
     }
@@ -479,15 +479,15 @@ class AdminController extends Controller
     public function questions(Request $request)
     {
         $query = Question::with('user');
-        
+
         if ($request->status) {
             $query->where('status', $request->status);
         }
-        
+
         if ($request->category) {
             $query->where('category', $request->category);
         }
-        
+
         if ($request->search) {
             $query->where('question', 'like', '%' . $request->search . '%')
                   ->orWhereHas('user', function($userQuery) use ($request) {
@@ -495,7 +495,7 @@ class AdminController extends Controller
                                 ->orWhere('email', 'like', '%' . $request->search . '%');
                   });
         }
-        
+
         $questions = $query->latest()->paginate(10)->appends($request->query());
         return view('admin.questions.index', compact('questions'));
     }
@@ -518,8 +518,112 @@ class AdminController extends Controller
             'status' => $request->status,
             'answer' => $request->answer
         ]);
-        
+
         return redirect()->route('admin.questions')->with('success', 'Question status updated successfully!');
+    }
+
+    // Predictions Management
+
+    private function checkPredictionPermission($permission)
+    {
+        $user = auth()->user();
+        if ($user->role !== 'admin' && !$user->hasPermissionTo($permission)) {
+            abort(403, 'You do not have permission to perform this action.');
+        }
+    }
+
+    public function predictions(Request $request)
+    {
+        $this->checkPredictionPermission('view predictions');
+
+        $query = \App\Models\Prediction::with('user');
+
+        if ($request->status) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->type) {
+            $query->where('type', $request->type);
+        }
+
+        if ($request->search) {
+            $query->where('name', 'like', '%' . $request->search . '%')
+                  ->orWhere('email', 'like', '%' . $request->search . '%');
+        }
+
+        $predictions = $query->latest()->paginate(10)->appends($request->query());
+        return view('admin.predictions.index', compact('predictions'));
+    }
+
+    public function viewPrediction($id)
+    {
+        $this->checkPredictionPermission('view predictions');
+
+        $prediction = \App\Models\Prediction::with('user')->findOrFail($id);
+        return view('admin.predictions.view', compact('prediction'));
+    }
+
+    public function updatePredictionStatus(Request $request, $id)
+    {
+        $this->checkPredictionPermission('edit predictions');
+
+        $request->validate([
+            'status' => 'required|in:pending,processing,completed,cancelled',
+            'report' => 'required_if:status,completed|nullable|string'
+        ]);
+
+        $prediction = \App\Models\Prediction::findOrFail($id);
+        $oldStatus = $prediction->status;
+
+        $prediction->update([
+            'status' => $request->status,
+            'report' => $request->report
+        ]);
+
+        // Send notifications if status actually changed
+        if ($oldStatus !== $request->status) {
+            $this->sendPredictionStatusNotification($prediction, $request->status);
+        }
+
+        return redirect()->route('admin.predictions')->with('success', 'Prediction status updated successfully!');
+    }
+
+    private function sendPredictionStatusNotification(\App\Models\Prediction $prediction, string $newStatus)
+    {
+        $user = $prediction->user;
+        if (!$user) return;
+
+        // Dashboard notification
+        $title = match ($newStatus) {
+            'processing' => 'Prediction In Progress',
+            'completed' => 'Prediction Report Ready',
+            'cancelled' => 'Prediction Cancelled',
+            default => 'Prediction Status Updated',
+        };
+
+        $message = match ($newStatus) {
+            'processing' => 'Your ' . ucfirst($prediction->type) . ' prediction is being prepared by our astrologer.',
+            'completed' => 'Your ' . ucfirst($prediction->type) . ' prediction report is ready! Check your dashboard to view it.',
+            'cancelled' => 'Your ' . ucfirst($prediction->type) . ' prediction order has been cancelled.',
+            default => 'Your ' . ucfirst($prediction->type) . ' prediction status has been updated to ' . $newStatus . '.',
+        };
+
+        \App\Models\Notification::createForUser(
+            $user->id,
+            'prediction_status',
+            $title,
+            $message,
+            ['prediction_id' => $prediction->id, 'status' => $newStatus]
+        );
+
+        // Email notification (only if user has email notifications enabled)
+        if ($user->email_notifications) {
+            try {
+                \Mail::to($user->email)->send(new \App\Mail\PredictionStatusChanged($prediction, $newStatus));
+            } catch (\Exception $e) {
+                \Log::error('Failed to send prediction status email: ' . $e->getMessage());
+            }
+        }
     }
 
     // Languages Management
@@ -551,7 +655,7 @@ class AdminController extends Controller
     public function updateLanguage(Request $request, $id)
     {
         $language = Language::findOrFail($id);
-        
+
         $request->validate([
             'code' => 'required|string|max:5|unique:languages,code,' . $id,
             'name' => 'required|string|max:255',
@@ -572,18 +676,18 @@ class AdminController extends Controller
     {
         Language::where('is_default', true)->update(['is_default' => false]);
         Language::findOrFail($id)->update(['is_default' => true]);
-        
+
         return redirect()->route('admin.languages')->with('success', 'Default language updated successfully!');
     }
 
     public function deleteLanguage($id)
     {
         $language = Language::findOrFail($id);
-        
+
         if ($language->is_default) {
             return redirect()->route('admin.languages')->with('error', 'Cannot delete default language!');
         }
-        
+
         $language->delete();
         return redirect()->route('admin.languages')->with('success', 'Language deleted successfully!');
     }
@@ -598,7 +702,7 @@ class AdminController extends Controller
     public function updateCurrency(Request $request, $id)
     {
         $currency = Currency::findOrFail($id);
-        
+
         $request->validate([
             'exchange_rate' => 'required|numeric|min:0',
         ]);
@@ -615,7 +719,7 @@ class AdminController extends Controller
     {
         Currency::where('is_default', true)->update(['is_default' => false]);
         Currency::findOrFail($id)->update(['is_default' => true]);
-        
+
         return redirect()->route('admin.currencies')->with('success', 'Default currency updated successfully!');
     }
 
@@ -629,7 +733,7 @@ class AdminController extends Controller
     public function updatePaymentGateway(Request $request, $id)
     {
         $gateway = PaymentGateway::findOrFail($id);
-        
+
         $gateway->update([
             'is_active' => $request->has('is_active'),
             'is_test_mode' => $request->has('is_test_mode'),
@@ -643,28 +747,28 @@ class AdminController extends Controller
     public function cmsPages(Request $request)
     {
         $query = \App\Models\CmsPage::with(['category', 'pageType']);
-        
+
         if ($request->search) {
             $query->where('title', 'like', '%' . $request->search . '%')
                   ->orWhere('body', 'like', '%' . $request->search . '%');
         }
-        
+
         if ($request->status !== null) {
             $query->where('is_published', $request->status);
         }
-        
+
         if ($request->category) {
             $query->where('cms_category_id', $request->category);
         }
-        
+
         if ($request->page_type) {
             $query->where('cms_page_type_id', $request->page_type);
         }
-        
+
         $pages = $query->latest()->paginate(10)->appends($request->query());
         $categories = \App\Models\CmsCategory::where('is_active', true)->get();
         $pageTypes = \App\Models\CmsPageType::where('is_active', true)->get();
-        
+
         return view('admin.cms.index', compact('pages', 'categories', 'pageTypes'));
     }
 
@@ -711,13 +815,13 @@ class AdminController extends Controller
             'is_published' => $request->has('is_published'),
             'allow_comments' => $request->has('allow_comments')
         ];
-        
+
         if ($request->hasFile('image')) {
             $data['image'] = $request->file('image')->store('cms', 'public');
         }
 
         $page = \App\Models\CmsPage::create($data);
-        
+
         // Create product if page type has product fields enabled
         if ($request->cms_page_type_id) {
             $pageType = CmsPageType::find($request->cms_page_type_id);
@@ -736,7 +840,7 @@ class AdminController extends Controller
                 ]);
             }
         }
-        
+
         // Save translations for other languages
         if ($request->translations) {
             foreach ($request->translations as $langCode => $translation) {
@@ -752,7 +856,7 @@ class AdminController extends Controller
                 }
             }
         }
-        
+
         return redirect()->route('admin.cms.pages')->with('success', 'Page created successfully!');
     }
 
@@ -769,7 +873,7 @@ class AdminController extends Controller
     public function updateCmsPage(Request $request, $id)
     {
         $page = \App\Models\CmsPage::findOrFail($id);
-        
+
         $request->validate([
             'title' => 'required|string|max:255',
             'slug' => 'required|string|max:255|unique:cms_pages,slug,' . $id,
@@ -796,13 +900,13 @@ class AdminController extends Controller
             'is_published' => $request->has('is_published'),
             'allow_comments' => $request->has('allow_comments')
         ];
-        
+
         // Handle image deletion
         if ($request->has('delete_image') && $page->image) {
             \Storage::disk('public')->delete($page->image);
             $data['image'] = null;
         }
-        
+
         if ($request->hasFile('image')) {
             if ($page->image) {
                 \Storage::disk('public')->delete($page->image);
@@ -811,7 +915,7 @@ class AdminController extends Controller
         }
 
         $page->update($data);
-        
+
         // Update or create product if page type has product fields enabled
         if ($request->cms_page_type_id) {
             $pageType = CmsPageType::find($request->cms_page_type_id);
@@ -831,7 +935,7 @@ class AdminController extends Controller
                         'is_featured' => $request->has('product.is_featured')
                     ]
                 );
-                
+
                 // Handle variants
                 if ($request->variants) {
                     $existingVariantIds = [];
@@ -857,7 +961,7 @@ class AdminController extends Controller
                 }
             }
         }
-        
+
         // Update translations
         $page->translations()->delete();
         if ($request->translations) {
@@ -874,7 +978,7 @@ class AdminController extends Controller
                 }
             }
         }
-        
+
         return redirect()->route('admin.cms.pages')->with('success', 'Page updated successfully!');
     }
 
@@ -923,7 +1027,7 @@ class AdminController extends Controller
     public function updateCmsCategory(Request $request, $id)
     {
         $category = CmsCategory::findOrFail($id);
-        
+
         $request->validate([
             'name' => 'required|string|max:255|unique:cms_categories,name,' . $id,
             'description' => 'nullable|string'
@@ -948,16 +1052,16 @@ class AdminController extends Controller
     public function cmsPageTypes(Request $request)
     {
         $query = CmsPageType::query();
-        
+
         if ($request->search) {
             $query->where('name', 'like', '%' . $request->search . '%')
                   ->orWhere('description', 'like', '%' . $request->search . '%');
         }
-        
+
         if ($request->status !== null) {
             $query->where('is_active', $request->status);
         }
-        
+
         $pageTypes = $query->latest()->paginate(10)->appends($request->query());
         return view('admin.cms.page-types', compact('pageTypes'));
     }
@@ -983,24 +1087,24 @@ class AdminController extends Controller
                     'type' => $field['type'],
                     'required' => (bool)$field['required']
                 ];
-                
+
                 if ($field['type'] === 'select' && !empty($field['options'])) {
                     $customField['options'] = array_map('trim', explode(',', $field['options']));
                 }
-                
+
                 if ($field['type'] === 'number') {
                     if (isset($field['min']) && $field['min'] !== '') $customField['min'] = $field['min'];
                     if (isset($field['max']) && $field['max'] !== '') $customField['max'] = $field['max'];
                     if (isset($field['step']) && $field['step'] !== '') $customField['step'] = $field['step'];
                 }
-                
+
                 if ($field['type'] === 'image') {
                     $customField['multiple'] = (bool)($field['multiple'] ?? false);
                     $customField['max_size'] = $field['max_size'] ?? 2;
                     $customField['max_images'] = $field['max_images'] ?? 5;
                     $customField['allowed_types'] = $field['allowed_types'] ?? ['jpg', 'png'];
                 }
-                
+
                 $customFields[] = $customField;
             }
         }
@@ -1032,7 +1136,7 @@ class AdminController extends Controller
     public function updateCmsPageType(Request $request, $id)
     {
         $pageType = CmsPageType::findOrFail($id);
-        
+
         $request->validate([
             'name' => 'required|string|max:255|unique:cms_page_types,name,' . $id,
             'description' => 'nullable|string'
@@ -1047,24 +1151,24 @@ class AdminController extends Controller
                     'type' => $field['type'],
                     'required' => (bool)$field['required']
                 ];
-                
+
                 if ($field['type'] === 'select' && !empty($field['options'])) {
                     $customField['options'] = array_map('trim', explode(',', $field['options']));
                 }
-                
+
                 if ($field['type'] === 'number') {
                     if (isset($field['min']) && $field['min'] !== '') $customField['min'] = $field['min'];
                     if (isset($field['max']) && $field['max'] !== '') $customField['max'] = $field['max'];
                     if (isset($field['step']) && $field['step'] !== '') $customField['step'] = $field['step'];
                 }
-                
+
                 if ($field['type'] === 'image') {
                     $customField['multiple'] = (bool)($field['multiple'] ?? false);
                     $customField['max_size'] = $field['max_size'] ?? 2;
                     $customField['max_images'] = $field['max_images'] ?? 5;
                     $customField['allowed_types'] = $field['allowed_types'] ?? ['jpg', 'png'];
                 }
-                
+
                 $customFields[] = $customField;
             }
         }
@@ -1106,11 +1210,11 @@ class AdminController extends Controller
     {
         $notification = \App\Models\Notification::findOrFail($id);
         $notification->update(['is_read' => true]);
-        
+
         if ($notification->data && isset($notification->data['url'])) {
             return redirect($notification->data['url']);
         }
-        
+
         return redirect()->route('admin.notifications');
     }
 
@@ -1153,17 +1257,17 @@ class AdminController extends Controller
     public function contactSubmissions(Request $request)
     {
         $query = ContactSubmission::query();
-        
+
         if ($request->search) {
             $query->where('name', 'like', '%' . $request->search . '%')
                   ->orWhere('email', 'like', '%' . $request->search . '%')
                   ->orWhere('subject', 'like', '%' . $request->search . '%');
         }
-        
+
         if ($request->status !== null) {
             $query->where('is_read', $request->status);
         }
-        
+
         $submissions = $query->latest()->paginate(10)->appends($request->query());
         return view('admin.contact.submissions', compact('submissions'));
     }
@@ -1208,11 +1312,11 @@ class AdminController extends Controller
     public function productLists(Request $request)
     {
         $query = \App\Models\AdminList::where('type', 'products');
-        
+
         if ($request->search) {
             $query->where('name', 'like', '%' . $request->search . '%');
         }
-        
+
         $lists = $query->latest()->paginate(10)->appends($request->query());
         return view('admin.lists.products', compact('lists'));
     }
@@ -1220,11 +1324,11 @@ class AdminController extends Controller
     public function pageLists(Request $request)
     {
         $query = \App\Models\AdminList::where('type', 'pages');
-        
+
         if ($request->search) {
             $query->where('name', 'like', '%' . $request->search . '%');
         }
-        
+
         $lists = $query->latest()->paginate(10)->appends($request->query());
         return view('admin.lists.pages', compact('lists'));
     }
@@ -1234,11 +1338,11 @@ class AdminController extends Controller
         if (!in_array($type, ['products', 'pages'])) {
             abort(404);
         }
-        
+
         $items = $type === 'products' ? Product::all() : \App\Models\CmsPage::all();
         $categories = $type === 'products' ? Category::where('is_active', true)->get() : CmsCategory::where('is_active', true)->get();
         $pageTypes = $type === 'pages' ? CmsPageType::where('is_active', true)->get() : collect();
-        
+
         return view('admin.lists.create', compact('type', 'items', 'categories', 'pageTypes'));
     }
 
@@ -1252,18 +1356,18 @@ class AdminController extends Controller
         ]);
 
         $configuration = [];
-        
+
         switch ($request->method) {
             case 'sql':
                 $request->validate(['sql_query' => 'required|string']);
                 $configuration['sql'] = $request->sql_query;
                 break;
-                
+
             case 'manual':
                 $request->validate(['selected_ids' => 'required|array']);
                 $configuration['selected_ids'] = $request->selected_ids;
                 break;
-                
+
             case 'query_builder':
                 $configuration['filters'] = $request->filters ?? [];
                 break;
@@ -1295,7 +1399,7 @@ class AdminController extends Controller
         $items = $list->type === 'products' ? Product::all() : \App\Models\CmsPage::all();
         $categories = $list->type === 'products' ? Category::where('is_active', true)->get() : CmsCategory::where('is_active', true)->get();
         $pageTypes = $list->type === 'pages' ? CmsPageType::where('is_active', true)->get() : collect();
-        
+
         return view('admin.lists.edit', compact('list', 'items', 'categories', 'pageTypes'));
     }
 
@@ -1308,18 +1412,18 @@ class AdminController extends Controller
         ]);
 
         $configuration = [];
-        
+
         switch ($request->method) {
             case 'sql':
                 $request->validate(['sql_query' => 'required|string']);
                 $configuration['sql'] = $request->sql_query;
                 break;
-                
+
             case 'manual':
                 $request->validate(['selected_ids' => 'required|array']);
                 $configuration['selected_ids'] = $request->selected_ids;
                 break;
-                
+
             case 'query_builder':
                 $configuration['filters'] = $request->filters ?? [];
                 break;
@@ -1354,22 +1458,22 @@ class AdminController extends Controller
     public function templates(Request $request)
     {
         $query = \App\Models\AdminList::where('is_template', true);
-        
+
         if ($request->search) {
             $query->where(function($q) use ($request) {
                 $q->where('name', 'like', '%' . $request->search . '%')
                   ->orWhere('template_name', 'like', '%' . $request->search . '%');
             });
         }
-        
+
         if ($request->type) {
             $query->where('type', $request->type);
         }
-        
+
         if ($request->category) {
             $query->where('template_category', $request->category);
         }
-        
+
         $templates = $query->latest()->paginate(10)->appends($request->query());
         return view('admin.lists.templates', compact('templates'));
     }
@@ -1384,16 +1488,16 @@ class AdminController extends Controller
     public function dynamicPages(Request $request)
     {
         $query = \App\Models\DynamicPage::query();
-        
+
         if ($request->search) {
             $query->where('title', 'like', '%' . $request->search . '%')
                   ->orWhere('system_name', 'like', '%' . $request->search . '%');
         }
-        
+
         if ($request->status !== null) {
             $query->where('is_published', $request->status);
         }
-        
+
         $pages = $query->latest()->paginate(10)->appends($request->query());
         return view('admin.dynamic-pages.index', compact('pages'));
     }
@@ -1452,7 +1556,7 @@ class AdminController extends Controller
     public function updateDynamicPage(Request $request, $id)
     {
         $page = \App\Models\DynamicPage::findOrFail($id);
-        
+
         $request->validate([
             'system_name' => 'required|string|max:255',
             'title' => 'required|string|max:255',
@@ -1501,14 +1605,14 @@ class AdminController extends Controller
         $folder = $request->get('folder', '');
         $disk = \Storage::disk('public');
         $path = $folder ? 'media/' . $folder : 'media';
-        
+
         if (!$disk->exists($path)) {
             $disk->makeDirectory($path);
         }
-        
+
         $files = [];
         $folders = [];
-        
+
         foreach ($disk->files($path) as $file) {
             $files[] = [
                 'name' => basename($file),
@@ -1519,14 +1623,14 @@ class AdminController extends Controller
                 'modified' => $disk->lastModified($file)
             ];
         }
-        
+
         foreach ($disk->directories($path) as $dir) {
             $folders[] = [
                 'name' => basename($dir),
                 'path' => str_replace('media/', '', $dir)
             ];
         }
-        
+
         return view('admin.media.index', compact('files', 'folders', 'folder'));
     }
 
@@ -1535,10 +1639,10 @@ class AdminController extends Controller
         $request->validate([
             'file' => 'required|file|max:10240'
         ]);
-        
+
         $folder = $request->input('folder') ? 'media/' . $request->input('folder') : 'media';
         $path = $request->file('file')->store($folder, 'public');
-        
+
         return response()->json([
             'success' => true,
             'url' => '/storage/' . $path,
@@ -1549,9 +1653,9 @@ class AdminController extends Controller
     public function deleteMedia(Request $request)
     {
         $request->validate(['path' => 'required|string']);
-        
+
         \Storage::disk('public')->delete($request->path);
-        
+
         return response()->json(['success' => true]);
     }
 
@@ -1561,26 +1665,26 @@ class AdminController extends Controller
             'name' => 'required|string|max:255',
             'parent' => 'nullable|string'
         ]);
-        
+
         $path = $request->parent ? 'media/' . $request->parent . '/' . $request->name : 'media/' . $request->name;
         \Storage::disk('public')->makeDirectory($path);
-        
+
         return response()->json(['success' => true]);
     }
 
     public function deleteFolder(Request $request)
     {
         $request->validate(['path' => 'required|string']);
-        
+
         \Storage::disk('public')->deleteDirectory('media/' . $request->path);
-        
+
         return response()->json(['success' => true]);
     }
 
     public function previewList(Request $request)
     {
         $configuration = [];
-        
+
         switch ($request->method) {
             case 'sql':
                 try {
@@ -1589,39 +1693,39 @@ class AdminController extends Controller
                 } catch (\Exception $e) {
                     return response()->json(['error' => 'Invalid SQL query: ' . $e->getMessage()], 400);
                 }
-                
+
             case 'manual':
                 $count = count($request->selected_ids ?? []);
                 return response()->json(['count' => $count]);
-                
+
             case 'query_builder':
                 $model = $request->type === 'products' ? Product::query() : \App\Models\CmsPage::query();
-                
+
                 foreach ($request->filters ?? [] as $filter) {
                     if (empty($filter['field']) || empty($filter['operator']) || $filter['value'] === '') {
                         continue;
                     }
-                    
+
                     $field = $filter['field'];
                     $operator = $filter['operator'];
                     $value = $filter['value'];
-                    
+
                     // Handle specific field mappings
                     if ($request->type === 'pages' && $field === 'page_type_id') {
                         $field = 'cms_page_type_id';
                     }
-                    
+
                     if ($operator === 'like') {
                         $model->where($field, 'like', '%' . $value . '%');
                     } else {
                         $model->where($field, $operator, $value);
                     }
                 }
-                
+
                 $results = $model->get();
                 return response()->json(['count' => $results->count(), 'results' => $results->take(5)]);
         }
-        
+
         return response()->json(['count' => 0]);
     }
 }
