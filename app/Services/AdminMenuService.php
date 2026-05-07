@@ -67,6 +67,12 @@ class AdminMenuService
                         'permission' => 'view predictions'
                     ],
                     [
+                        'title' => 'Campaign Leads',
+                        'icon' => 'far fa-circle',
+                        'route' => 'admin.campaign-leads',
+                        'active' => 'admin.campaign-leads*'
+                    ],
+                    [
                         'title' => 'Pooja Bookings',
                         'icon' => 'far fa-circle',
                         'route' => 'admin.consultations',

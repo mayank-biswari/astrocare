@@ -626,6 +626,41 @@ class AdminController extends Controller
         }
     }
 
+    // Campaign Leads Management
+
+    public function campaignLeads(Request $request)
+    {
+        $query = \App\Models\CampaignLead::query();
+
+        if ($request->search) {
+            $query->where(function ($q) use ($request) {
+                $q->where('full_name', 'like', '%' . $request->search . '%')
+                  ->orWhere('email', 'like', '%' . $request->search . '%')
+                  ->orWhere('phone_number', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        if ($request->source) {
+            $query->where('source', $request->source);
+        }
+
+        $leads = $query->latest()->paginate(15)->appends($request->query());
+        return view('admin.campaign-leads.index', compact('leads'));
+    }
+
+    public function viewCampaignLead($id)
+    {
+        $lead = \App\Models\CampaignLead::findOrFail($id);
+        return view('admin.campaign-leads.view', compact('lead'));
+    }
+
+    public function deleteCampaignLead($id)
+    {
+        $lead = \App\Models\CampaignLead::findOrFail($id);
+        $lead->delete();
+        return redirect()->route('admin.campaign-leads')->with('success', 'Campaign lead deleted successfully.');
+    }
+
     // Languages Management
     public function languages()
     {

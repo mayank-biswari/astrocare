@@ -171,7 +171,7 @@ Route::middleware(['auth', 'admin'])->prefix('api')->group(function () {
 Route::get('/view/{slug}', [App\Http\Controllers\CmsController::class, 'viewListPage'])->name('list.view');
 
 // Dynamic Pages - Must be last to avoid conflicts
-Route::get('/{url}', [App\Http\Controllers\CmsController::class, 'viewDynamicPage'])->name('dynamic.view')->where('url', '^(?!admin).*');
+Route::get('/{url}', [App\Http\Controllers\CmsController::class, 'viewDynamicPage'])->name('dynamic.view')->where('url', '^(?!admin|lms).*');
 
 // Admin Routes
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
@@ -223,6 +223,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/predictions', [App\Http\Controllers\AdminController::class, 'predictions'])->name('predictions');
     Route::get('/predictions/{id}/view', [App\Http\Controllers\AdminController::class, 'viewPrediction'])->name('predictions.view');
     Route::put('/predictions/{id}/status', [App\Http\Controllers\AdminController::class, 'updatePredictionStatus'])->name('predictions.status');
+
+    // Campaign Leads
+    Route::get('/campaign-leads', [App\Http\Controllers\AdminController::class, 'campaignLeads'])->name('campaign-leads');
+    Route::get('/campaign-leads/{id}/view', [App\Http\Controllers\AdminController::class, 'viewCampaignLead'])->name('campaign-leads.view');
+    Route::delete('/campaign-leads/{id}', [App\Http\Controllers\AdminController::class, 'deleteCampaignLead'])->name('campaign-leads.delete');
 
     // User Management
     Route::prefix('user-management')->name('user-management.')->group(function () {
