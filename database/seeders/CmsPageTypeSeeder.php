@@ -74,7 +74,10 @@ class CmsPageTypeSeeder extends Seeder
         ];
 
         foreach ($pageTypes as $pageType) {
-            CmsPageType::create($pageType);
+            CmsPageType::updateOrCreate(
+                ['slug' => $pageType['slug']],
+                $pageType
+            );
         }
     }
 }

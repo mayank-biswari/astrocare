@@ -11,7 +11,7 @@ class TestimonialSeeder extends Seeder
     public function run(): void
     {
         $testimonialsPageType = CmsPageType::where('slug', 'testimonials')->first();
-        
+
         if (!$testimonialsPageType) {
             return;
         }
@@ -120,14 +120,18 @@ class TestimonialSeeder extends Seeder
         ];
 
         foreach ($testimonials as $testimonial) {
-            CmsPage::create([
-                'title' => $testimonial['title'],
-                'body' => $testimonial['body'],
-                'cms_page_type_id' => $testimonialsPageType->id,
-                'custom_fields' => $testimonial['custom_fields'],
-                'is_published' => true,
-                'allow_comments' => false
-            ]);
+            CmsPage::updateOrCreate(
+                [
+                    'title' => $testimonial['title'],
+                    'cms_page_type_id' => $testimonialsPageType->id,
+                ],
+                [
+                    'body' => $testimonial['body'],
+                    'custom_fields' => $testimonial['custom_fields'],
+                    'is_published' => true,
+                    'allow_comments' => false
+                ]
+            );
         }
     }
 }
