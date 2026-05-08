@@ -47,7 +47,8 @@ class RoleController extends Controller
         ]);
 
         if (!empty($validated['permissions'])) {
-            $role->syncPermissions($validated['permissions']);
+            $permissions = Permission::whereIn('id', $validated['permissions'])->get();
+            $role->syncPermissions($permissions);
         }
 
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
@@ -79,7 +80,8 @@ class RoleController extends Controller
             'guard_name' => $validated['guard_name'] ?? 'web',
         ]);
 
-        $role->syncPermissions($validated['permissions'] ?? []);
+        $permissions = Permission::whereIn('id', $validated['permissions'] ?? [])->get();
+        $role->syncPermissions($permissions);
 
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
