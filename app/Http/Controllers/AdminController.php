@@ -627,7 +627,6 @@ class AdminController extends Controller
     }
 
     // Campaign Leads Management
-
     public function campaignLeads(Request $request)
     {
         $query = \App\Models\CampaignLead::query();
