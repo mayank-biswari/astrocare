@@ -88,7 +88,10 @@ class ServiceSeeder extends Seeder
         ];
 
         foreach ($services as $service) {
-            \App\Models\Service::create($service);
+            \App\Models\Service::updateOrCreate(
+                ['name' => $service['name'], 'type' => $service['type']],
+                $service
+            );
         }
     }
 }

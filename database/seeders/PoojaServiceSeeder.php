@@ -60,7 +60,10 @@ class PoojaServiceSeeder extends Seeder
         ];
 
         foreach ($poojas as $pooja) {
-            \App\Models\PoojaService::create($pooja);
+            \App\Models\PoojaService::updateOrCreate(
+                ['slug' => $pooja['slug']],
+                $pooja
+            );
         }
     }
 }

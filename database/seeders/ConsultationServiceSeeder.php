@@ -19,7 +19,7 @@ class ConsultationServiceSeeder extends Seeder
                 'is_active' => true
             ],
             [
-                'name' => 'Video Consultation', 
+                'name' => 'Video Consultation',
                 'type' => 'consultation',
                 'description' => 'Face-to-face video consultation for detailed astrological guidance and remedies.',
                 'price' => 599,
@@ -27,7 +27,7 @@ class ConsultationServiceSeeder extends Seeder
             ],
             [
                 'name' => 'Phone Consultation',
-                'type' => 'consultation', 
+                'type' => 'consultation',
                 'description' => 'Personal phone consultation with experienced astrologers for comprehensive guidance.',
                 'price' => 399,
                 'is_active' => true
@@ -35,7 +35,10 @@ class ConsultationServiceSeeder extends Seeder
         ];
 
         foreach ($services as $service) {
-            Service::create($service);
+            Service::updateOrCreate(
+                ['name' => $service['name'], 'type' => $service['type']],
+                $service
+            );
         }
     }
 }
