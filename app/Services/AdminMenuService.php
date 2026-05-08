@@ -67,6 +67,12 @@ class AdminMenuService
                         'permission' => 'view predictions'
                     ],
                     [
+                        'title' => 'Campaign Leads',
+                        'icon' => 'far fa-circle',
+                        'route' => 'admin.campaign-leads',
+                        'active' => 'admin.campaign-leads*'
+                    ],
+                    [
                         'title' => 'Pooja Bookings',
                         'icon' => 'far fa-circle',
                         'route' => 'admin.consultations',
@@ -161,6 +167,30 @@ class AdminMenuService
                         'icon' => 'far fa-circle',
                         'route' => 'admin.admins',
                         'active' => 'admin.admins*'
+                    ]
+                ]
+            ],
+            [
+                'title' => 'Permissions',
+                'icon' => 'fas fa-shield-alt',
+                'children' => [
+                    [
+                        'title' => 'Roles',
+                        'icon' => 'far fa-circle',
+                        'route' => 'admin.roles.index',
+                        'active' => 'admin.roles*'
+                    ],
+                    [
+                        'title' => 'Permissions',
+                        'icon' => 'far fa-circle',
+                        'route' => 'admin.permissions.index',
+                        'active' => 'admin.permissions*'
+                    ],
+                    [
+                        'title' => 'User Roles',
+                        'icon' => 'far fa-circle',
+                        'route' => 'admin.user-roles.index',
+                        'active' => 'admin.user-roles*'
                     ]
                 ]
             ],

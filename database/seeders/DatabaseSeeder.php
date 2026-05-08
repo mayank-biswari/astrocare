@@ -29,7 +29,8 @@ class DatabaseSeeder extends Seeder
             UpdateCmsPageLanguageSeeder::class,
             TestimonialSeeder::class,
             SacredProductsSeeder::class,
-            ServicesSeeder::class
+            ServicesSeeder::class,
+            PermissionManagerSeeder::class,
         ]);
     }
 }

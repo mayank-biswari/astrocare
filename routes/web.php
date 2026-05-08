@@ -9,6 +9,9 @@ use App\Http\Controllers\KundliController;
 use App\Http\Controllers\PoojaController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\PermissionController;
+use App\Http\Controllers\Admin\UserRoleController;
 
 // Home
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -171,7 +174,7 @@ Route::middleware(['auth', 'admin'])->prefix('api')->group(function () {
 Route::get('/view/{slug}', [App\Http\Controllers\CmsController::class, 'viewListPage'])->name('list.view');
 
 // Dynamic Pages - Must be last to avoid conflicts
-Route::get('/{url}', [App\Http\Controllers\CmsController::class, 'viewDynamicPage'])->name('dynamic.view')->where('url', '^(?!admin).*');
+Route::get('/{url}', [App\Http\Controllers\CmsController::class, 'viewDynamicPage'])->name('dynamic.view')->where('url', '^(?!admin|lms).*');
 
 // Admin Routes
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
@@ -224,6 +227,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/predictions/{id}/view', [App\Http\Controllers\AdminController::class, 'viewPrediction'])->name('predictions.view');
     Route::put('/predictions/{id}/status', [App\Http\Controllers\AdminController::class, 'updatePredictionStatus'])->name('predictions.status');
 
+    // Campaign Leads
+    Route::get('/campaign-leads', [App\Http\Controllers\AdminController::class, 'campaignLeads'])->name('campaign-leads');
+    Route::get('/campaign-leads/{id}/view', [App\Http\Controllers\AdminController::class, 'viewCampaignLead'])->name('campaign-leads.view');
+    Route::delete('/campaign-leads/{id}', [App\Http\Controllers\AdminController::class, 'deleteCampaignLead'])->name('campaign-leads.delete');
+
     // User Management
     Route::prefix('user-management')->name('user-management.')->group(function () {
         Route::get('/', [App\Http\Controllers\Admin\UserManagementController::class, 'index'])->name('index');
@@ -235,6 +243,23 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::get('/roles', [App\Http\Controllers\Admin\UserManagementController::class, 'roles'])->name('roles');
         Route::post('/roles', [App\Http\Controllers\Admin\UserManagementController::class, 'storeRole'])->name('roles.store');
         Route::delete('/roles/{role}', [App\Http\Controllers\Admin\UserManagementController::class, 'destroyRole'])->name('roles.destroy');
+    });
+
+    // Roles (Permission Management)
+    Route::middleware('permission.manager:manage roles')->group(function () {
+        Route::resource('roles', RoleController::class);
+    });
+
+    // Permissions (Permission Management)
+    Route::middleware('permission.manager:manage permissions')->group(function () {
+        Route::resource('permissions', PermissionController::class);
+    });
+
+    // User Roles (Permission Management)
+    Route::middleware('permission.manager:manage user-roles')->group(function () {
+        Route::get('/user-roles', [UserRoleController::class, 'index'])->name('user-roles.index');
+        Route::get('/user-roles/{user}/edit', [UserRoleController::class, 'edit'])->name('user-roles.edit');
+        Route::put('/user-roles/{user}', [UserRoleController::class, 'update'])->name('user-roles.update');
     });
 
     // Users
