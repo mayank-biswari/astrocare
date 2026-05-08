@@ -9,6 +9,9 @@ use App\Http\Controllers\KundliController;
 use App\Http\Controllers\PoojaController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\PermissionController;
+use App\Http\Controllers\Admin\UserRoleController;
 
 // Home
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -240,6 +243,23 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::get('/roles', [App\Http\Controllers\Admin\UserManagementController::class, 'roles'])->name('roles');
         Route::post('/roles', [App\Http\Controllers\Admin\UserManagementController::class, 'storeRole'])->name('roles.store');
         Route::delete('/roles/{role}', [App\Http\Controllers\Admin\UserManagementController::class, 'destroyRole'])->name('roles.destroy');
+    });
+
+    // Roles (Permission Management)
+    Route::middleware('permission.manager:manage roles')->group(function () {
+        Route::resource('roles', RoleController::class);
+    });
+
+    // Permissions (Permission Management)
+    Route::middleware('permission.manager:manage permissions')->group(function () {
+        Route::resource('permissions', PermissionController::class);
+    });
+
+    // User Roles (Permission Management)
+    Route::middleware('permission.manager:manage user-roles')->group(function () {
+        Route::get('/user-roles', [UserRoleController::class, 'index'])->name('user-roles.index');
+        Route::get('/user-roles/{user}/edit', [UserRoleController::class, 'edit'])->name('user-roles.edit');
+        Route::put('/user-roles/{user}', [UserRoleController::class, 'update'])->name('user-roles.update');
     });
 
     // Users

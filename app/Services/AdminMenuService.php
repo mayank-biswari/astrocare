@@ -171,6 +171,30 @@ class AdminMenuService
                 ]
             ],
             [
+                'title' => 'Permissions',
+                'icon' => 'fas fa-shield-alt',
+                'children' => [
+                    [
+                        'title' => 'Roles',
+                        'icon' => 'far fa-circle',
+                        'route' => 'admin.roles.index',
+                        'active' => 'admin.roles*'
+                    ],
+                    [
+                        'title' => 'Permissions',
+                        'icon' => 'far fa-circle',
+                        'route' => 'admin.permissions.index',
+                        'active' => 'admin.permissions*'
+                    ],
+                    [
+                        'title' => 'User Roles',
+                        'icon' => 'far fa-circle',
+                        'route' => 'admin.user-roles.index',
+                        'active' => 'admin.user-roles*'
+                    ]
+                ]
+            ],
+            [
                 'title' => 'Communication',
                 'icon' => 'fas fa-envelope',
                 'children' => [

@@ -23,6 +23,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
             'lms.access' => \App\Http\Middleware\LmsAccessMiddleware::class,
+            'permission.manager' => \App\Http\Middleware\PermissionManagerMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
