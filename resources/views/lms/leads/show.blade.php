@@ -4,18 +4,35 @@
 @section('page-title', 'Lead Details')
 
 @section('content')
+@php
+    $currentUser = auth()->user();
+    $isSuperAdmin = $currentUser->id === 1;
+    $canViewPii = $piiMasking->canViewPii($currentUser);
+    $shouldMaskPii = $piiMasking->shouldMask($currentUser);
+@endphp
 <div class="max-w-5xl mx-auto space-y-6">
     <!-- Header with actions -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
             <h2 class="text-2xl font-bold text-gray-800">{{ $lead->full_name }}</h2>
-            <p class="text-sm text-gray-500 mt-1">Created {{ $lead->created_at->format('M d, Y \a\t h:i A') }}</p>
+            <p class="text-sm text-gray-500 mt-1">
+                <span class="inline-flex items-center px-2 py-0.5 rounded bg-gray-100 text-gray-700 font-mono text-xs mr-2">{{ $lead->lead_code }}</span>
+                Created {{ $lead->created_at->format('M d, Y \a\t h:i A') }}
+            </p>
         </div>
         <div class="flex items-center space-x-3">
+            @if($accessControl->can(auth()->user(), 'edit', $lead))
             <a href="{{ route('lms.leads.edit', $lead) }}"
                class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
                 <i class="fas fa-edit mr-1"></i> Edit
             </a>
+            @endif
+            @if($accessControl->can(auth()->user(), 'assign', $lead))
+            <a href="{{ route('lms.leads.assign', $lead) }}"
+               class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                <i class="fas fa-user-plus mr-1"></i> Assign
+            </a>
+            @endif
             <a href="{{ route('lms.leads.index') }}"
                class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
                 <i class="fas fa-arrow-left mr-1"></i> Back to List
@@ -47,14 +64,38 @@
                     <dd class="mt-1 text-sm text-gray-900">{{ $lead->full_name }}</dd>
                 </div>
                 <div>
+                    <dt class="text-sm font-medium text-gray-500">Lead Code</dt>
+                    <dd class="mt-1 text-sm text-gray-900 font-mono">{{ $lead->lead_code }}</dd>
+                </div>
+                <div>
                     <dt class="text-sm font-medium text-gray-500">Email</dt>
                     <dd class="mt-1 text-sm text-gray-900">
-                        <a href="mailto:{{ $lead->email }}" class="text-indigo-600 hover:text-indigo-800">{{ $lead->email }}</a>
+                        @if($isSuperAdmin)
+                            <a href="mailto:{{ $lead->email }}" class="text-indigo-600 hover:text-indigo-800">{{ $lead->email }}</a>
+                        @elseif($canViewPii)
+                            <span class="pii-masked-value" data-lead-id="{{ $lead->id }}" data-field="email">{{ $piiMasking->maskEmail($lead, $currentUser) }}</span>
+                            <button type="button" class="pii-reveal-btn ml-1 text-indigo-500 hover:text-indigo-700" data-lead-id="{{ $lead->id }}" data-field="email" title="Reveal email">
+                                <i class="fas fa-eye text-xs"></i>
+                            </button>
+                        @else
+                            {{ $piiMasking->maskEmail($lead, $currentUser) }}
+                        @endif
                     </dd>
                 </div>
                 <div>
                     <dt class="text-sm font-medium text-gray-500">Phone Number</dt>
-                    <dd class="mt-1 text-sm text-gray-900">{{ $lead->phone_number }}</dd>
+                    <dd class="mt-1 text-sm text-gray-900">
+                        @if($isSuperAdmin)
+                            {{ $lead->phone_number }}
+                        @elseif($canViewPii)
+                            <span class="pii-masked-value" data-lead-id="{{ $lead->id }}" data-field="phone_number">{{ $piiMasking->maskPhone($lead, $currentUser) }}</span>
+                            <button type="button" class="pii-reveal-btn ml-1 text-indigo-500 hover:text-indigo-700" data-lead-id="{{ $lead->id }}" data-field="phone_number" title="Reveal phone number">
+                                <i class="fas fa-eye text-xs"></i>
+                            </button>
+                        @else
+                            {{ $piiMasking->maskPhone($lead, $currentUser) }}
+                        @endif
+                    </dd>
                 </div>
                 <div>
                     <dt class="text-sm font-medium text-gray-500">Source</dt>
@@ -71,6 +112,14 @@
                 <div class="md:col-span-2">
                     <dt class="text-sm font-medium text-gray-500">Message</dt>
                     <dd class="mt-1 text-sm text-gray-900">{{ $lead->message ?? '—' }}</dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">Owner</dt>
+                    <dd class="mt-1 text-sm text-gray-900">{{ $lead->owner->name ?? 'Unassigned' }}</dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">Assignee</dt>
+                    <dd class="mt-1 text-sm text-gray-900">{{ $lead->assignee->name ?? 'Unassigned' }}</dd>
                 </div>
                 <div>
                     <dt class="text-sm font-medium text-gray-500">Created At</dt>
@@ -267,6 +316,7 @@
     </div>
 
     <!-- Delete Lead -->
+    @if($accessControl->can(auth()->user(), 'delete', $lead))
     <div class="bg-white rounded-lg shadow-sm border border-red-200">
         <div class="px-6 py-4 flex items-center justify-between">
             <div>
@@ -284,6 +334,7 @@
             </form>
         </div>
     </div>
+    @endif
 </div>
 
 @push('scripts')

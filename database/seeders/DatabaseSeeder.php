@@ -31,6 +31,7 @@ class DatabaseSeeder extends Seeder
             SacredProductsSeeder::class,
             ServicesSeeder::class,
             PermissionManagerSeeder::class,
+            LeadPermissionSeeder::class,
         ]);
     }
 }

@@ -7,6 +7,7 @@ use App\Http\Controllers\Lms\LmsNoteController;
 use App\Http\Controllers\Lms\LmsFollowUpController;
 use App\Http\Controllers\Lms\LmsExportController;
 use App\Http\Controllers\Lms\LmsNotificationController;
+use App\Http\Controllers\Lms\LmsAuditLogController;
 
 Route::middleware(['web', 'auth', 'lms.access'])->prefix('lms')->name('lms.')->group(function () {
     // Dashboard
@@ -24,6 +25,13 @@ Route::middleware(['web', 'auth', 'lms.access'])->prefix('lms')->name('lms.')->g
     // Lead status update
     Route::put('/leads/{lead}/status', [LmsLeadController::class, 'updateStatus'])->name('leads.status');
 
+    // Lead assignment
+    Route::get('/leads/{lead}/assign', [LmsLeadController::class, 'assign'])->name('leads.assign');
+    Route::post('/leads/{lead}/assign', [LmsLeadController::class, 'storeAssignment'])->name('leads.assign.store');
+
+    // PII Reveal
+    Route::post('/leads/{lead}/reveal-pii', [LmsLeadController::class, 'revealPii'])->name('leads.reveal-pii');
+
     // Lead notes
     Route::post('/leads/{lead}/notes', [LmsNoteController::class, 'store'])->name('leads.notes.store');
 
@@ -40,4 +48,7 @@ Route::middleware(['web', 'auth', 'lms.access'])->prefix('lms')->name('lms.')->g
     Route::get('/notifications', [LmsNotificationController::class, 'index'])->name('notifications.index');
     Route::put('/notifications/{notification}/read', [LmsNotificationController::class, 'markRead'])->name('notifications.read');
     Route::post('/notifications/mark-all-read', [LmsNotificationController::class, 'markAllRead'])->name('notifications.mark-all-read');
+
+    // Audit Logs
+    Route::get('/audit-logs', [LmsAuditLogController::class, 'index'])->name('audit-logs.index');
 });

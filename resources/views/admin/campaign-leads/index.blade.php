@@ -8,6 +8,28 @@
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
+    <!-- Campaign Notification Settings -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0"><i class="fas fa-cog mr-2"></i>Notification Settings</h5>
+        </div>
+        <div class="card-body">
+            <p class="text-muted mb-3">Configure the email address that receives notifications when new leads are submitted for each campaign.</p>
+            @foreach($sources as $source)
+            <form method="POST" action="{{ route('admin.campaign-leads.settings.update') }}" class="form-inline mb-2">
+                @csrf
+                <input type="hidden" name="source" value="{{ $source }}">
+                <label class="mr-2"><span class="badge badge-secondary">{{ $source }}</span></label>
+                <input type="email" name="notification_email" value="{{ $notificationEmails[$source] ?? '' }}" class="form-control mr-2" placeholder="notification@example.com" style="min-width: 300px;" required>
+                <button type="submit" class="btn btn-sm btn-primary">Save</button>
+            </form>
+            @endforeach
+            @if($sources->isEmpty())
+                <p class="text-muted">No campaign sources found yet. Settings will appear here once leads are submitted.</p>
+            @endif
+        </div>
+    </div>
+
     <div class="card">
         <div class="card-body">
             <!-- Search -->
