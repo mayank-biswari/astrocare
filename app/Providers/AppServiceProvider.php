@@ -23,15 +23,20 @@ class AppServiceProvider extends ServiceProvider
             \App\Events\PoojaBooked::class,
             \App\Listeners\SendPoojaBookingNotification::class,
         );
-        
+
         \Event::listen(
             \App\Events\ContactFormSubmitted::class,
             \App\Listeners\SendContactNotification::class,
         );
-        
+
         \Event::listen(
             \App\Events\QuestionSubmitted::class,
             \App\Listeners\SendQuestionNotifications::class,
+        );
+
+        \Event::listen(
+            \App\Events\CampaignLeadStored::class,
+            \App\Listeners\SendCampaignLeadNotification::class,
         );
     }
 }

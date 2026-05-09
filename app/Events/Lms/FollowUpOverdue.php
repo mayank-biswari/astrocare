@@ -38,6 +38,7 @@ class FollowUpOverdue implements ShouldBroadcast
             'title' => 'Overdue Follow-Up',
             'message' => "Follow-up for {$this->followUp->lead->full_name} is overdue",
             'lead_id' => $this->followUp->campaign_lead_id,
+            'lead_code' => $this->followUp->lead->lead_code,
             'follow_up_id' => $this->followUp->id,
             'created_at' => now()->toISOString(),
         ];

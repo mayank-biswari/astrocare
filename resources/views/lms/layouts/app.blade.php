@@ -96,6 +96,14 @@
                     <i class="fas fa-file-export w-5 text-center mr-3"></i>
                     Export
                 </a>
+
+                @if(auth()->user()->id === 1 || auth()->user()->hasRole('admin'))
+                <a href="{{ route('lms.audit-logs.index') }}"
+                   class="sidebar-link flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-colors {{ request()->routeIs('lms.audit-logs.*') ? 'active' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900' }}">
+                    <i class="fas fa-clipboard-list w-5 text-center mr-3"></i>
+                    Audit Logs
+                </a>
+                @endif
             </nav>
 
             <!-- Sidebar Footer -->
@@ -383,6 +391,9 @@
             .listen('FollowUpOverdue', (e) => { updateNotificationBell(e); });
     </script>
     @endauth
+
+    {{-- PII Reveal Script --}}
+    @include('lms.partials.pii-reveal-script')
 
     @stack('scripts')
 </body>

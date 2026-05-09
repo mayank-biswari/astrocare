@@ -33,27 +33,41 @@
                 <!-- Email -->
                 <div>
                     <label for="email" class="block text-sm font-medium text-gray-700 mb-1">
-                        Email <span class="text-red-500">*</span>
+                        Email @if($piiMasking->canViewPii(auth()->user()))<span class="text-red-500">*</span>@endif
                     </label>
-                    <input type="email" name="email" id="email" value="{{ old('email', $lead->email) }}"
-                           class="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm px-4 py-2.5 border {{ $errors->has('email') ? 'border-red-500' : '' }}"
-                           placeholder="email@example.com" required>
-                    @error('email')
-                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
+                    @if($piiMasking->canViewPii(auth()->user()))
+                        <input type="email" name="email" id="email" value="{{ old('email', $lead->email) }}"
+                               class="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm px-4 py-2.5 border {{ $errors->has('email') ? 'border-red-500' : '' }}"
+                               placeholder="email@example.com" required>
+                        @error('email')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    @else
+                        <input type="text" id="email" value="{{ $lead->lead_code }}"
+                               class="w-full rounded-lg border-gray-300 bg-gray-100 shadow-sm text-sm px-4 py-2.5 border text-gray-500"
+                               readonly disabled>
+                        <p class="mt-1 text-xs text-gray-500">PII masked — you do not have permission to view or edit this field.</p>
+                    @endif
                 </div>
 
                 <!-- Phone Number -->
                 <div>
                     <label for="phone_number" class="block text-sm font-medium text-gray-700 mb-1">
-                        Phone Number <span class="text-red-500">*</span>
+                        Phone Number @if($piiMasking->canViewPii(auth()->user()))<span class="text-red-500">*</span>@endif
                     </label>
-                    <input type="text" name="phone_number" id="phone_number" value="{{ old('phone_number', $lead->phone_number) }}"
-                           class="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm px-4 py-2.5 border {{ $errors->has('phone_number') ? 'border-red-500' : '' }}"
-                           placeholder="+1 234 567 8900" required>
-                    @error('phone_number')
-                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
+                    @if($piiMasking->canViewPii(auth()->user()))
+                        <input type="text" name="phone_number" id="phone_number" value="{{ old('phone_number', $lead->phone_number) }}"
+                               class="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm px-4 py-2.5 border {{ $errors->has('phone_number') ? 'border-red-500' : '' }}"
+                               placeholder="+1 234 567 8900" required>
+                        @error('phone_number')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    @else
+                        <input type="text" id="phone_number" value="••••••••"
+                               class="w-full rounded-lg border-gray-300 bg-gray-100 shadow-sm text-sm px-4 py-2.5 border text-gray-500"
+                               readonly disabled>
+                        <p class="mt-1 text-xs text-gray-500">PII masked — you do not have permission to view or edit this field.</p>
+                    @endif
                 </div>
             </div>
 

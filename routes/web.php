@@ -231,6 +231,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/campaign-leads', [App\Http\Controllers\AdminController::class, 'campaignLeads'])->name('campaign-leads');
     Route::get('/campaign-leads/{id}/view', [App\Http\Controllers\AdminController::class, 'viewCampaignLead'])->name('campaign-leads.view');
     Route::delete('/campaign-leads/{id}', [App\Http\Controllers\AdminController::class, 'deleteCampaignLead'])->name('campaign-leads.delete');
+    Route::post('/campaign-leads/settings', [App\Http\Controllers\AdminController::class, 'updateCampaignSettings'])->name('campaign-leads.settings.update');
 
     // User Management
     Route::prefix('user-management')->name('user-management.')->group(function () {

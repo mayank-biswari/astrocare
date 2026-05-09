@@ -644,7 +644,30 @@ class AdminController extends Controller
         }
 
         $leads = $query->latest()->paginate(15)->appends($request->query());
-        return view('admin.campaign-leads.index', compact('leads'));
+
+        // Get unique campaign sources and their notification emails
+        $sources = \App\Models\CampaignLead::select('source')->distinct()->pluck('source');
+        $notificationEmails = [];
+        foreach ($sources as $source) {
+            $notificationEmails[$source] = \App\Models\CampaignSetting::getNotificationEmail($source);
+        }
+
+        return view('admin.campaign-leads.index', compact('leads', 'sources', 'notificationEmails'));
+    }
+
+    public function updateCampaignSettings(Request $request)
+    {
+        $request->validate([
+            'source' => 'required|string|max:50',
+            'notification_email' => 'required|email|max:255',
+        ]);
+
+        \App\Models\CampaignSetting::setNotificationEmail(
+            $request->source,
+            $request->notification_email
+        );
+
+        return redirect()->route('admin.campaign-leads')->with('success', 'Notification email updated successfully.');
     }
 
     public function viewCampaignLead($id)

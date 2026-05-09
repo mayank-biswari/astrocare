@@ -80,7 +80,9 @@ class OverdueCommandTest extends TestCase
 
         $this->assertNotNull($notification);
         $this->assertStringContains('Overdue Test Lead', $notification->message);
-        $this->assertEquals(['follow_up_id' => $followUp->id], $notification->data);
+        $this->assertEquals($followUp->id, $notification->data['follow_up_id']);
+        $this->assertArrayHasKey('lead_code', $notification->data);
+        $this->assertEquals($this->lead->lead_code, $notification->data['lead_code']);
     }
 
     /**
@@ -275,7 +277,9 @@ class OverdueCommandTest extends TestCase
         $this->assertEquals('Overdue Follow-Up', $notification->title);
         $this->assertEquals("Follow-up for Overdue Test Lead is overdue", $notification->message);
         $this->assertEquals($this->lead->id, $notification->lead_id);
-        $this->assertEquals(['follow_up_id' => $followUp->id], $notification->data);
+        $this->assertEquals($followUp->id, $notification->data['follow_up_id']);
+        $this->assertArrayHasKey('lead_code', $notification->data);
+        $this->assertEquals($this->lead->lead_code, $notification->data['lead_code']);
     }
 
     /**

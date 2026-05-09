@@ -41,6 +41,7 @@ class NewLeadCreated implements ShouldBroadcast
             'title' => 'New Lead',
             'message' => "{$this->lead->full_name} from {$this->lead->source}",
             'lead_id' => $this->lead->id,
+            'lead_code' => $this->lead->lead_code,
             'created_at' => now()->toISOString(),
         ];
     }

@@ -53,7 +53,7 @@ class CheckOverdueFollowUps extends Command
                 'title' => 'Overdue Follow-Up',
                 'message' => "Follow-up for {$followUp->lead->full_name} is overdue",
                 'lead_id' => $followUp->campaign_lead_id,
-                'data' => ['follow_up_id' => $followUp->id],
+                'data' => ['follow_up_id' => $followUp->id, 'lead_code' => $followUp->lead->lead_code],
             ]);
 
             $notified++;

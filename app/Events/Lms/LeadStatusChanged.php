@@ -44,6 +44,7 @@ class LeadStatusChanged implements ShouldBroadcast
             'title' => 'Lead Status Updated',
             'message' => "{$this->lead->full_name}: {$this->oldStatus} → {$this->newStatus}",
             'lead_id' => $this->lead->id,
+            'lead_code' => $this->lead->lead_code,
             'changed_by' => $this->changedBy->name,
             'created_at' => now()->toISOString(),
         ];
