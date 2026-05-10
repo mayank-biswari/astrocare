@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\CampaignLead;
 use Illuminate\Http\Request;
 use App\Models\User;
 
@@ -11,13 +12,13 @@ class UserController extends Controller
     public function search(Request $request)
     {
         $term = $request->get('q', '');
-        
+
         $users = User::where('name', 'like', "%{$term}%")
             ->orWhere('email', 'like', "%{$term}%")
             ->orderBy('name')
             ->limit(20)
             ->get(['id', 'name', 'email']);
-        
+
         return response()->json([
             'results' => $users->map(function($user) {
                 return [
@@ -25,6 +26,20 @@ class UserController extends Controller
                     'text' => "{$user->name} ({$user->email})"
                 ];
             })
+        ]);
+    }
+
+    public function enquiries(Request $request)
+    {
+        $email = $request->user()->email;
+
+        $enquiries = CampaignLead::where('email', $email)
+            ->orderBy('created_at', 'desc')
+            ->limit(50)
+            ->get(['full_name', 'email', 'phone_number', 'status', 'created_at']);
+
+        return response()->json([
+            'enquiries' => $enquiries,
         ]);
     }
 }

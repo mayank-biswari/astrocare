@@ -30,6 +30,8 @@ class User extends Authenticatable
         'language',
         'currency',
         'phone',
+        'country_code',
+        'phone_number',
         'date_of_birth',
         'role',
         'address',

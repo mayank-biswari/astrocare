@@ -55,7 +55,7 @@
                             {{ $order->user->name ?? 'Guest' }}<br>
                             <small class="text-muted">{{ $order->user->email ?? 'N/A' }}</small>
                         </td>
-                        <td>₹{{ number_format($order->total_amount) }}</td>
+                        <td>{{ getCurrencySymbol($order->currency) }}{{ number_format($order->total_amount, 2) }}</td>
                         <td>
                             <form action="{{ route('admin.orders.status', $order->id) }}" method="POST" class="d-inline">
                                 @csrf

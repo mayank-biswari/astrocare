@@ -8,7 +8,7 @@ use Srmklive\PayPal\Services\PayPal as PayPalClient;
 
 class PaymentService
 {
-    public function processPayment(Order $order, $gatewayCode)
+    public function processPayment(Order $order, $gatewayCode, ?string $returnUrl = null, ?string $cancelUrl = null)
     {
         $gateway = PaymentGateway::where('code', $gatewayCode)->first();
 
@@ -26,7 +26,7 @@ class PaymentService
             case 'stripe':
                 return $this->processStripe($order, $gateway);
             case 'paypal':
-                return $this->processPayPal($order, $gateway);
+                return $this->processPayPal($order, $gateway, $returnUrl, $cancelUrl);
             default:
                 return ['success' => false, 'message' => 'Payment gateway not implemented'];
         }
@@ -80,7 +80,7 @@ class PaymentService
         return ['success' => false, 'message' => 'Stripe not configured'];
     }
 
-    private function processPayPal(Order $order, PaymentGateway $gateway)
+    private function processPayPal(Order $order, PaymentGateway $gateway, ?string $returnUrl = null, ?string $cancelUrl = null)
     {
         $credentials = $gateway->credentials;
         $mode = $gateway->is_test_mode ? 'sandbox' : 'live';
@@ -112,6 +112,11 @@ class PaymentService
             }
             $amount = number_format($totalAmount, 2, '.', '');
 
+            // Use custom callback URLs if provided (for SPA-originated requests),
+            // otherwise fall back to the default web routes
+            $effectiveReturnUrl = $returnUrl ?? route('paypal.success');
+            $effectiveCancelUrl = $cancelUrl ?? route('paypal.cancel');
+
             $response = $provider->createOrder([
                 'intent' => 'CAPTURE',
                 'purchase_units' => [
@@ -124,8 +129,8 @@ class PaymentService
                     ],
                 ],
                 'application_context' => [
-                    'return_url' => route('paypal.success'),
-                    'cancel_url' => route('paypal.cancel'),
+                    'return_url' => $effectiveReturnUrl,
+                    'cancel_url' => $effectiveCancelUrl,
                     'brand_name' => config('app.name', 'AstroServices'),
                 ],
             ]);
