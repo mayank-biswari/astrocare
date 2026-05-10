@@ -29,8 +29,12 @@
                         <h3 class="card-title">Order Items</h3>
                     </div>
                     <div class="card-body">
-                        @php $items = json_decode($order->items, true); @endphp
-                        @if($items)
+                        @php
+                            $items = is_array($order->items) ? $order->items : json_decode($order->items, true);
+                            // Determine if items is a list of products or a single plan info object
+                            $isItemList = $items && isset($items[0]);
+                        @endphp
+                        @if($items && $isItemList)
                             @foreach($items as $item)
                                 <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3">
                                     <div class="d-flex align-items-center">
@@ -38,31 +42,49 @@
                                             <img src="{{ asset($item['image']) }}" alt="{{ $item['name'] }}" class="img-thumbnail mr-3" style="width: 60px; height: 60px; object-fit: cover;">
                                         @else
                                             <div class="bg-primary text-white d-flex align-items-center justify-content-center mr-3" style="width: 60px; height: 60px; border-radius: 4px;">
-                                                <span class="font-weight-bold">{{ substr($item['name'], 0, 2) }}</span>
+                                                <span class="font-weight-bold">{{ substr($item['name'] ?? '??', 0, 2) }}</span>
                                             </div>
                                         @endif
                                         <div>
-                                            <h6 class="mb-1">{{ $item['name'] }}</h6>
-                                            <small class="text-muted">Quantity: {{ $item['quantity'] }}</small>
+                                            <h6 class="mb-1">{{ $item['name'] ?? 'Item' }}</h6>
+                                            <small class="text-muted">Quantity: {{ $item['quantity'] ?? 1 }}</small>
                                         </div>
                                     </div>
                                     <div class="text-right">
-                                        <strong>₹{{ number_format($item['price'] * $item['quantity']) }}</strong>
+                                        <strong>{{ getCurrencySymbol($order->currency) }}{{ number_format(($item['price'] ?? 0) * ($item['quantity'] ?? 1), 2) }}</strong>
                                     </div>
                                 </div>
                             @endforeach
+                        @elseif($items)
+                            {{-- Single plan/service order (campaign orders) --}}
+                            <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-primary text-white d-flex align-items-center justify-content-center mr-3" style="width: 60px; height: 60px; border-radius: 4px;">
+                                        <span class="font-weight-bold">{{ substr($items['plan_name'] ?? 'PL', 0, 2) }}</span>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-1">{{ $items['plan_name'] ?? 'Plan' }}</h6>
+                                        @if(isset($items['description']))
+                                            <small class="text-muted">{{ $items['description'] }}</small>
+                                        @endif
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <strong>{{ getCurrencySymbol($order->currency) }}{{ number_format($order->total_amount, 2) }}</strong>
+                                </div>
+                            </div>
                         @endif
-                        
+
                         <div class="border-top pt-3">
                             <div class="d-flex justify-content-between">
                                 <strong>Total Amount:</strong>
-                                <strong class="text-primary">₹{{ number_format($order->total_amount) }}</strong>
+                                <strong class="text-primary">{{ getCurrencySymbol($order->currency) }}{{ number_format($order->total_amount, 2) }}</strong>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            
+
             <div class="col-md-4">
                 <div class="card">
                     <div class="card-header">
@@ -81,7 +103,7 @@
                             <tr>
                                 <td><strong>Status:</strong></td>
                                 <td>
-                                    <span class="badge 
+                                    <span class="badge
                                         @if($order->status == 'delivered') badge-success
                                         @elseif($order->status == 'shipped') badge-info
                                         @elseif($order->status == 'processing') badge-warning
@@ -98,7 +120,7 @@
                         </table>
                     </div>
                 </div>
-                
+
                 <div class="card">
                     <div class="card-header">
                         <h3 class="card-title">Customer Details</h3>
@@ -107,10 +129,10 @@
                         <p><strong>Name:</strong> {{ $order->user->name }}</p>
                         <p><strong>Email:</strong> {{ $order->user->email }}</p>
                         <p><strong>Phone:</strong> {{ $order->phone }}</p>
-                        <p><strong>Address:</strong><br>{{ $order->shipping_address }}</p>
+                        <p><strong>Address:</strong><br>{{ is_array($order->shipping_address) ? implode(', ', array_filter($order->shipping_address)) : ($order->shipping_address ?? 'N/A') }}</p>
                     </div>
                 </div>
-                
+
                 <div class="card">
                     <div class="card-header">
                         <h3 class="card-title">Update Status</h3>

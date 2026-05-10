@@ -3,17 +3,78 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\UserManagementFilterRequest;
 use App\Models\User;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 
 class UserManagementController extends Controller
 {
-    public function index()
+    public function index(UserManagementFilterRequest $request)
     {
-        $users = User::with('roles')->latest()->paginate(20);
-        $roles = Role::all();
-        return view('admin.user-management.index', compact('users', 'roles'));
+        try {
+            $query = User::with('roles');
+
+            // Search by name or email (case-insensitive partial match)
+            if ($search = $request->validated('search')) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('users.name', 'LIKE', "%{$search}%")
+                      ->orWhere('users.email', 'LIKE', "%{$search}%");
+                });
+            }
+
+            // Filter by role (via Spatie roles relationship)
+            if ($role = $request->validated('role')) {
+                $query->whereHas('roles', function ($q) use ($role) {
+                    $q->where('roles.name', $role);
+                });
+            }
+
+            // Filter by date range
+            if ($dateFrom = $request->validated('date_from')) {
+                $query->whereDate('users.created_at', '>=', $dateFrom);
+            }
+            if ($dateTo = $request->validated('date_to')) {
+                $query->whereDate('users.created_at', '<=', $dateTo);
+            }
+
+            // Sort
+            $sortBy = $request->validated('sort_by') ?? 'created_at';
+            $sortDir = $request->validated('sort_dir') ?? 'desc';
+
+            if ($sortBy === 'role') {
+                // Sort by role requires a join
+                $query->leftJoin('model_has_roles', function ($join) {
+                    $join->on('users.id', '=', 'model_has_roles.model_id')
+                         ->where('model_has_roles.model_type', '=', User::class);
+                })
+                ->leftJoin('roles', 'model_has_roles.role_id', '=', 'roles.id')
+                ->orderByRaw("LOWER(roles.name) {$sortDir}")
+                ->select('users.*');
+            } else {
+                $query->orderByRaw("LOWER(users.{$sortBy}) {$sortDir}");
+            }
+
+            // Get total count before pagination
+            $totalFiltered = $query->count();
+
+            // Paginate and append query parameters
+            $users = $query->paginate(20)->appends($request->validated());
+            $roles = Role::all();
+
+            return view('admin.user-management.index', compact(
+                'users', 'roles', 'totalFiltered'
+            ));
+        } catch (QueryException $e) {
+            return redirect()->back()
+                ->with('error', 'An error occurred while loading users. Please try again.')
+                ->withInput();
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'An error occurred while loading users. Please try again.')
+                ->withInput();
+        }
     }
 
     public function create()
