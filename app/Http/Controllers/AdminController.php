@@ -19,7 +19,6 @@ use App\Models\CmsCategory;
 use App\Models\CmsPageType;
 use App\Models\ContactSubmission;
 use App\Models\ContactSetting;
-
 class AdminController extends Controller
 {
     public function dashboard()

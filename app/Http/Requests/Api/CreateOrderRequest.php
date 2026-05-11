@@ -48,6 +48,7 @@ class CreateOrderRequest extends FormRequest
                     }
                 },
             ],
+            'coupon_code' => ['nullable', 'string', 'max:50'],
         ];
     }
 

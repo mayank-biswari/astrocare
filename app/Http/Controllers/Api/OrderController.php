@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Exceptions\CouponValidationException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\CreateOrderRequest;
 use App\Models\Order;
+use App\Services\CouponService;
 use App\Services\PaymentService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class OrderController extends Controller
 {
@@ -46,21 +49,59 @@ class OrderController extends Controller
         $validated = $request->validated();
         $planId = $validated['plan_id'];
         $paymentGateway = $validated['payment_gateway'];
+        $couponCode = $validated['coupon_code'] ?? null;
         $plan = config("plans.{$planId}");
+
+        $originalPrice = (float) $plan['price'];
+        $totalAmount = $originalPrice;
+        $coupon = null;
+        $couponMetadata = [];
+
+        // If coupon_code is provided, validate and calculate discount
+        if ($couponCode) {
+            $couponService = new CouponService();
+
+            try {
+                $coupon = $couponService->validateCoupon($couponCode);
+            } catch (CouponValidationException $e) {
+                throw ValidationException::withMessages([
+                    'coupon_code' => [$e->getMessage()],
+                ]);
+            }
+
+            $discountResult = $couponService->calculateDiscount($coupon, $originalPrice);
+            $totalAmount = $discountResult['discounted_price'];
+
+            $couponMetadata = [
+                'coupon_code' => $coupon->code,
+                'discount_type' => $coupon->discount_type,
+                'discount_value' => (float) $coupon->discount_value,
+                'discount_amount' => $discountResult['discount_amount'],
+                'original_price' => $originalPrice,
+            ];
+        }
+
+        // Build items data
+        $items = [
+            'plan_id' => $planId,
+            'plan_name' => $plan['name'],
+            'description' => $plan['description'],
+        ];
+
+        // Merge coupon metadata into items if coupon was applied
+        if (!empty($couponMetadata)) {
+            $items = array_merge($items, $couponMetadata);
+        }
 
         // Create the order with pending payment status
         $order = Order::create([
             'user_id' => $request->user()->id,
             'order_number' => 'ORD-' . strtoupper(Str::random(8)),
-            'total_amount' => $plan['price'],
+            'total_amount' => $totalAmount,
             'currency' => $plan['currency'],
             'status' => 'pending',
             'payment_status' => 'pending',
-            'items' => [
-                'plan_id' => $planId,
-                'plan_name' => $plan['name'],
-                'description' => $plan['description'],
-            ],
+            'items' => $items,
             'shipping_address' => [],
         ]);
 
@@ -78,7 +119,7 @@ class OrderController extends Controller
             'order_number' => $order->order_number,
             'plan_id' => $planId,
             'plan_name' => $plan['name'],
-            'total_amount' => number_format($plan['price'], 2, '.', ''),
+            'total_amount' => number_format($totalAmount, 2, '.', ''),
             'currency' => $order->currency,
             'status' => $order->status,
         ];
@@ -104,6 +145,11 @@ class OrderController extends Controller
                     'payment_status' => 'paid',
                     'transaction_id' => $transactionId,
                 ]);
+
+                // Increment coupon usage after successful payment
+                if ($coupon) {
+                    (new CouponService())->incrementUsage($coupon);
+                }
 
                 return response()->json([
                     'order' => $orderResponse,

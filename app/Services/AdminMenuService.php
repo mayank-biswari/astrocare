@@ -34,6 +34,12 @@ class AdminMenuService
                         'icon' => 'far fa-circle',
                         'route' => 'admin.orders',
                         'active' => 'admin.orders*'
+                    ],
+                    [
+                        'title' => 'Coupons',
+                        'icon' => 'far fa-circle',
+                        'route' => 'admin.coupons',
+                        'active' => 'admin.coupons*'
                     ]
                 ]
             ],
