@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Coupon;
 use App\Models\Order;
 use App\Models\PaymentGateway;
+use App\Services\CouponService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Srmklive\PayPal\Services\PayPal as PayPalClient;
@@ -69,6 +71,9 @@ class PaymentCallbackController extends Controller
                     'payment_status' => 'paid',
                     'transaction_id' => $transactionId,
                 ]);
+
+                // Increment coupon usage after successful payment
+                $this->incrementCouponUsageIfApplicable($order);
 
                 return redirect($this->getSpaRedirectUrl('success'));
             }
@@ -162,5 +167,21 @@ class PaymentCallbackController extends Controller
         $provider->getAccessToken();
 
         return $provider;
+    }
+
+    /**
+     * Increment coupon usage count if the order has a coupon applied.
+     */
+    private function incrementCouponUsageIfApplicable(Order $order): void
+    {
+        $items = $order->items;
+
+        if (is_array($items) && !empty($items['coupon_code'])) {
+            $coupon = Coupon::where('code', $items['coupon_code'])->first();
+
+            if ($coupon) {
+                (new CouponService())->incrementUsage($coupon);
+            }
+        }
     }
 }
