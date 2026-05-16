@@ -82,7 +82,8 @@ class KundliController extends Controller
 
         $kundliData = session('kundli_checkout');
         $paymentGateways = \App\Models\PaymentGateway::getActiveGateways();
-        return view('kundli.checkout', compact('kundliData', 'paymentGateways'));
+        $countryCodes = \App\Models\CountryCode::getActive();
+        return view('kundli.checkout', compact('kundliData', 'paymentGateways', 'countryCodes'));
     }
 
     public function placeOrder(Request $request)
@@ -90,16 +91,27 @@ class KundliController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email',
-            'phone' => 'required|string',
+            'country_code' => 'required|string|max:7',
+            'phone' => 'required|string|regex:/^[0-9]+$/',
             'payment_gateway' => 'required|exists:payment_gateways,code'
         ]);
+
+        // Validate phone digits against country code table
+        $country = \App\Models\CountryCode::findByDialCode($request->country_code);
+        if ($country && strlen($request->phone) !== $country->phone_digits) {
+            return back()->withErrors([
+                'phone' => "Phone number must be exactly {$country->phone_digits} digits for {$country->name}."
+            ])->withInput();
+        }
 
         if (!session('kundli_checkout')) {
             return redirect()->route('kundli.create')->with('error', 'No kundli data found.');
         }
 
+        $fullPhone = $request->country_code . $request->phone;
+
         if (auth()->check() && !auth()->user()->phone) {
-            auth()->user()->update(['phone' => $request->phone]);
+            auth()->user()->update(['phone' => $fullPhone]);
         }
 
         $kundliData = session('kundli_checkout');
@@ -116,7 +128,7 @@ class KundliController extends Controller
             'payment_method' => $request->payment_gateway,
             'payment_status' => 'pending',
             'items' => [['name' => 'Kundli - ' . ucfirst($kundliData['type']), 'quantity' => 1, 'price' => $kundliData['amount']]],
-            'shipping_address' => ['phone' => $request->phone],
+            'shipping_address' => ['phone' => $fullPhone],
         ]);
 
         // Process payment

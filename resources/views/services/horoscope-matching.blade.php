@@ -13,29 +13,29 @@
         <div class="bg-white rounded-lg shadow-lg p-8">
             <form action="{{ route('horoscope.process') }}" method="POST" class="space-y-8">
                 @csrf
-                
+
                 <!-- Male Details -->
                 <div class="border-b pb-6">
                     <h2 class="text-2xl font-bold mb-6 text-indigo-600">Male Details</h2>
                     <div class="grid md:grid-cols-2 gap-6">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
-                            <input type="text" name="male_name" required 
+                            <input type="text" name="male_name" required
                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Date of Birth</label>
-                            <input type="date" name="male_dob" required 
+                            <input type="date" name="male_dob" required
                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Time of Birth</label>
-                            <input type="time" name="male_time" required 
+                            <input type="time" name="male_time" required
                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Place of Birth</label>
-                            <input type="text" name="male_place" required 
+                            <input type="text" name="male_place" required
                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
                         </div>
                     </div>
@@ -47,22 +47,22 @@
                     <div class="grid md:grid-cols-2 gap-6">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
-                            <input type="text" name="female_name" required 
+                            <input type="text" name="female_name" required
                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Date of Birth</label>
-                            <input type="date" name="female_dob" required 
+                            <input type="date" name="female_dob" required
                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Time of Birth</label>
-                            <input type="time" name="female_time" required 
+                            <input type="time" name="female_time" required
                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Place of Birth</label>
-                            <input type="text" name="female_place" required 
+                            <input type="text" name="female_place" required
                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500">
                         </div>
                     </div>
@@ -74,13 +74,11 @@
                     <div class="grid md:grid-cols-2 gap-6">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
-                            <input type="email" name="email" required 
+                            <input type="email" name="email" required
                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
-                            <input type="tel" name="phone" required 
-                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+                            @include('components.phone-input', ['value' => '', 'id' => 'horoscope', 'label' => 'Phone Number', 'ring' => 'indigo'])
                         </div>
                     </div>
                 </div>

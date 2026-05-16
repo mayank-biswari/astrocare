@@ -204,16 +204,25 @@ class ProductController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email',
-            'phone' => 'required|string',
+            'country_code' => 'required|string|max:7',
+            'phone' => 'required|string|regex:/^[0-9]+$/',
             'address' => 'required|string',
             'city' => 'required|string',
             'pincode' => 'required|string',
             'payment_gateway' => 'required|exists:payment_gateways,code'
         ]);
 
+        // Validate phone digits against country code table
+        $country = \App\Models\CountryCode::findByDialCode($request->country_code);
+        if ($country && strlen($request->phone) !== $country->phone_digits) {
+            return back()->withErrors(['phone' => "Phone number must be exactly {$country->phone_digits} digits for {$country->name}."])->withInput();
+        }
+
+        $fullPhone = $request->country_code . $request->phone;
+
         // Update user phone if not already filled
         if (auth()->check() && !auth()->user()->phone) {
-            auth()->user()->update(['phone' => $request->phone]);
+            auth()->user()->update(['phone' => $fullPhone]);
         }
 
         // Calculate total from cart

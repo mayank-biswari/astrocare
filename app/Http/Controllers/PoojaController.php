@@ -74,12 +74,21 @@ class PoojaController extends Controller
             'amount' => 'required|numeric',
             'scheduled_at' => 'required|date|after:now',
             'devotee_name' => 'required|string',
-            'phone' => 'required|string',
+            'country_code' => 'required|string|max:7',
+            'phone' => 'required|string|regex:/^[0-9]+$/',
             'email' => 'nullable|email',
             'gotra' => 'nullable|string',
             'special_requirements' => 'nullable|string',
             'captcha' => 'required|captcha'
         ]);
+
+        // Validate phone digits against country code table
+        $country = \App\Models\CountryCode::findByDialCode($request->country_code);
+        if ($country && strlen($request->phone) !== $country->phone_digits) {
+            return back()->withErrors(['phone' => "Phone number must be exactly {$country->phone_digits} digits for {$country->name}."])->withInput();
+        }
+
+        $fullPhone = $request->country_code . $request->phone;
 
         // Store booking details in session
         session([
@@ -89,7 +98,7 @@ class PoojaController extends Controller
                 'amount' => $request->amount,
                 'scheduled_at' => $request->scheduled_at,
                 'devotee_name' => $request->devotee_name,
-                'phone' => $request->phone,
+                'phone' => $fullPhone,
                 'email' => $request->email,
                 'gotra' => $request->gotra,
                 'special_requirements' => $request->special_requirements

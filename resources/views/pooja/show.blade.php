@@ -6,7 +6,7 @@
 <div class="container mx-auto px-4 py-8">
     <div class="max-w-4xl mx-auto">
         <nav class="text-sm text-gray-500 mb-6">
-            <a href="{{ route('pooja.index') }}" class="hover:text-orange-600">Pooja & Rituals</a> > 
+            <a href="{{ route('pooja.index') }}" class="hover:text-orange-600">Pooja & Rituals</a> >
             {{ $pooja->name }}
         </nav>
 
@@ -16,7 +16,7 @@
                 <div class="text-6xl mb-6 text-center">{{ $pooja->icon }}</div>
                 <h1 class="text-3xl font-bold mb-6">{{ $pooja->name }}</h1>
                 <div class="text-3xl font-bold text-orange-600 mb-6">{{ formatPrice($pooja->price) }}</div>
-                
+
                 <div class="mb-6">
                     <h3 class="text-lg font-bold mb-3">About This Pooja</h3>
                     <p class="text-gray-600 mb-4">{{ $pooja->description }}</p>
@@ -49,7 +49,7 @@
             <!-- Booking Form -->
             <div class="bg-white rounded-lg shadow-lg p-8">
                 <h2 class="text-2xl font-bold mb-6">Book This Pooja</h2>
-                
+
                 <form action="{{ route('pooja.book') }}" method="POST" class="space-y-6">
                     @csrf
                     <input type="hidden" name="name" value="{{ $pooja->name }}">
@@ -63,9 +63,7 @@
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
-                        <input type="tel" name="phone" required
-                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
+                        @include('components.phone-input', ['value' => '', 'id' => 'pooja', 'label' => 'Phone Number', 'ring' => 'orange'])
                     </div>
 
                     <div>
@@ -83,7 +81,7 @@
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Gotra (Optional)</label>
-                        <input type="text" name="gotra" 
+                        <input type="text" name="gotra"
                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
                     </div>
 
@@ -99,10 +97,10 @@
                         <label class="block text-sm font-medium text-gray-700 mb-2">Security Check</label>
                         <div class="flex items-center space-x-4 mb-2">
                             <img src="{{ captcha_src() }}" alt="Captcha" class="border rounded">
-                            <button type="button" onclick="this.previousElementSibling.src='{{ captcha_src() }}?'+Math.random()" 
+                            <button type="button" onclick="this.previousElementSibling.src='{{ captcha_src() }}?'+Math.random()"
                                     class="text-orange-600 hover:text-orange-800 text-sm">Refresh</button>
                         </div>
-                        <input type="text" name="captcha" required 
+                        <input type="text" name="captcha" required
                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
                                placeholder="Enter captcha">
                         @error('captcha')
