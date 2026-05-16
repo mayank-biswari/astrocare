@@ -182,8 +182,7 @@ class DashboardController extends Controller
         // Get user's kundlis stats
         $kundliStats = [
             'generated' => $user->kundlis()->count(),
-            'downloaded' => $user->kundlis()->whereNotNull('downloaded_at')->count(),
-            'shared' => $user->kundlis()->where('is_shared', true)->count()
+            'downloaded' => $user->kundlis()->whereNotNull('pdf_path')->count(),
         ];
 
         // Get user's poojas stats
