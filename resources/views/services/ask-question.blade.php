@@ -41,32 +41,30 @@
                 <h2 class="text-2xl font-bold text-gray-800 mb-2">Submit Your Question</h2>
                 <p class="text-gray-600">Fill in your details to receive personalized astrological guidance</p>
             </div>
-            
+
             <form action="{{ route('ask.submit') }}" method="POST" class="space-y-6">
                 @csrf
-                
+
                 <div class="grid md:grid-cols-2 gap-6">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Full Name <span class="text-red-500">*</span></label>
-                        <input type="text" name="name" value="{{ old('name', session('question_data.name', auth()->user()->name ?? '')) }}" required 
+                        <input type="text" name="name" value="{{ old('name', session('question_data.name', auth()->user()->name ?? '')) }}" required
                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Email <span class="text-red-500">*</span></label>
-                        <input type="email" name="email" value="{{ old('email', session('question_data.email', auth()->user()->email ?? '')) }}" required 
+                        <input type="email" name="email" value="{{ old('email', session('question_data.email', auth()->user()->email ?? '')) }}" required
                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
                     </div>
                 </div>
 
                 <div class="grid md:grid-cols-2 gap-6">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number <span class="text-red-500">*</span></label>
-                        <input type="tel" name="phone" value="{{ old('phone', session('question_data.phone', auth()->user()->phone ?? '')) }}" required 
-                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
+                        @include('components.phone-input', ['value' => old('phone', session('question_data.phone', auth()->user()->phone ?? '')), 'id' => 'question', 'label' => 'Phone Number', 'ring' => 'orange'])
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Date of Birth <span class="text-red-500">*</span></label>
-                        <input type="date" name="dob" value="{{ old('dob', session('question_data.dob')) }}" required 
+                        <input type="date" name="dob" value="{{ old('dob', session('question_data.dob')) }}" required
                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
                     </div>
                 </div>
@@ -74,12 +72,12 @@
                 <div class="grid md:grid-cols-2 gap-6">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Time of Birth</label>
-                        <input type="time" name="time" value="{{ old('time', session('question_data.time')) }}" 
+                        <input type="time" name="time" value="{{ old('time', session('question_data.time')) }}"
                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Place of Birth</label>
-                        <input type="text" name="place" value="{{ old('place', session('question_data.place')) }}" 
+                        <input type="text" name="place" value="{{ old('place', session('question_data.place')) }}"
                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
                     </div>
                 </div>
@@ -100,7 +98,7 @@
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Your Question <span class="text-red-500">*</span></label>
-                    <textarea name="question" rows="5" required 
+                    <textarea name="question" rows="5" required
                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
                               placeholder="Please describe your question in detail. The more specific you are, the better guidance we can provide.">{{ old('question', session('question_data.question')) }}</textarea>
                 </div>

@@ -47,11 +47,7 @@
                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
                 </div>
 
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Phone <span class="text-red-500">*</span></label>
-                    <input type="tel" name="phone" value="{{ auth()->user()->phone ?? '' }}" required
-                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
-                </div>
+                @include('components.phone-input', ['value' => auth()->user()->phone ?? '', 'id' => 'prediction', 'ring' => 'indigo'])
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Payment Method <span class="text-red-500">*</span></label>
