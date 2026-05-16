@@ -10,7 +10,8 @@ use App\Http\Controllers\Api\PaymentGatewayController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
 
-Route::post('/campaign-leads', [CampaignLeadController::class, 'store']);
+Route::post('/campaign-leads', [CampaignLeadController::class, 'store'])
+    ->middleware('throttle:5,1');
 
 Route::get('/pages/{slug}', [PageController::class, 'show']);
 
@@ -37,5 +38,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/orders', [OrderController::class, 'store']);
     Route::get('/user/orders', [OrderController::class, 'index']);
     Route::get('/user/enquiries', [UserController::class, 'enquiries']);
-    Route::post('/coupons/validate', [CouponController::class, 'validate']);
+    Route::post('/coupons/validate', [CouponController::class, 'validate'])
+        ->middleware('throttle:30,1');
 });
