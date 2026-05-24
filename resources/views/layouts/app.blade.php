@@ -176,7 +176,7 @@
                 </div>
 
                 <!-- Mobile Menu Button -->
-                <div class="lg:hidden flex items-center space-x-2">
+                <div class="lg:hidden flex items-center space-x-3">
                     <a href="{{ route('cart.index') }}" class="hover:text-divine-gold relative">
                         <i class="fas fa-shopping-cart text-lg"></i>
                         @php $cartCount = count(session()->get('cart', [])); @endphp
@@ -184,6 +184,13 @@
                             <span class="absolute -top-2 -right-2 bg-divine-gold text-temple-red text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">{{ $cartCount }}</span>
                         @endif
                     </a>
+                    @auth
+                        <button id="mobile-menu-btn" onclick="window.toggleDashboardSidebar()" class="text-white hover:text-divine-gold focus:outline-none transition-colors duration-300" aria-label="User menu">
+                            <div class="w-8 h-8 rounded-full bg-divine-gold/20 border-2 border-divine-gold flex items-center justify-center">
+                                <i class="fas fa-user text-sm text-divine-gold"></i>
+                            </div>
+                        </button>
+                    @endauth
                     <button onclick="toggleMobileMenu()" class="text-white hover:text-divine-gold focus:outline-none transition-colors duration-300">
                         <svg id="mobile-menu-icon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
@@ -435,6 +442,12 @@ function toggleMobileMenu() {
     menuIcon.classList.toggle('hidden');
     closeIcon.classList.toggle('hidden');
 }
+
+// Dashboard sidebar toggle (overridden by dashboard layout script)
+window.toggleDashboardSidebar = window.toggleDashboardSidebar || function() {
+    // Default: navigate to dashboard if not on a dashboard page
+    window.location.href = '/dashboard';
+};
 
 function toggleMobileServices() {
     const servicesMenu = document.getElementById('mobile-services-menu');

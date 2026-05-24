@@ -162,6 +162,11 @@ Route::get('captcha/{config?}', '\Mews\Captcha\CaptchaController@getCaptcha')->n
 Route::get('/paypal/success', [App\Http\Controllers\PayPalController::class, 'success'])->name('paypal.success');
 Route::get('/paypal/cancel', [App\Http\Controllers\PayPalController::class, 'cancel'])->name('paypal.cancel');
 
+// Cross-App Authentication
+Route::get('/auth/cross-app-login', \App\Http\Controllers\Auth\CrossAppLoginController::class)
+    ->middleware('throttle:10,1')
+    ->name('auth.cross-app-login');
+
 // Auth Routes - Load before dynamic pages
 require __DIR__.'/auth.php';
 

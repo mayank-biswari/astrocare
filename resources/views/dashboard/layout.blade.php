@@ -2,11 +2,6 @@
 
 @section('content')
 <div class="flex min-h-screen bg-gray-50">
-    <!-- Mobile Menu Button -->
-    <button id="mobile-menu-btn" class="lg:hidden fixed top-20 left-4 z-30 bg-white p-2 rounded-lg shadow-lg">
-        <i class="fas fa-bars text-xl"></i>
-    </button>
-
     <!-- Sidebar -->
     <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out w-64 bg-white shadow-lg z-40">
         <div class="p-6">
@@ -76,7 +71,7 @@
     <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden hidden"></div>
 
     <!-- Main Content -->
-    <main class="flex-1 p-4 lg:p-8 pt-16 lg:pt-8">
+    <main class="flex-1 p-4 lg:p-8">
         @yield('dashboard-content')
     </main>
 </div>
@@ -86,14 +81,17 @@
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('sidebar-overlay');
 
-    mobileMenuBtn.addEventListener('click', () => {
+    // Override the default toggleDashboardSidebar for dashboard pages
+    window.toggleDashboardSidebar = function() {
         sidebar.classList.toggle('-translate-x-full');
         overlay.classList.toggle('hidden');
-    });
+    };
 
-    overlay.addEventListener('click', () => {
-        sidebar.classList.add('-translate-x-full');
-        overlay.classList.add('hidden');
-    });
+    if (overlay) {
+        overlay.addEventListener('click', () => {
+            sidebar.classList.add('-translate-x-full');
+            overlay.classList.add('hidden');
+        });
+    }
 </script>
 @endsection
