@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CampaignLeadController;
 use App\Http\Controllers\Api\CouponController;
+use App\Http\Controllers\Api\CrossAppTokenController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\PageController;
 use App\Http\Controllers\Api\PaymentCallbackController;
@@ -32,6 +33,8 @@ Route::prefix('auth')->group(function () {
         ->middleware('auth:sanctum');
     Route::get('/user', [AuthController::class, 'user'])
         ->middleware('auth:sanctum');
+    Route::post('/cross-app-token', [CrossAppTokenController::class, 'store'])
+        ->middleware(['auth:sanctum', 'throttle:5,1']);
 });
 
 Route::middleware('auth:sanctum')->group(function () {

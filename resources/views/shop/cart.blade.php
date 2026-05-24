@@ -3,6 +3,7 @@
 @section('title', 'Shopping Cart')
 
 @section('content')
+<div class="min-h-screen bg-gray-50">
 <div class="container mx-auto px-4 py-4 sm:py-8">
     <h1 class="text-xl sm:text-3xl font-bold mb-4 sm:mb-8">Shopping Cart</h1>
 
@@ -114,5 +115,6 @@
             <a href="{{ route('shop.index') }}" class="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700">Start Shopping</a>
         </div>
     @endif
+</div>
 </div>
 @endsection
