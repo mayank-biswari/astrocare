@@ -95,7 +95,7 @@
                     <h5 class="mb-0">Update Status & Report</h5>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('admin.predictions.status', $prediction->id) }}" method="POST">
+                    <form action="{{ route('admin.predictions.status', $prediction->id) }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
 
@@ -110,9 +110,29 @@
                         </div>
 
                         <div class="form-group mb-3">
-                            <label class="form-label font-weight-bold">Prediction Report</label>
-                            <textarea name="report" class="form-control" rows="10" placeholder="Enter the prediction report for the customer...">{{ $prediction->report }}</textarea>
+                            <label class="form-label font-weight-bold">Prediction Report (Text)</label>
+                            <textarea name="report" class="form-control" rows="8" placeholder="Enter the prediction report for the customer...">{{ $prediction->report }}</textarea>
                             <small class="text-muted">Required when marking as Completed. This report will be visible to the customer.</small>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label class="form-label font-weight-bold">Upload Report PDF</label>
+                            @if($prediction->report_file)
+                                <div class="mb-2">
+                                    <a href="{{ asset('storage/' . $prediction->report_file) }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-file-pdf"></i> View Current Report PDF
+                                    </a>
+                                    <small class="text-muted ml-2">Upload a new file to replace.</small>
+                                </div>
+                            @endif
+                            <div class="custom-file">
+                                <input type="file" class="custom-file-input" id="report_file" name="report_file" accept=".pdf">
+                                <label class="custom-file-label" for="report_file">Choose PDF file</label>
+                            </div>
+                            <small class="text-muted">Accepted: PDF only. Max size: 10MB.</small>
+                            @error('report_file')
+                                <div class="text-danger mt-1">{{ $message }}</div>
+                            @enderror
                         </div>
 
                         @error('report')

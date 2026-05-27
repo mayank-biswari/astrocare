@@ -15,13 +15,13 @@
                 <!-- Consultation Info -->
                 <div>
                     <h2 class="text-lg sm:text-xl font-bold mb-4">Consultation Information</h2>
-                    
+
                     <div class="space-y-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-600">Type</label>
                             <p class="text-lg">{{ ucfirst($consultation->type) }} Consultation</p>
                         </div>
-                        
+
                         <div>
                             <label class="block text-sm font-medium text-gray-600">Status</label>
                             <span class="px-3 py-1 rounded-full text-sm
@@ -32,39 +32,39 @@
                                 {{ ucfirst($consultation->status) }}
                             </span>
                         </div>
-                        
+
                         <div>
                             <label class="block text-sm font-medium text-gray-600">Date & Time</label>
-                            <p class="text-lg">{{ $consultation->date ? $consultation->date->format('M d, Y') : 'Not scheduled' }} {{ $consultation->time ? 'at ' . $consultation->time : '' }}</p>
+                            <p class="text-lg">{{ $consultation->scheduled_at ? $consultation->scheduled_at->format('M d, Y \a\t h:i A') : 'Not scheduled' }}</p>
                         </div>
-                        
+
                         <div>
                             <label class="block text-sm font-medium text-gray-600">Duration</label>
                             <p class="text-lg">{{ $consultation->duration }} minutes</p>
                         </div>
-                        
+
                         <div>
                             <label class="block text-sm font-medium text-gray-600">Amount Paid</label>
                             <p class="text-lg font-bold text-indigo-600">₹{{ number_format($consultation->amount) }}</p>
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Contact & Notes -->
                 <div>
                     <h2 class="text-lg sm:text-xl font-bold mb-4">Contact Information</h2>
-                    
+
                     <div class="space-y-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-600">Phone</label>
                             <p class="text-lg">{{ $consultation->phone ?? 'Not provided' }}</p>
                         </div>
-                        
+
                         <div>
                             <label class="block text-sm font-medium text-gray-600">Email</label>
                             <p class="text-lg">{{ $consultation->email ?? auth()->user()->email }}</p>
                         </div>
-                        
+
                         @if($consultation->notes)
                         <div>
                             <label class="block text-sm font-medium text-gray-600">Additional Notes</label>
@@ -73,7 +73,7 @@
                             </div>
                         </div>
                         @endif
-                        
+
                         @if($consultation->reschedule_reason)
                         <div>
                             <label class="block text-sm font-medium text-gray-600">Reschedule Reason</label>
@@ -82,7 +82,7 @@
                             </div>
                         </div>
                         @endif
-                        
+
                         @if($consultation->cancellation_reason)
                         <div>
                             <label class="block text-sm font-medium text-gray-600">Cancellation Reason</label>
@@ -94,7 +94,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Actions -->
             <div class="border-t pt-4 sm:pt-6 mt-4 sm:mt-8">
                 <div class="flex flex-col sm:flex-row gap-2 sm:gap-3">

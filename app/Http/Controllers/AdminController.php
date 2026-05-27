@@ -469,9 +469,31 @@ class AdminController extends Controller
 
     public function updateKundliStatus(Request $request, $id)
     {
-        $request->validate(['status' => 'required|in:pending,completed,cancelled']);
-        Kundli::findOrFail($id)->update(['status' => $request->status]);
-        return redirect()->route('admin.kundlis')->with('success', 'Kundli status updated successfully!');
+        $request->validate([
+            'status' => 'required|in:pending,completed,cancelled',
+            'pdf_file' => 'nullable|file|mimes:pdf|max:10240',
+            'report' => 'nullable|string',
+        ]);
+
+        $kundli = Kundli::findOrFail($id);
+
+        $data = [
+            'status' => $request->status,
+            'report' => $request->report,
+        ];
+
+        // Handle PDF file upload
+        if ($request->hasFile('pdf_file')) {
+            // Delete old file if exists
+            if ($kundli->pdf_path && \Storage::disk('public')->exists($kundli->pdf_path)) {
+                \Storage::disk('public')->delete($kundli->pdf_path);
+            }
+            $data['pdf_path'] = $request->file('pdf_file')->store('kundlis/reports', 'public');
+        }
+
+        $kundli->update($data);
+
+        return redirect()->route('admin.kundlis')->with('success', 'Kundli updated successfully!');
     }
 
     // Questions Management
@@ -568,16 +590,28 @@ class AdminController extends Controller
 
         $request->validate([
             'status' => 'required|in:pending,processing,completed,cancelled',
-            'report' => 'required_if:status,completed|nullable|string'
+            'report' => 'required_if:status,completed|nullable|string',
+            'report_file' => 'nullable|file|mimes:pdf|max:10240',
         ]);
 
         $prediction = \App\Models\Prediction::findOrFail($id);
         $oldStatus = $prediction->status;
 
-        $prediction->update([
+        $data = [
             'status' => $request->status,
-            'report' => $request->report
-        ]);
+            'report' => $request->report,
+        ];
+
+        // Handle PDF file upload
+        if ($request->hasFile('report_file')) {
+            // Delete old file if exists
+            if ($prediction->report_file && \Storage::disk('public')->exists($prediction->report_file)) {
+                \Storage::disk('public')->delete($prediction->report_file);
+            }
+            $data['report_file'] = $request->file('report_file')->store('predictions/reports', 'public');
+        }
+
+        $prediction->update($data);
 
         // Send notifications if status actually changed
         if ($oldStatus !== $request->status) {

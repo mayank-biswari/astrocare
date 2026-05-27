@@ -202,6 +202,26 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::delete('/coupons/{id}', [App\Http\Controllers\Admin\CouponController::class, 'destroy'])->name('coupons.delete');
     Route::patch('/coupons/{id}/toggle', [App\Http\Controllers\Admin\CouponController::class, 'toggleStatus'])->name('coupons.toggle');
 
+    // Services Management
+    Route::get('/services', [App\Http\Controllers\Admin\ServiceManagementController::class, 'index'])->name('services.index');
+    Route::get('/services/create', [App\Http\Controllers\Admin\ServiceManagementController::class, 'create'])->name('services.create');
+    Route::post('/services', [App\Http\Controllers\Admin\ServiceManagementController::class, 'store'])->name('services.store');
+    Route::get('/services/{id}/edit', [App\Http\Controllers\Admin\ServiceManagementController::class, 'edit'])->name('services.edit');
+    Route::put('/services/{id}', [App\Http\Controllers\Admin\ServiceManagementController::class, 'update'])->name('services.update');
+    Route::delete('/services/{id}', [App\Http\Controllers\Admin\ServiceManagementController::class, 'destroy'])->name('services.destroy');
+    Route::patch('/services/{id}/toggle', [App\Http\Controllers\Admin\ServiceManagementController::class, 'toggleStatus'])->name('services.toggle');
+
+    // Service Tiers
+    Route::post('/services/{id}/tiers', [App\Http\Controllers\Admin\ServiceManagementController::class, 'storeTier'])->name('services.tiers.store');
+    Route::put('/services/{id}/tiers/{tierId}', [App\Http\Controllers\Admin\ServiceManagementController::class, 'updateTier'])->name('services.tiers.update');
+    Route::delete('/services/{id}/tiers/{tierId}', [App\Http\Controllers\Admin\ServiceManagementController::class, 'destroyTier'])->name('services.tiers.destroy');
+
+    // Service Form Fields
+    Route::post('/services/{id}/fields', [App\Http\Controllers\Admin\ServiceManagementController::class, 'storeField'])->name('services.fields.store');
+    Route::put('/services/{id}/fields/{fieldId}', [App\Http\Controllers\Admin\ServiceManagementController::class, 'updateField'])->name('services.fields.update');
+    Route::delete('/services/{id}/fields/{fieldId}', [App\Http\Controllers\Admin\ServiceManagementController::class, 'destroyField'])->name('services.fields.destroy');
+    Route::post('/services/{id}/fields/reorder', [App\Http\Controllers\Admin\ServiceManagementController::class, 'reorderFields'])->name('services.fields.reorder');
+
     // Lists
     Route::prefix('lists')->name('lists.')->group(function () {
         Route::get('/products', [App\Http\Controllers\Admin\ListController::class, 'productLists'])->name('products');

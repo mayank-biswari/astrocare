@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Consultation extends Model
 {
     protected $fillable = [
-        'user_id', 'service_id', 'type', 'scheduled_at', 'status', 'amount', 'currency', 'notes', 'reschedule_reason', 'suggestions', 'remedies', 'cancellation_reason'
+        'user_id', 'service_id', 'type', 'duration', 'scheduled_at', 'status', 'amount', 'currency', 'notes', 'reschedule_reason', 'suggestions', 'remedies', 'cancellation_reason'
     ];
 
     protected $casts = [

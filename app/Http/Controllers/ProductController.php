@@ -242,7 +242,7 @@ class ProductController extends Controller
             'payment_status' => 'pending',
             'shipping_address' => $request->address . ', ' . $request->city . ' - ' . $request->pincode,
             'phone' => $request->phone,
-            'items' => json_encode($cart),
+            'items' => json_encode(array_values($cart)),
         ]);
 
         // Save address if user consented

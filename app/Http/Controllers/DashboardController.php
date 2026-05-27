@@ -19,7 +19,7 @@ class DashboardController extends Controller
             $multiplier = 1;
             if ($bookingData['duration'] == 45) $multiplier = 1.5;
             elseif ($bookingData['duration'] == 60) $multiplier = 2;
-            $amount = $service->price * $multiplier;
+            $amount = $service->base_price * $multiplier;
 
             // Store booking details in session for checkout
             session([
