@@ -46,6 +46,16 @@ return new class extends Migration
             $table->integer('sort_order')->default(0)->after('is_active');
         });
 
+        // Normalize existing type values before converting to enum
+        \Illuminate\Support\Facades\DB::table('services')
+            ->where('type', 'horoscope_matching')
+            ->update(['type' => 'matching']);
+
+        // Map any other non-standard values to 'custom'
+        \Illuminate\Support\Facades\DB::table('services')
+            ->whereNotIn('type', ['question', 'prediction', 'kundli', 'consultation', 'pooja', 'matching', 'custom'])
+            ->update(['type' => 'custom']);
+
         // For MySQL: Change type column to enum
         if (\Illuminate\Support\Facades\DB::getDriverName() === 'mysql') {
             \Illuminate\Support\Facades\DB::statement("ALTER TABLE services MODIFY COLUMN type ENUM('question', 'prediction', 'kundli', 'consultation', 'pooja', 'matching', 'custom') NOT NULL");
