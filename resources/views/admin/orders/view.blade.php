@@ -32,7 +32,8 @@
                         @php
                             $items = is_array($order->items) ? $order->items : json_decode($order->items, true);
                             // Determine if items is a list of products or a single plan info object
-                            $isItemList = $items && isset($items[0]);
+                            // Check if any item has a 'name' key (product items) or if it's numerically indexed
+                            $isItemList = $items && (isset($items[0]) || (is_array($items) && !isset($items['plan_id']) && !isset($items['plan_name']) && count($items) > 0 && isset(array_values($items)[0]['name'])));
                         @endphp
                         @if($items && $isItemList)
                             @foreach($items as $item)

@@ -52,13 +52,13 @@
 
             <div class="card">
                 <div class="card-header">
-                    <h5>Update Status</h5>
+                    <h5>Update Status & Report</h5>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('admin.kundlis.status', $kundli->id) }}" method="POST">
+                    <form action="{{ route('admin.kundlis.status', $kundli->id) }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
-                        
+
                         <div class="form-group">
                             <label>Status</label>
                             <select name="status" class="form-control" required>
@@ -68,7 +68,32 @@
                             </select>
                         </div>
 
-                        <button type="submit" class="btn btn-primary btn-block">Update Status</button>
+                        <div class="form-group">
+                            <label class="font-weight-bold">Upload Kundli Report PDF</label>
+                            @if($kundli->pdf_path)
+                                <div class="mb-2">
+                                    <a href="{{ asset('storage/' . $kundli->pdf_path) }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-file-pdf"></i> View Current PDF
+                                    </a>
+                                    <small class="text-muted ml-2">Upload a new file to replace.</small>
+                                </div>
+                            @endif
+                            <div class="custom-file">
+                                <input type="file" class="custom-file-input" id="pdf_file" name="pdf_file" accept=".pdf">
+                                <label class="custom-file-label" for="pdf_file">Choose PDF file</label>
+                            </div>
+                            <small class="text-muted">Accepted: PDF only. Max size: 10MB.</small>
+                            @error('pdf_file')
+                                <div class="text-danger mt-1">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="form-group">
+                            <label class="font-weight-bold">Report Notes (Optional)</label>
+                            <textarea name="report" class="form-control" rows="4" placeholder="Enter any notes or summary for the kundli report...">{{ $kundli->report }}</textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-block">Update Kundli</button>
                     </form>
                 </div>
             </div>

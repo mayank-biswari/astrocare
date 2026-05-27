@@ -48,6 +48,12 @@ class AdminMenuService
                 'icon' => 'fas fa-star',
                 'children' => [
                     [
+                        'title' => 'Service Management',
+                        'icon' => 'fas fa-concierge-bell',
+                        'route' => 'admin.services.index',
+                        'active' => 'admin.services*'
+                    ],
+                    [
                         'title' => 'Consultations',
                         'icon' => 'far fa-circle',
                         'route' => 'admin.consultations',

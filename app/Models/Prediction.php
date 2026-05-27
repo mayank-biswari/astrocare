@@ -18,6 +18,7 @@ class Prediction extends Model
         'amount',
         'status',
         'report',
+        'report_file',
         'payment_status',
     ];
 
