@@ -67,7 +67,7 @@
                 @elseif($layout === 'slider')
                     @include('dynamic-pages.layouts.default-slider', ['items' => $items, 'section' => $section, 'loopIndex' => $loop->index])
                 @endif
-                
+
                 @if($items instanceof \Illuminate\Pagination\LengthAwarePaginator)
                     <div class="mt-6">
                         {{ $items->links() }}
@@ -81,12 +81,6 @@
 
     @endforeach
 </div>
-
-@if($page->custom_js)
-<script>
-{!! $page->custom_js !!}
-</script>
-@endif
 
 @foreach($page->external_js ?? [] as $js)
     @if($js)
@@ -180,5 +174,10 @@ $(document).ready(function(){
     @endforeach
 });
 </script>
+@if($page->custom_js)
+<script>
+{!! $page->custom_js !!}
+</script>
+@endif
 @endpush
 @endsection
