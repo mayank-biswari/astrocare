@@ -19,21 +19,21 @@
                 <div class="text-4xl mb-4 text-center">💬</div>
                 <h3 class="text-base sm:text-xl font-bold mb-4">{{ __('messages.chat_consultation') }}</h3>
                 <p class="text-sm sm:text-base text-gray-600 mb-4">{{ __('messages.chat_desc') }}</p>
-                <div class="text-lg sm:text-2xl font-bold text-indigo-600 mb-4">₹299/{{ __('messages.session') }}</div>
+                <div class="text-lg sm:text-2xl font-bold text-indigo-600 mb-4">{{ formatPrice(299) }}/{{ __('messages.session') }}</div>
                 <a href="{{ route('consultations.show', 'chat') }}" class="bg-indigo-600 text-white text-sm sm:text-base px-4 sm:px-6 py-2 sm:py-3 rounded hover:bg-indigo-700 block text-center">{{ __('messages.book_now') }}</a>
             </div>
             <div class="bg-white p-3 sm:p-6 rounded-lg shadow-lg">
                 <div class="text-4xl mb-4 text-center">📹</div>
                 <h3 class="text-base sm:text-xl font-bold mb-4">{{ __('messages.video_consultation') }}</h3>
                 <p class="text-sm sm:text-base text-gray-600 mb-4">{{ __('messages.video_desc') }}</p>
-                <div class="text-lg sm:text-2xl font-bold text-indigo-600 mb-4">₹599/{{ __('messages.session') }}</div>
+                <div class="text-lg sm:text-2xl font-bold text-indigo-600 mb-4">{{ formatPrice(599) }}/{{ __('messages.session') }}</div>
                 <a href="{{ route('consultations.show', 'video') }}" class="bg-indigo-600 text-white text-sm sm:text-base px-4 sm:px-6 py-2 sm:py-3 rounded hover:bg-indigo-700 block text-center">{{ __('messages.book_now') }}</a>
             </div>
             <div class="bg-white p-3 sm:p-6 rounded-lg shadow-lg">
                 <div class="text-4xl mb-4 text-center">📞</div>
                 <h3 class="text-base sm:text-xl font-bold mb-4">{{ __('messages.phone_consultation') }}</h3>
                 <p class="text-sm sm:text-base text-gray-600 mb-4">{{ __('messages.phone_desc') }}</p>
-                <div class="text-lg sm:text-2xl font-bold text-indigo-600 mb-4">₹499/{{ __('messages.session') }}</div>
+                <div class="text-lg sm:text-2xl font-bold text-indigo-600 mb-4">{{ formatPrice(499) }}/{{ __('messages.session') }}</div>
                 <a href="{{ route('consultations.show', 'phone') }}" class="bg-indigo-600 text-white text-sm sm:text-base px-4 sm:px-6 py-2 sm:py-3 rounded hover:bg-indigo-700 block text-center">{{ __('messages.book_now') }}</a>
             </div>
         </div>
@@ -46,19 +46,19 @@
             <div class="bg-white p-3 sm:p-6 rounded-lg shadow-lg">
                 <h3 class="text-base sm:text-xl font-bold mb-4">{{ __('messages.basic_kundli') }}</h3>
                 <p class="text-sm sm:text-base text-gray-600 mb-4">{{ __('messages.basic_kundli_desc') }}</p>
-                <div class="text-lg sm:text-2xl font-bold text-indigo-600 mb-4">₹299</div>
+                <div class="text-lg sm:text-2xl font-bold text-indigo-600 mb-4">{{ formatPrice(299) }}</div>
                 <a href="{{ route('kundli.create') }}" class="bg-indigo-600 text-white text-sm sm:text-base px-4 sm:px-6 py-2 sm:py-3 rounded hover:bg-indigo-700 block text-center">{{ __('messages.generate') }}</a>
             </div>
             <div class="bg-white p-3 sm:p-6 rounded-lg shadow-lg">
                 <h3 class="text-base sm:text-xl font-bold mb-4">{{ __('messages.detailed_kundli') }}</h3>
                 <p class="text-sm sm:text-base text-gray-600 mb-4">{{ __('messages.detailed_kundli_desc') }}</p>
-                <div class="text-lg sm:text-2xl font-bold text-indigo-600 mb-4">₹599</div>
+                <div class="text-lg sm:text-2xl font-bold text-indigo-600 mb-4">{{ formatPrice(599) }}</div>
                 <a href="{{ route('kundli.create') }}" class="bg-indigo-600 text-white text-sm sm:text-base px-4 sm:px-6 py-2 sm:py-3 rounded hover:bg-indigo-700 block text-center">{{ __('messages.generate') }}</a>
             </div>
             <div class="bg-white p-3 sm:p-6 rounded-lg shadow-lg">
                 <h3 class="text-base sm:text-xl font-bold mb-4">{{ __('messages.premium_kundli') }}</h3>
                 <p class="text-sm sm:text-base text-gray-600 mb-4">{{ __('messages.premium_kundli_desc') }}</p>
-                <div class="text-lg sm:text-2xl font-bold text-indigo-600 mb-4">₹999</div>
+                <div class="text-lg sm:text-2xl font-bold text-indigo-600 mb-4">{{ formatPrice(999) }}</div>
                 <a href="{{ route('kundli.create') }}" class="bg-indigo-600 text-white text-sm sm:text-base px-4 sm:px-6 py-2 sm:py-3 rounded hover:bg-indigo-700 block text-center">{{ __('messages.generate') }}</a>
             </div>
         </div>
@@ -71,13 +71,13 @@
             <div class="bg-white p-4 sm:p-8 rounded-lg shadow-lg">
                 <h3 class="text-lg sm:text-2xl font-bold mb-4">{{ __('messages.horoscope_matching') }}</h3>
                 <p class="text-sm sm:text-base text-gray-600 mb-6">{{ __('messages.horoscope_matching_desc') }}</p>
-                <div class="text-lg sm:text-2xl font-bold text-indigo-600 mb-4">₹399</div>
+                <div class="text-lg sm:text-2xl font-bold text-indigo-600 mb-4">{{ formatPrice(399) }}</div>
                 <a href="{{ route('horoscope.matching') }}" class="bg-indigo-600 text-white text-sm sm:text-base px-4 sm:px-6 py-2 sm:py-3 rounded hover:bg-indigo-700">{{ __('messages.check_compatibility') }}</a>
             </div>
             <div class="bg-white p-4 sm:p-8 rounded-lg shadow-lg">
                 <h3 class="text-lg sm:text-2xl font-bold mb-4">{{ __('messages.ask_question') }}</h3>
                 <p class="text-sm sm:text-base text-gray-600 mb-6">{{ __('messages.ask_question_desc') }}</p>
-                <div class="text-lg sm:text-2xl font-bold text-indigo-600 mb-4">₹199</div>
+                <div class="text-lg sm:text-2xl font-bold text-indigo-600 mb-4">{{ formatPrice(199) }}</div>
                 <a href="{{ route('ask.question') }}" class="bg-indigo-600 text-white text-sm sm:text-base px-4 sm:px-6 py-2 sm:py-3 rounded hover:bg-indigo-700">{{ __('messages.ask_now') }}</a>
             </div>
         </div>
